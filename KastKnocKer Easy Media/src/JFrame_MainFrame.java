@@ -13,7 +13,7 @@ public class JFrame_MainFrame extends JFrame implements ActionListener,WindowLis
 		this.addWindowListener(this);
 		this.setTitle("KastKnocKer - Easy Media");
 		JMenuBar BarraDeiMenu=new JMenuBar();
-		JMenu menuFile=new JMenu("File");
+		JMenu menuFile=new JMenu("File"); 
 		
 		JMenuItem MnuovoEsame=new JMenuItem("Nuovo Esame");
 		JMenuItem MSalva=new JMenuItem("Salva");
