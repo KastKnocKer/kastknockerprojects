@@ -1,0 +1,98 @@
+StartLibrary
+Voto
+Analisi Matematica A
+8
+22
+Voto
+Analisi Matematica B
+5
+22
+Voto
+Analisi Matematica C
+5
+22
+Voto
+Basi di Dati A
+5
+0
+Voto
+Calcolatori Elettronici A
+5
+30
+Voto
+Chimica
+6
+30
+Voto
+Elettronica A
+5
+30
+Voto
+Elettronica B
+5
+0
+Voto
+Elettrotecnica A
+5
+27
+Voto
+F.di Informatica A
+4
+27
+Voto
+F.di Informatica B
+6
+29
+Voto
+F.di Informatica C
+8
+30
+Voto
+F.di Informatica Lab
+3
+29
+Voto
+Fisica A
+6
+30
+Voto
+Fisica B
+6
+30
+Voto
+Fondamenti di Ricerca Operativa
+5
+0
+Voto
+Geometria A
+5
+30
+Voto
+Geometria B
+3
+30
+Voto
+Inglese A
+3
+22
+Voto
+Inglese B
+3
+23
+Voto
+Metodi Statistici
+5
+26
+Voto
+Reti Logiche
+3
+30
+Voto
+Sistemi Operativi
+8
+30
+Voto
+Termodinamica e Trasmissione del Calore
+5
+25
+EOF
