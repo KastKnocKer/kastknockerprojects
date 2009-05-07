@@ -1,0 +1,17 @@
+StartArtistLibrary
+SoloMusicArtist
+Vasco Rossi
+
+
+
+
+
+
+
+
+
+
+BOB
+
+EOB
+EOF
