@@ -57,7 +57,7 @@ public class TableModelListaOrdinazioni extends AbstractTableModel{
 		cliente = ListaClienti.getClienteDaIDCliente( ordinazione.getIDCliente() );
 		prodotto = ListaProdotti.getProdottoDaCodice( ordinazione.getCodiceProdotto() );
 		
-		Float prezzo = Float.parseFloat(prodotto.getPrezzoCliente())*Float.parseFloat(ordinazione.getQuantita());
+		Float prezzo = Float.parseFloat(prodotto.getPrezzoFornitore())*Float.parseFloat(ordinazione.getQuantita());
 		switch(arg1){
 		case 0: return ordinazione.getCodiceProdotto();
 		case 1: return ordinazione.getQuantita();

@@ -11,7 +11,7 @@ import java.util.Vector;
 
 
 
-public class ListaProdotti extends ListNode{
+public class ListaProdotti extends Vector<Prodotto>{
 	
 	public static ListaProdotti LinkListaProdotti;
 	
@@ -21,20 +21,7 @@ public class ListaProdotti extends ListNode{
 		this.caricaProdottiDaDatabase();
 	}
 	
-	public void insert(Prodotto o){
-		if( this.contains(o) ) return;
-		setNode(new Node(o,getNode()));
-	}
-	
-	public boolean contains(Prodotto o){
-		Node tmp=getNode();
-		while(tmp!=null){
-			if(  ((Prodotto) tmp.info).getCodice().equals(o.getCodice())) return true;
-			tmp=tmp.next;
-		}
-		return false;
-	}
-	
+
 	public void caricaProdottiDaDatabase(){
 	
 		Vector v = Database.eseguiQuery("SELECT * FROM CatalogoProdotti_Query;");
@@ -53,78 +40,47 @@ public class ListaProdotti extends ListNode{
 					Oggetto.setPrezzoFornitore(record[6]);
 					Oggetto.setPunti(record[7]);
 					Oggetto.setContenuto(record[8]);
-					this.insert(Oggetto);
+					this.add(Oggetto);
 				}
-	}
-	
-	public void caricaProdottiDaTXT(){
-		BufferedReader reader  = null; // il reader che userò sul file
-		try {
-			reader = new BufferedReader(new FileReader ("DataBaseProdotti.txt"));			
-			String Tmp;
-			Prodotto Oggetto = null;
-			while ((Tmp = reader.readLine()) != null) {	//Finchè non è nulla continua la lettura!
-			Oggetto = new Prodotto();
-			
-			Oggetto.setCategoria(Tmp);
-			Oggetto.setTipo(reader.readLine());
-			Oggetto.setCodice(reader.readLine());
-			Oggetto.setProduttore(reader.readLine());
-			Oggetto.setNome(reader.readLine());
-			Oggetto.setPunti(reader.readLine());
-			Oggetto.setContenuto(reader.readLine());
-			Oggetto.setPrezzoCliente(reader.readLine());
-			Oggetto.setPrezzoFornitore(reader.readLine());
-			
-			this.insert(Oggetto);
-			}
-			
-			
-				
-			}
-		catch (FileNotFoundException e) {System.out.println("File non trovato");}
-		catch (IOException e) {System.out.println("IO EXCE");}
-	}
-	
-	public void salvaProdottiSuTXT(){
-		BufferedWriter writer;
-		try {
-			writer = new BufferedWriter(new FileWriter("DataBaseProdotti.txt", false));
-			//writer.newLine();
-			int LunghezzaLista = this.length();
-			Prodotto Oggetto = null;
-			for (int i=0 ; i < LunghezzaLista ; i++){
-			Oggetto = (Prodotto) this.getObjPos(i);
-			
-			writer.write( Oggetto.getCategoria() ); writer.newLine();
-			writer.write( Oggetto.getTipo() ); writer.newLine();
-			writer.write( Oggetto.getCodice() ); writer.newLine();
-			writer.write( Oggetto.getProduttore() ); writer.newLine();
-			writer.write( Oggetto.getNome() ); writer.newLine();
-			writer.write( Oggetto.getPunti() ); writer.newLine();
-			writer.write( Oggetto.getContenuto() ); writer.newLine();
-			writer.write( Oggetto.getPrezzoCliente() ); writer.newLine();
-			writer.write( Oggetto.getPrezzoFornitore() ); writer.newLine();
-			
-			}
-			
-			//writer.write("EOF");
-			//writer.newLine();
 		
-			// chiudo il file
-			writer.flush();
-			writer.close();
+	this.caricaPromozioni();
+				
+	}
+	
+	private void caricaPromozioni(){
+		Prodotto Oggetto = null;
+		Vector v = Database.eseguiQuery("SELECT * FROM Promozione;");
+			for(int i=0; i < v.size(); i++){
+			String [] record = (String[]) v.elementAt(i);
+			Oggetto = this.getProdottoDaCodice(record[1]);
+
+			
+			if(record[2].equals("Sconto")){
+				
+				Float prezzo = Float.parseFloat( Oggetto.getPrezzoFornitore() );
+				Float punti = Float.parseFloat( Oggetto.getPunti() );
+				prezzo=prezzo*(100-Integer.parseInt(record[3]))/100;
+				punti=punti*(100-Integer.parseInt(record[4]))/100;
+				Oggetto.setPrezzoFornitore( prezzo.toString() );
+				Oggetto.setPunti( punti.toString() );
 			}
-		catch (IOException e) {
-			System.out.println("Eccezione durante un'operazione di Output artista");
+			
+			if(record[2].equals("Ribasso")){
+				Oggetto.setPrezzoFornitore( record[3] );
+				Oggetto.setPunti( record[4] );
+			}
+		
+				
+			
 			}
 	}
+	
 	
 	public static boolean contains (String codiceProdotto) {
 		Prodotto prodotto;
-		for(int i=0 ; i<ListaProdotti.LinkListaProdotti.length(); i++){
-			prodotto = (Prodotto) ListaProdotti.LinkListaProdotti.getObjPos(i);
-			if(prodotto.getCodice().equals(codiceProdotto)){
+		for(int i=0 ; i<ListaProdotti.LinkListaProdotti.size(); i++){
+			prodotto = (Prodotto) ListaProdotti.LinkListaProdotti.get(i);
+			if(prodotto.getCodice().toLowerCase().equals(codiceProdotto.toLowerCase())){
 				return true;
 			}
 		}
@@ -133,9 +89,9 @@ public class ListaProdotti extends ListNode{
 
 	public static Prodotto getProdottoDaCodice(String codiceProdotto) {
 		Prodotto prodotto;
-		for(int i=0 ; i<ListaProdotti.LinkListaProdotti.length(); i++){
-			prodotto = (Prodotto) ListaProdotti.LinkListaProdotti.getObjPos(i);
-			if(prodotto.getCodice().equals(codiceProdotto)){
+		for(int i=0 ; i<ListaProdotti.LinkListaProdotti.size(); i++){
+			prodotto = (Prodotto) ListaProdotti.LinkListaProdotti.get(i);
+			if(prodotto.getCodice().toLowerCase().equals(codiceProdotto.toLowerCase())){
 				return prodotto;
 			}
 		}

@@ -38,11 +38,11 @@ public class TableModelListaProdotti extends AbstractTableModel{
 	}
 
 	public int getRowCount() {
-		return listaprodotti.length();
+		return listaprodotti.size();
 	}
 
 	public Object getValueAt(int arg0, int arg1) {
-		prodotto = (Prodotto) listaprodotti.getObjPos(arg0);
+		prodotto = (Prodotto) listaprodotti.get(arg0);
 		
 		switch(arg1){
 		case 0: return prodotto.getCodice();

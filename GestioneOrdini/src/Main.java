@@ -1,5 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
+
 import Grafica.*;
 import Liste.*;
 
@@ -25,10 +26,18 @@ public class Main {
 		ListaProdotti.LinkListaProdotti = new ListaProdotti();
 		ListaOrdini.LinkListaOrdini = new ListaOrdini();
 		ListaOrdinazioni.LinkListaOrdinazioni = new ListaOrdinazioni();
-		
+		ListaDistributori.LinkListaDistributori = new ListaDistributori();
 		
 		MainFrame MF = new MainFrame();
-		ListaOrdinazioni.riassuntoOrdinazione();
+		
+		
+		/*PROVA STAMPA*/
+		//JFrame frame = new JFrame();
+		//frame.setVisible(true);
+		//frame.add(new Pannello());
+		//frame.pack();
+		/**************/
+		
 	}
 
 }
