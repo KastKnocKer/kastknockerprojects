@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="F:/Programmazione/Workspace/KastKnocker Mp3-Organizer/jmf.jar"/>
 	<classpathentry kind="lib" path="F:/Programmazione/Workspace/KastKnocker Mp3-Organizer/mediaplayer.jar"/>
 	<classpathentry kind="lib" path="F:/Programmazione/Workspace/KastKnocker Mp3-Organizer/jaudiotagger.jar"/>
+	<classpathentry kind="lib" path="multiplayer.jar"/>
+	<classpathentry kind="lib" path="sound.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
