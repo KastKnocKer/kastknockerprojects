@@ -27,7 +27,7 @@ public class MMSViaWeb {
 		try{
 			// Struttura del pacchetto
 	        String data = URLEncoder.encode("recipient", "UTF-8") + "=" + URLEncoder.encode("%2B39" + destinatario, "UTF-8");
-	        data += "&" + URLEncoder.encode("subjecttosend", "UTF-8") + "=" + URLEncoder.encode("Da: " + mittente, "UTF-8");
+	        data += "&" + URLEncoder.encode("subjecttosend", "UTF-8") + "=" + URLEncoder.encode(mittente, "UTF-8");
 	        data += "&" + URLEncoder.encode("TextName", "UTF-8") + "=" + URLEncoder.encode(testomessaggio, "UTF-8");
 	        data += "&" + URLEncoder.encode("SmilName", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8");
 	        data += "&" + URLEncoder.encode("ImageName", "UTF-8") + "=" + URLEncoder.encode("", "UTF-8");
@@ -47,8 +47,7 @@ public class MMSViaWeb {
 	        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 	        String line;
 	        while ((line = rd.readLine()) != null) {
-	            
-	        	//System.out.println(line);
+	        	//System.out.println(line);	        	
 	        }
 	        wr.close();
 	        rd.close();
