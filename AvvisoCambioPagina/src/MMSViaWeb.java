@@ -49,6 +49,7 @@ public class MMSViaWeb {
 	        while ((line = rd.readLine()) != null) {
 	        	//System.out.println(line);	        	
 	        }
+	        
 	        wr.close();
 	        rd.close();
 	        
