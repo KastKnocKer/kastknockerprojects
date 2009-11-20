@@ -5,6 +5,7 @@ public class SitoDaControllare {
 	private String messaggio = null;
 	private String tipopagina = null;
 	private boolean aggiornato = false;
+	private String dataUltimoAggiornamento = null;
 	
 	public void setUrl(String url) {
 		this.url = url;
@@ -29,6 +30,15 @@ public class SitoDaControllare {
 	}
 	public boolean isAggiornato() {
 		return aggiornato;
+	}
+	
+	public void controlloAggiornato() {
+		
+		if(tipopagina.equals("html")){
+			
+			
+		}
+		
 	}
 	
 }

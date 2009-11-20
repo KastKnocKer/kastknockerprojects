@@ -17,23 +17,40 @@ public class Main {
 		
 	Vector<SitoDaControllare> vettore = new Vector<SitoDaControllare>();
 	
+	/* CARICAMENTO SITI DA CONTROLLARE */
 	SitoDaControllare sito = new SitoDaControllare();
-	sito.setUrl("");
+	sito.setUrl("http://www.dii.unimo.it/zanasi/didattica/contr_A_NOD/Controlli_A_NOD_09.htm");
 	sito.setMessaggio("Pagina Controlli Automatici Aggiornata");
 	sito.setTipopagina("html");
-	
 	vettore.addElement(sito);
 	
-	
 	String messaggio = new String("");
+	boolean flag = true ;
+
 	
-	for(int i=0; i<vettore.size(); i++){
+	while(flag){
+		
+		for(int i=0; i<vettore.size(); i++){
 		
 		sito = vettore.get(i);
-		if( sito.isAggiornato() ){
-			
+			sito.controlloAggiornato();
+			if( sito.isAggiornato() ){
+			messaggio.concat(sito.getMessaggio());
+			messaggio.concat(" - ");
+			vettore.remove(i);
+			}
 		}
 		
+		if(messaggio.length()>0){
+			MMSViaWeb mms = new MMSViaWeb();
+			mms.setMittente("ProgPro");
+			mms.setDestinatario("3406787668");
+			mms.setTestomessaggio(messaggio);
+			mms.sendMMS();
+			System.exit(0);
+		}
+		
+		try {Thread.currentThread().sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 	
 	
@@ -80,5 +97,4 @@ public class Main {
 		}*/
 		
 	}
-
 }
