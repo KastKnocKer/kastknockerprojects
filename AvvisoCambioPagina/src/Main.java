@@ -18,10 +18,9 @@ public class Main {
 	Vector<SitoDaControllare> vettore = new Vector<SitoDaControllare>();
 	
 	/* CARICAMENTO SITI DA CONTROLLARE */
-	SitoDaControllare sito = new SitoDaControllare();
-	sito.setUrl("http://www.dii.unimo.it/zanasi/didattica/contr_A_NOD/Controlli_A_NOD_09.htm");
+	SitoDaControllare sito = new SitoDaControllare("http://www.dii.unimo.it/zanasi/didattica/contr_A_NOD/Controlli_A_NOD_09.htm","html");
+	//SitoDaControllare sito = new SitoDaControllare("http://127.0.0.1/Sito/KastKnocKerRadio.htm","html");
 	sito.setMessaggio("Pagina Controlli Automatici Aggiornata");
-	sito.setTipopagina("html");
 	vettore.addElement(sito);
 	
 	String messaggio = new String("");
@@ -33,11 +32,15 @@ public class Main {
 		for(int i=0; i<vettore.size(); i++){
 		
 		sito = vettore.get(i);
-			sito.controlloAggiornato();
+		sito.controlloAggiornato();
 			if( sito.isAggiornato() ){
-			messaggio.concat(sito.getMessaggio());
-			messaggio.concat(" - ");
-			vettore.remove(i);
+				System.out.println("LA MERDA e' rosa!");
+			//messaggio.concat(sito.getMessaggio());
+			//messaggio.concat(" - ");
+			messaggio=sito.getMessaggio();
+			System.out.println(sito.getMessaggio());
+			//vettore.remove(i);
+			//i--;
 			}
 		}
 		
@@ -50,7 +53,7 @@ public class Main {
 			System.exit(0);
 		}
 		
-		try {Thread.currentThread().sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.currentThread().sleep(600000);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 	
 	
