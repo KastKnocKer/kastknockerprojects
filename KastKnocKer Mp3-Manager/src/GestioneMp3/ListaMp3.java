@@ -16,8 +16,8 @@ public class ListaMp3 extends Vector{
 		
 	}
 	
-	public void caricaMp3daDir(){
-		String dir = new String("E:\\eMule\\Incoming");
+	public void caricaMp3daDir(String dir){
+		//String dir = new String("E:\\eMule\\Incoming");
 		
 		File file = new File(dir);
 		if( file.isDirectory() ){
@@ -28,6 +28,19 @@ public class ListaMp3 extends Vector{
 			}
 			
 		}
+	}
+	
+	public void caricaMp3Ricorsivo(String dir){
+		File file = new File(dir);
+		if( file.isDirectory() ){
+			caricaMp3daDir(file.getAbsolutePath());
+			File[] listfiles = file.listFiles();
+			for(int i=0; i<listfiles.length; i++){
+				if(listfiles[i].isDirectory()) caricaMp3Ricorsivo(listfiles[i].getAbsolutePath());
+			}
+		}
+		
+		
 	}
 	
 	public void aggiornaVociDB(){

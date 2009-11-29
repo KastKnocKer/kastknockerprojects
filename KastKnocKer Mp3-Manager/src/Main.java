@@ -11,7 +11,7 @@ public class Main {
 	public static void main(String[] args) {
 		Database.Connetti();
 		ListaMp3 listamp3 = new ListaMp3();
-		listamp3.caricaMp3daDir();
+		listamp3.caricaMp3Ricorsivo("E:\\eMule\\Incoming");
 		listamp3.aggiornaVociDB();
 		JFrame_Main jfm = new JFrame_Main();
 		
