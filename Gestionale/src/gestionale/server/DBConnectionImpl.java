@@ -23,7 +23,6 @@ public DBConnectionImpl() {
 	db.setPublicHost("localhost");
 	db.connetti();
 	System.out.println(db.getErrore());
-	
 	System.out.println("Connesso: " + db.isConnesso());
 	
 }
@@ -42,12 +41,13 @@ public User authenticateUser(User utente) {
 	return user;
 	}
 
-@Override
+
 public Contatto[] getContatto(String query) {
 	
 	Contatto[] contattoarray = null;
 	
 	Vector v = db.eseguiQuery(query);
+	
 	String[] record = null;
 	
 	try{
@@ -56,9 +56,11 @@ public Contatto[] getContatto(String query) {
 		for(int i=0; i<v.size();i++){
 			record = (String[]) v.get(i);
 			
-			contattoarray[i] = new Contatto();			
-			contattoarray[i].setCitta(record[0]);
-			contattoarray[i].setRagioneSociale(record[1]);
+			contattoarray[i] = new Contatto();	
+
+			//contattoarray[i].setRagioneSociale(record[1]);
+			//contattoarray[i].setCitta(record[2]);
+			System.out.println(record[1]);
 		}
 		
 	}catch(Exception e){
@@ -69,6 +71,16 @@ public Contatto[] getContatto(String query) {
 
 
 	return contattoarray;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+// Funzione generica per eseguire le query
+//////////////////////////////
+
+public String[][] eseguiQuery(String query) {
+	
+	return db.eseguiQueryStringArray(query);
 }
 
 

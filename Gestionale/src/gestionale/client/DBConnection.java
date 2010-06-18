@@ -15,6 +15,7 @@ public interface DBConnection extends RemoteService {
 	
 	public Contatto[] getContatto(String query);
 
+	public String[][] eseguiQuery(String query);
 
 	
 }

@@ -13,5 +13,7 @@ public interface DBConnectionAsync {
 	public void authenticateUser(User utente, AsyncCallback<User>callback);
 
 	public void getContatto(String query, AsyncCallback<Contatto[]> callback);
+
+	void eseguiQuery(String query, AsyncCallback<String[][]> callback);
 	
 }

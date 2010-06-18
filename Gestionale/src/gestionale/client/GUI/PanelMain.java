@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
-import gestionale.shared.Contatto;
 import gestionale.shared.User;
 
 import com.google.gwt.core.client.GWT;

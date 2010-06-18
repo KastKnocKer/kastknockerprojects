@@ -128,4 +128,48 @@ public class MySQLAccess {
 
    public boolean isConnesso() { return connesso; }   // Ritorna TRUE se la connessione con il Database è attiva
    public String getErrore() { return errore; }       // Ritorna il messaggio d'errore dell'ultima eccezione sollevata
+
+
+   public String[][] eseguiQueryStringArray(String query) {
+	      Vector v = null;
+	      String [] record;
+	      int colonne = 0;
+	      int righe = 0;
+	      
+	      String[][] queryResult = null;
+	      
+	      try {
+	         Statement stmt = db.createStatement();     // Creo lo Statement per l'esecuzione della query
+	         ResultSet rs = stmt.executeQuery(query);   // Ottengo il ResultSet dell'esecuzione della query
+	         v = new Vector();
+	         ResultSetMetaData rsmd = rs.getMetaData();
+	         colonne = rsmd.getColumnCount();
+	         
+	         
+	         int k=0;
+	         
+	         while(rs.next()) k++; 	//Conto quante righe ci sono
+	         
+	         rs.beforeFirst();		//Torno ad inizio lista
+	         
+	         queryResult = new String[k][colonne];
+	         int riga=0;
+	         while(rs.next()) {   // Creo il vettore risultato scorrendo tutto il ResultSet
+		            System.out.println("");
+		            System.out.print("Server: ");
+		            for (int i=0; i<colonne; i++) {
+		            	queryResult[riga][i] = rs.getString(i+1);
+				            	System.out.print(queryResult[riga][i]+" - ");
+		            }
+		            riga++;
+		         }
+	         rs.close();     // Chiudo il ResultSet
+	         stmt.close();   // Chiudo lo Statement
+	      } catch (Exception e) { e.printStackTrace(); errore = e.getMessage(); }
+
+	      return queryResult;
+	   }
+
+
+
 }

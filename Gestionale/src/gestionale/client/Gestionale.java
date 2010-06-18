@@ -15,7 +15,7 @@ public class Gestionale implements EntryPoint {
 	//INIZIALIZZAZIONI
 	new GUI();
 	GUI.visualizzaLoginPanel();
-	GUI.enterAfterLogin();
+	//GUI.enterAfterLogin();
 	
 
 	}

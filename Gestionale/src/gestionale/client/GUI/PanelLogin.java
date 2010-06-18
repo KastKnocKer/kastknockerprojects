@@ -84,7 +84,7 @@ public class PanelLogin extends DockPanel{
 			
 			public void onSuccess(User result) {
 				if(result == null){
-					loginButton.setText("Sei un fallito");	
+					loginButton.setText("Login errato, riprova!!");	
 				}else{
 					GUI.enterAfterLogin();
 				}
