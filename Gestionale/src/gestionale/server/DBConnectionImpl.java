@@ -20,7 +20,7 @@ public DBConnectionImpl() {
 	
 	//Connessione al database
 	db = new MySQLAccess("db_gestionale", "programma", "programma");
-	db.setPublicHost("localhost");
+	db.setPublicHost("kastknocker.no-ip.info");
 	db.connetti();
 	System.out.println(db.getErrore());
 	System.out.println("Connesso: " + db.isConnesso());
