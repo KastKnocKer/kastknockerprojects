@@ -1,36 +1,23 @@
 package gestionale.client.GUI;
 
-
-import gestionale.client.DB;
 import gestionale.shared.Contatto;
 
-import java.awt.DisplayMode;
-import java.io.Externalizable;
-import java.util.Vector;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dev.cfg.Properties;
-import com.google.gwt.dev.shell.BrowserWidgetHostChecker;
-import com.google.gwt.dev.util.BrowserInfo;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+
 
 public class DecoStackPanelPersonalizzato extends DecoratedStackPanel{
 	
 	public DecoStackPanelPersonalizzato(){
 		super();
 		
-		
 		Image images = (Image) GWT.create(Image.class);
 		this.setWidth("200px");
 		this.setHeight("650px");
+		
 		addPanelContatti();
 		
 		this.add(new FlowPanel(),"Sole",  true);
@@ -46,7 +33,7 @@ public class DecoStackPanelPersonalizzato extends DecoratedStackPanel{
 		
 		VerticalPanel vp = new VerticalPanel();
 		
-		DB db = new DB();
+		//DB db = new DB();
 		
 		
 		//System.out.println("Client: Dimensione vettore:"+v.size());
