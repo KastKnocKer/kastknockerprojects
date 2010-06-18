@@ -19,6 +19,10 @@ h1 {
   font-size: 16pt;
 }
 
+.decoStackPanelMainPanel {
+ 
+}
+
 /** Most GWT widgets already have a style name defined */
 .gwt-DialogBox {
   width: 400px;

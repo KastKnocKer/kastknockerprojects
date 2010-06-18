@@ -1,5 +1,6 @@
 package gestionale.client.GUI;
 
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class GUI {
@@ -27,7 +28,8 @@ public class GUI {
 	
 	
 	public static void visualizzaMenuBar(){
-		RootPanel.get().add(MB);
+		//RootPanel.get().add(MB);
+		RootLayoutPanel.get().add(MB);
 	}
 	
 	public static void visualizzaLoginPanel(){

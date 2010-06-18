@@ -4,13 +4,21 @@ package gestionale.client.GUI;
 import gestionale.client.DB;
 import gestionale.shared.Contatto;
 
+import java.awt.DisplayMode;
+import java.io.Externalizable;
 import java.util.Vector;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dev.cfg.Properties;
+import com.google.gwt.dev.shell.BrowserWidgetHostChecker;
+import com.google.gwt.dev.util.BrowserInfo;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -19,16 +27,15 @@ public class DecoStackPanelPersonalizzato extends DecoratedStackPanel{
 	public DecoStackPanelPersonalizzato(){
 		super();
 		
+		
 		Image images = (Image) GWT.create(Image.class);
 		this.setWidth("200px");
 		this.setHeight("650px");
-		
 		addPanelContatti();
 		
 		this.add(new FlowPanel(),"Sole",  true);
 		this.add(new FlowPanel(),"Cuore", true);
 		this.add(new FlowPanel(),"Amore",  true);
-		
 		
 		
 	}
@@ -41,7 +48,6 @@ public class DecoStackPanelPersonalizzato extends DecoratedStackPanel{
 		
 		DB db = new DB();
 		
-		db.eseguiQuery("SELECT * FROM contatti");
 		
 		//System.out.println("Client: Dimensione vettore:"+v.size());
 		//Button b = new Button();
