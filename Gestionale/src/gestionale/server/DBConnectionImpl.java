@@ -42,7 +42,7 @@ public User authenticateUser(User utente) {
 	}
 
 
-public Contatto[] getContatto(String query) {
+public Contatto[] eseguiQueryContatto(String query) {
 	
 	Contatto[] contattoarray = null;
 	
@@ -56,11 +56,23 @@ public Contatto[] getContatto(String query) {
 		for(int i=0; i<v.size();i++){
 			record = (String[]) v.get(i);
 			
-			contattoarray[i] = new Contatto();	
-
-			//contattoarray[i].setRagioneSociale(record[1]);
-			//contattoarray[i].setCitta(record[2]);
-			System.out.println(record[1]);
+			contattoarray[i] = new Contatto();
+			
+			contattoarray[i].setID(record[0]);
+			contattoarray[i].setRagioneSociale(record[1]);
+			contattoarray[i].setPrecisazione(record[2]);
+			contattoarray[i].setPIVA(record[3]);
+			contattoarray[i].setLogo(record[4]);
+			contattoarray[i].setIndirizzo(record[5]);
+			contattoarray[i].setTelefono(record[6]);
+			contattoarray[i].setCellulare(record[7]);
+			contattoarray[i].setFax(record[8]);
+			contattoarray[i].seteMail(record[9]);
+			contattoarray[i].setSitoWeb(record[10]);
+			contattoarray[i].setTipoSoggetto(record[11]);
+			contattoarray[i].setProvvigione(record[12]);
+			contattoarray[i].setNote(record[13]);
+			
 		}
 		
 	}catch(Exception e){
@@ -79,7 +91,6 @@ public Contatto[] getContatto(String query) {
 //////////////////////////////
 
 public String[][] eseguiQuery(String query) {
-	
 	return db.eseguiQueryStringArray(query);
 }
 

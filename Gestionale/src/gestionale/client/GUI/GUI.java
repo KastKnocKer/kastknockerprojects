@@ -1,7 +1,13 @@
 package gestionale.client.GUI;
 
+import gestionale.client.Liste;
+
+import com.google.gwt.user.client.ui.DecoratedTabBar;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TabBar;
+import com.google.gwt.user.client.ui.TabPanel;
 
 public class GUI {
 	
@@ -12,14 +18,16 @@ public class GUI {
 	
 	public GUI(){
 		
-		MB = new Menubar();
+		
 		PL = new PanelLogin();
-		PM = new PanelMain();
+		
 		
 
 	}
 	
 	public static void enterAfterLogin(){
+		MB = new Menubar();
+		PM = new PanelMain();
 		clearGUI();
 		RootPanel.get().add(MB);
 		RootPanel.get().add(PM);

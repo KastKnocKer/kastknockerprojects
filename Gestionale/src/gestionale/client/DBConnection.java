@@ -13,7 +13,7 @@ public interface DBConnection extends RemoteService {
 	
 	public User authenticateUser(User utente);
 	
-	public Contatto[] getContatto(String query);
+	public Contatto[] eseguiQueryContatto(String query);
 
 	public String[][] eseguiQuery(String query);
 

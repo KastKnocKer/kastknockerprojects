@@ -1,7 +1,9 @@
 package gestionale.client;
 
+
 import gestionale.client.GUI.GUI;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.RootPanel;
 
 
 
@@ -16,8 +18,9 @@ public class Gestionale implements EntryPoint {
 	new GUI();
 	GUI.visualizzaLoginPanel();
 	//GUI.enterAfterLogin();
+	//new DB().eseguiQueryContatto("SELECT * FROM contatti");
+	Liste l = new Liste();
 	
-
 	}
 	
 }

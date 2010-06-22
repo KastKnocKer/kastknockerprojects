@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
+import gestionale.client.Liste;
 import gestionale.shared.User;
 
 import com.google.gwt.core.client.GWT;
@@ -18,6 +19,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
+import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -27,15 +29,28 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.google.gwt.user.client.ui.TabLayoutPanel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 public class PanelMain extends DockPanel{
 	
+	private DecoratedTabPanel tp;
 
 	public PanelMain(){
 		
-		this.add(new DecoStackPanelPersonalizzato(),DockPanel.CENTER);
+		tp=new DecoratedTabPanel();
+		tp.add(new PanelContatti(), "Contatti");
+		
+		tp.add( new PanelGestioneContattiMain(null), "Aggiungi Contatto" );
+		tp.add( new PanelGestioneContattiMain(Liste.getVettoreContatti().get(0)), "Aggiungi Contatto" );
+		
+		
+		this.add(tp,DockPanel.CENTER);
+		this.add(new DecoStackPanelPersonalizzato(),DockPanel.WEST);
+		
+		
 		/*
 		flexTable = new FlexTable();
 		

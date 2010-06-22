@@ -1,5 +1,7 @@
 package gestionale.client;
 
+import gestionale.shared.Contatto;
+
 import java.util.Vector;
 
 import com.google.gwt.core.client.GWT;
@@ -9,15 +11,14 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 public class DB {
 	
 	public static Vector vettoreTemporaneo = null;
-	
+	public static Contatto[] arrayContatto = null;
+	public static Vector<Contatto> vettoreContatto = null;
 	
 	
 	public DB(){
 		
-		
-		
 	}
-	
+//////////////////////////////////////////////////////////////////////////////////////////
 	public Vector<String[]> eseguiQuery(String query){
 		
 		DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
@@ -31,10 +32,6 @@ public class DB {
 		
 		return vettoreTemporaneo;
 	}
-	
-	
-	
-	
 	
 	private class QueryHandler<T> implements AsyncCallback<String[][]> {
 
@@ -73,10 +70,41 @@ public class DB {
 			}
 			
 			
-			
-			
 		}
 		
 	}
+	
+//////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	public Contatto[] eseguiQueryContatto(String query){
+		
+		DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+	    ServiceDefTarget target = (ServiceDefTarget) rpc;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "DBConnection";
+		target.setServiceEntryPoint(moduleRelativeURL);
+		
+		AsyncCallback<Contatto[]> callback = new queryContattoHandler<Contatto[]>();
+		rpc.eseguiQueryContatto(query,callback);
+		
+		return arrayContatto;
+	}
+	
+	private class queryContattoHandler<T> implements AsyncCallback<Contatto[]>{
+
+		public void onFailure(Throwable caught) {
+			
+		}
+
+		public void onSuccess(Contatto[] result) {
+			vettoreContatto = new Vector<Contatto>();
+			for(int i=0; i<result.length; i++){
+				vettoreContatto.add(result[i]);
+			}
+		}
+		
+	}
+	
+	
 
 }

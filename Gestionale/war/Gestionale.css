@@ -14,14 +14,22 @@ h1 {
   width: 270px;
 }
 
+.labelIndirizziGestioneContatto{
+  width: 100px;
+}
+
 .sendButton {
   display: block;
   font-size: 16pt;
 }
 
-.decoStackPanelMainPanel {
- 
+.cw-StackPanelHeader {
+  padding-left: 7px;
+  font-weight: bold;
+  font-size: 1.4em;
 }
+
+
 
 /** Most GWT widgets already have a style name defined */
 .gwt-DialogBox {
