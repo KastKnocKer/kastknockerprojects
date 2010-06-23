@@ -17,5 +17,5 @@ public interface DBConnection extends RemoteService {
 
 	public String[][] eseguiQuery(String query);
 
-	
+	public boolean eseguiUpdate(String query);
 }

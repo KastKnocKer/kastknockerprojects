@@ -95,6 +95,14 @@ public String[][] eseguiQuery(String query) {
 }
 
 
+public boolean eseguiUpdate(String query) {
+	
+	System.out.println("SERVER:  "+query);
+	
+	return db.eseguiAggiornamento(query);
+}
+
+
 
 
 

@@ -15,6 +15,8 @@ public interface DBConnectionAsync {
 	public void eseguiQueryContatto(String query, AsyncCallback<Contatto[]> callback);
 
 	public void eseguiQuery(String query, AsyncCallback<String[][]> callback);
+
+	void eseguiUpdate(String query, AsyncCallback<Boolean> callback);
 	
 	
 }

@@ -36,15 +36,12 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 public class PanelMain extends DockPanel{
 	
-	private DecoratedTabPanel tp;
+	private static DecoratedTabPanel tp;
 
 	public PanelMain(){
 		
 		tp=new DecoratedTabPanel();
 		tp.add(new PanelContatti(), "Contatti");
-		
-		tp.add( new PanelGestioneContattiMain(null), "Aggiungi Contatto" );
-		tp.add( new PanelGestioneContattiMain(Liste.getVettoreContatti().get(0)), "Aggiungi Contatto" );
 		
 		
 		this.add(tp,DockPanel.CENTER);
@@ -72,6 +69,10 @@ public class PanelMain extends DockPanel{
 		this.add(flexTable,DockLayoutPanelPanel.CENTER);*/
 	}
 
+	public static void addToTabPanel(Widget w, String s){
+		tp.add(w,s);
+		tp.selectTab(tp.getWidgetCount()-1);
+	}
 
 
 }

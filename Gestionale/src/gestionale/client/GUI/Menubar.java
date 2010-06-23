@@ -59,8 +59,7 @@ public class Menubar extends MenuBar{
 	Command openDialogBoxGestioneContatti = new Command() {
 	      
 	      public void execute() {
-	    	new PanelGestioneContattiMain(Liste.getVettoreContatti().get(0));
-			System.out.println("KISSSSSSSSSSSSSSSSSSSSs");
+	    	  PanelMain.addToTabPanel( new PanelGestioneContattiMain(null) , "Crea contatto");
 	      }
 	};
 

@@ -1,5 +1,7 @@
 package gestionale.client.GUI;
 
+import gestionale.shared.Contatto;
+
 import java.util.Vector;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -13,30 +15,49 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
-import gestionale.shared.Contatto;
+public class PanelGestioneContattiCampiVari extends VerticalPanel{
 
-public class PanelGestioneContattiIndirizzi extends VerticalPanel{
-
-	private Contatto contatto;
-	private TextBox[] tbarray;
 	private Vector<String[]> v;
-	private static String[] campi = {"Etichetta","Via","N.Civico","CAP","Frazione","Citta'","Provincia","Regione","Nazione"};
-	private static String[] dimensione = {"200px","250px","60px","60px","110px","110px","110px","110px","110px"};
-	private PanelGestioneContattiIndirizzi thispanel;
+	private PanelGestioneContattiCampiVari thispanel;
+	private String modalita;
+	private Contatto contatto;
+	private String[] campi = {"Etichetta","Via"};
+	private String[] dimensione = {"200px","350px"};
 	
-	public PanelGestioneContattiIndirizzi(Contatto c){
+	private TextBox[] tbarray;
+	
+	public static String mod_Telefono = "Telefono";
+	public static String mod_Cellulare = "Cellulare";
+	public static String mod_Fax = "Fax";
+	public static String mod_Email = "eMail";
+	
+	
+	public PanelGestioneContattiCampiVari(Contatto c, String mod){
 		super();
+		modalita=mod;
 		thispanel=this;
 		contatto=c;
-		v = contatto.getVectorIndirizzi();
+		
+		if(mod.equals(mod_Telefono)){
+			v = contatto.getVectorCampo(mod_Telefono);
+			campi[1] = "Numero di Telefono Fisso";
+		}
+		if(mod.equals(mod_Cellulare)){
+			v = contatto.getVectorCampo(mod_Cellulare);
+			campi[1] = "Numero di Cellulare";
+		}
+		if(mod.equals(mod_Fax)){
+			v = contatto.getVectorCampo(mod_Fax);
+			campi[1] = "Numero di Fax";
+		}
+		if(mod.equals(mod_Email)){
+			v = contatto.getVectorCampo(mod_Email);
+			campi[1] = "Indirizzo e-Mail";
+		}
+		
 		aggiornaPannello();
-	}
-	
-	public DecoratorPanel getPannello(){
-		DecoratorPanel dp = new DecoratorPanel();
-		dp.add(this);
-		return dp;
 	}
 	
 	public void aggiornaPannello(){
@@ -53,8 +74,8 @@ public class PanelGestioneContattiIndirizzi extends VerticalPanel{
 				          }
 			};
 		
-		Grid grid = new Grid(v.size()+1,campi.length+1);
-		Grid grid2 = new Grid(1,campi.length);
+		Grid grid = new Grid(v.size()+1,3);
+		Grid grid2 = new Grid(1,2);
 		
 		for(int i=0; i<campi.length; i++){
 			Label lb = new Label(campi[i]);
@@ -86,34 +107,42 @@ public class PanelGestioneContattiIndirizzi extends VerticalPanel{
 			grid2.setWidget(0, j, lb);
 		}
 		
-		Button addIndirizzoButton = new Button("Aggiungi Indirizzo",new ClickHandler() {
-	          public void onClick(ClickEvent event) {
-	        	  boolean isnotnull = false;
-	        	  String[] arrayString = new String[campi.length];
-	        	  for(int i=0;i<campi.length; i++){
-	        		  arrayString[i]=tbarray[i].getText();
-	        		  if( arrayString[i].length()>0 ) isnotnull=true;
-	        	  }
-	        	 
-	        	  if(isnotnull){
-	        		  v.add(arrayString);
-	        		  thispanel.aggiornaPannello();
-	        	  }
-	          }
+		Button addIndirizzoButton = new Button("Aggiungi",new ClickHandler() {
+			          public void onClick(ClickEvent event) {
+			        	  boolean isnotnull = false;
+			        	  String[] arrayString = new String[campi.length];
+			        	  for(int i=0;i<campi.length; i++){
+			        		  arrayString[i]=tbarray[i].getText();
+			        		  if( arrayString[i].length()>0 ) isnotnull=true;
+			        	  }
+			        	 
+			        	  if(isnotnull){
+			        		  v.add(arrayString);
+			        		  thispanel.aggiornaPannello();
+			        	  }
+			          }
 		});
 		
 		this.add(grid);
-		this.add( new Label("Indirizzo aggiuntivo:") );
+		this.add( new Label("Record aggiuntivo:") );
 		this.add(grid2);
 		this.add(addIndirizzoButton);
 	}
-	
-	public String getStringaIndirizzi(){
+
+	public DecoratorPanel getPannello(){
+		DecoratorPanel dp = new DecoratorPanel();
+		dp.add(this);
+		return dp;
+	}
+
+	public String getStringaValori() {
 		String stringa = new String("");
+		
 		for(int i=0; i<v.size();i++){
 			String[] array = v.get(i);
-			stringa=stringa+"*"+array[0]+"+"+array[1]+"+"+array[2]+"+"+array[3]+"+"+array[4]+"+"+array[5]+"+"+array[6]+"+"+array[7]+"+"+array[8]+"*";
+			stringa=stringa+"*"+array[0]+"?"+array[1]+"*";
 		}
+		
 		return stringa;
 	}
 	

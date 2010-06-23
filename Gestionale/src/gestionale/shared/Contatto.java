@@ -70,36 +70,6 @@ public class Contatto implements IsSerializable {
 	        	corpoHtml=new String(corpoHtml + stringResult);
 	        }
         
-        
-        
-        
-        
-    
-	        
-        /*
-        if(this.getTelefono1().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Tel:" + this.getTelefono1());
-        if(this.getTelefono2().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Tel:" + this.getTelefono2());
-        if(this.getTelefono3().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Tel:" + this.getTelefono3());
-        if(this.getTelefono4().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Tel:" + this.getTelefono4());
-        if(this.getTelefono5().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Tel:" + this.getTelefono5());
-        if(this.getTelefono6().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Tel:" + this.getTelefono6());
-        
-        if(this.getCellulare1().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Cell:" + this.getCellulare1());
-        if(this.getCellulare2().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Cell:" + this.getCellulare2());
-        if(this.getCellulare3().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Cell:" + this.getCellulare3());
-        if(this.getCellulare4().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Cell:" + this.getCellulare4());
-        if(this.getCellulare5().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Cell:" + this.getCellulare5());
-        if(this.getCellulare6().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Cell:" + this.getCellulare6());
-        
-        if(this.getFax1().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Fax:" + this.getFax1());
-        if(this.getFax2().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Fax:" + this.getFax2());
-        if(this.getFax3().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Fax:" + this.getFax3());
-        
-        if(this.getFax().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Fax:" + this.getFax());
-        if(this.getFax().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Fax:" + this.getFax());
-        if(this.getFax().length()!=0) corpoHtml=new String(corpoHtml + "<br>" + "Fax:" + this.getFax());
-        
-        */
         return corpoHtml;
 	}
 	
@@ -233,6 +203,39 @@ public class Contatto implements IsSerializable {
 		return v;
 	}
 
+	public Vector<String[]> getVectorCampo(String campo){
+		String stringa = null;
+		
+		if(campo.equals("Telefono")) stringa=this.getTelefono();
+		if(campo.equals("Cellulare")) stringa=this.getCellulare();
+		if(campo.equals("Fax")) stringa=this.getFax();
+		if(campo.equals("eMail")) stringa=this.geteMail();
+		
+		
+		Vector<String[]> v = new Vector<String[]>();
+		
+		if(stringa.length()==0) return v;
+		int indiceA,indiceB,indiceC;
+		String risultato = new String("");
+		String temp,temporanea;
+		temp=new String("");
+		
+		while(stringa.length()>0){
+			indiceA=stringa.indexOf('*');
+			indiceB=stringa.indexOf('?');
+			indiceC=stringa.indexOf('*', 1);
+			
+			String[] str = new String[2];
+			str[0] = stringa.substring(indiceA+1, indiceB);
+			str[1] = stringa.substring(indiceB+1, indiceC);
+			
+			stringa = stringa.substring(indiceC+1);
+			v.add(str);
+		}
+		
+		return v;
+	}
+	
 	public void setID(String iD) {
 		ID = iD;
 	}

@@ -105,6 +105,31 @@ public class DB {
 		
 	}
 	
+//////////////////////////////////////////////////////////////////////////
 	
+	public void eseguiUpdateToDB(String query){
+		
+		DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+	    ServiceDefTarget target = (ServiceDefTarget) rpc;
+		String moduleRelativeURL = GWT.getModuleBaseURL() + "DBConnection";
+		target.setServiceEntryPoint(moduleRelativeURL);
+		
+		AsyncCallback<Boolean> callback = new queryUpdateHandler<Boolean>();
+		rpc.eseguiUpdate(query,callback);
+		
+		return;
+	}
+	
+	private class queryUpdateHandler<T> implements AsyncCallback<Boolean>{
+
+		public void onFailure(Throwable caught) {
+			
+		}
+
+		public void onSuccess(Boolean result) {
+			
+		}
+		
+	}
 
 }

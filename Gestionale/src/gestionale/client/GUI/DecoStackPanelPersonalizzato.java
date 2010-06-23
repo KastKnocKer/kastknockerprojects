@@ -10,6 +10,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -27,13 +28,14 @@ public class DecoStackPanelPersonalizzato extends DecoratedStackPanel{
 	
 	private VerticalPanel vp;
 	private Tree treeRoot;
+	private Image img;
 	
 	public DecoStackPanelPersonalizzato(){
 		super();
 		
 		Image images = (Image) GWT.create(Image.class);
 		this.setWidth("200px");
-		this.setHeight("650px");
+		this.setHeight(Integer.toString(Window.getClientHeight()-50)+"px");
 		
 		addPanelContatti();
 		
@@ -57,9 +59,34 @@ public class DecoStackPanelPersonalizzato extends DecoratedStackPanel{
 		
 		
 		// Create a popup to show the contact info when a contact is clicked
-	    HorizontalPanel contactPopupContainer = new HorizontalPanel();
+	    final HorizontalPanel contactPopupContainer = new HorizontalPanel();
 	    contactPopupContainer.setSpacing(5);
 	    contactPopupContainer.add(new Image("Icone/Contatti.png"));
+	    
+	    img = new Image("Icone/edit.png");
+	    img.setTitle("Modifica contatto");
+	    img.addClickHandler(new ClickHandler() { public void onClick(ClickEvent event) {
+	    						Contatto c = null;
+	    						String ragionesociale = event.getSource().toString().substring(22);
+	    						int indice = ragionesociale.indexOf('"');
+	    						ragionesociale = ragionesociale.substring(0, indice);
+	    						System.out.println( ragionesociale );
+								
+						        Vector<Contatto> vc = Liste.getVettoreContatti();
+						        			
+						        for(int i=0; i<vc.size(); i++){
+						        	if( vc.get(i).getRagioneSociale().equals(ragionesociale)){ c=vc.get(i); break;}
+						        }
+						        System.out.println("Arrivo qua?");
+						        PanelMain.addToTabPanel( new PanelGestioneContattiMain(c) , "Modifica: "+c.getRagioneSociale());
+						        //contactPopupContainer.
+						       
+						        
+						      }});
+	    
+	    contactPopupContainer.add(img);
+	    
+	    
 	    final HTML contactInfo = new HTML();
 	    contactPopupContainer.add(contactInfo);
 	    final PopupPanel contactPopup = new PopupPanel(true, false);
@@ -79,7 +106,7 @@ public class DecoStackPanelPersonalizzato extends DecoratedStackPanel{
 			
 			contactLink.addClickHandler(new ClickHandler() {public void onClick(ClickEvent event) {
 											Contatto c = null;
-									        System.out.println("ECCO LA RISORSA: "+event.getSource().toString().substring(54,event.getSource().toString().indexOf("</a>")));
+									        //System.out.println("ECCO LA RISORSA: "+event.getSource().toString().substring(54,event.getSource().toString().indexOf("</a>")));
 									        
 									        Vector<Contatto> vc = Liste.getVettoreContatti();
 									        String ragionesociale = event.getSource().toString().substring(54,event.getSource().toString().indexOf("</a>"));
@@ -90,7 +117,7 @@ public class DecoStackPanelPersonalizzato extends DecoratedStackPanel{
 									        }
 									        
 									        contactInfo.setHTML(c.getHtmlText()); //INFORMAZIONI SUL POPUP
-							
+									        img.setTitle("Modifica: "+c.getRagioneSociale());
 									          // Show the popup of contact info
 									          int left = contactLink.getAbsoluteLeft() + 14;
 									          int top = contactLink.getAbsoluteTop() + 14;

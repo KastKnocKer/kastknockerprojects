@@ -2,14 +2,24 @@ package gestionale.client.GUI;
 
 import java.util.Vector;
 
+import gestionale.client.DB;
+import gestionale.client.Liste;
 import gestionale.shared.Contatto;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
 public class PanelGestioneContattiMain extends DockPanel{
 
 	private PanelGestioneContattiMain dialog;
+	private PanelGestioneContattiIndirizzi pgcInd;
+	private PanelGestioneContattiCampiVari pgccvTelefono;
+	private PanelGestioneContattiCampiVari pgccvCellulare;
+	private PanelGestioneContattiCampiVari pgccvFax;
+	private PanelGestioneContattiCampiVari pgccvMail;
+	
+	
 	private Contatto contatto;
 	private Boolean modifica;
 	private TextBox tb_RagioneSociale;
@@ -59,8 +69,11 @@ public class PanelGestioneContattiMain extends DockPanel{
 		int k=0;
 		String ts = contattoIn.getTipoSoggetto();
 		if(ts.equals("Cliente"))k=1;
+		if(ts.equals("Fornitore"))k=2;
+		if(ts.equals("Trasportatore"))k=3;
 		
 		lb_TipoSoggetto.setSelectedIndex(k);
+		lb_TipoSoggetto.setEnabled(false);
 		}
 		
 		dialog = this;
@@ -101,8 +114,16 @@ public class PanelGestioneContattiMain extends DockPanel{
 		this.add(vp,DockPanel.CENTER);
 
 
-		PanelGestioneContattiIndirizzi pgcInd = new PanelGestioneContattiIndirizzi(contatto);
+		pgcInd = new PanelGestioneContattiIndirizzi(contatto);
 		dp_Indirizzi.add( pgcInd.getPannello() );
+		pgccvTelefono	= new PanelGestioneContattiCampiVari(contatto,"Telefono");
+		dp_Telefono.add( pgccvTelefono.getPannello() );
+		pgccvCellulare	= new PanelGestioneContattiCampiVari(contatto,"Cellulare");
+		dp_Cellulare.add( pgccvCellulare.getPannello() );
+		pgccvFax		= new PanelGestioneContattiCampiVari(contatto,"Fax");
+		dp_Fax.add( pgccvFax.getPannello() );
+		pgccvMail		= new PanelGestioneContattiCampiVari(contatto,"eMail");
+		dp_eMail.add( pgccvMail.getPannello() );
 		
 		
 		
@@ -113,6 +134,48 @@ public class PanelGestioneContattiMain extends DockPanel{
 		        	  dialog.removeFromParent();
 		          }
 		});
+		
+		Button confermaButton = new Button("Conferma",new ClickHandler() {
+	          public void onClick(ClickEvent event) {
+	        	  
+	        	  contatto.setRagioneSociale( tb_RagioneSociale.getText() );
+	        	  contatto.setPrecisazione( tb_Precisazione.getText() );
+	        	  contatto.setPIVA( tb_PIVA.getText() );
+	        	  contatto.setSitoWeb( tb_SitoWeb.getText() );
+	        	  contatto.setProvvigione( tb_Provvigione.getText() );
+	        	  contatto.setTipoSoggetto(lb_TipoSoggetto.getItemText( lb_TipoSoggetto.getSelectedIndex() ));
+	        	  
+	        	  contatto.setIndirizzo( pgcInd.getStringaIndirizzi() );
+	        	  contatto.setTelefono( pgccvTelefono.getStringaValori() );
+	        	  contatto.setCellulare( pgccvCellulare.getStringaValori() );
+	        	  contatto.setFax( pgccvFax.getStringaValori() );
+	        	  contatto.seteMail( pgccvMail.getStringaValori() );
+	        	  
+	        	  
+	        	  if( modifica ){
+	        		  Vector<Contatto> v = Liste.getVettoreContatti();
+	        		  
+	        		  for(int i=0;i<v.size();i++){
+	        			  if( v.get(i).getID().equals(contatto.getID()) ){v.setElementAt(contatto, i); break;}
+	        		  }
+	        		  
+	        		  DB db = new DB();
+	        		  String query = "UPDATE contatti SET RagioneSociale='"+contatto.getRagioneSociale()+"',Precisazione='"+contatto.getPrecisazione()+"',PIVA='"+contatto.getPIVA()+"',Logo='"+contatto.getLogo()+"',Indirizzo='"+contatto.getIndirizzo()+"',Telefono='"+contatto.getTelefono()+"',Cellulare='"+contatto.getCellulare()+"',Fax='"+contatto.getFax()+"',Email='"+contatto.geteMail()+"',SitoWeb='"+contatto.getSitoWeb()+"',TipoSoggetto='"+contatto.getTipoSoggetto()+"',Provvigione='"+contatto.getProvvigione()+"',Note='"+contatto.getNote()+"' WHERE ID='"+contatto.getID()+"'";
+	        		  db.eseguiUpdateToDB(query);
+	        		  dialog.removeFromParent();
+	        		  
+	        	  }else{
+	        		  Liste.getVettoreContatti().add(contatto);
+	        		  DB db = new DB();
+	        		  String query = "INSERT INTO contatti (`RagioneSociale`,`Precisazione`,`PIVA`,`Logo`,`Indirizzo`,`Telefono`,`Cellulare`,`Fax`,`Email`,`SitoWeb`,`TipoSoggetto`,`Provvigione`,`Note`) VALUES ('"+contatto.getRagioneSociale()+"','"+contatto.getPrecisazione()+"','"+contatto.getPIVA()+"','"+contatto.getLogo()+"','"+contatto.getIndirizzo()+"','"+contatto.getTelefono()+"','"+contatto.getCellulare()+"','"+contatto.getFax()+"','"+contatto.geteMail()+"','"+contatto.getSitoWeb()+"','"+contatto.getTipoSoggetto()+"','"+contatto.getProvvigione()+"','"+contatto.getNote()+"')";
+	        		  db.eseguiUpdateToDB(query);
+	        		  dialog.removeFromParent();
+	        	  }
+	        	  
+	          }
+		});
+		
+		vp.add(confermaButton);
 		vp.add(closeButton);
 		//this.add(vp);
 		
