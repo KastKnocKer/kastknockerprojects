@@ -27,6 +27,7 @@ public DBConnectionImpl() {
 	
 }
 
+
 public User authenticateUser(User utente) {
 	db.connetti();
 	String query = "SELECT COUNT(*) FROM utente WHERE Username='"+ utente.getUsername() +"' AND Password='"+ utente.getPassword()+"'";
