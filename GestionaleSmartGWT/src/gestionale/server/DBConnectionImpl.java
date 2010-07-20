@@ -2,6 +2,7 @@ package gestionale.server;
 
 import gestionale.client.DBConnection;
 import gestionale.shared.Contatto;
+import gestionale.shared.Ordine;
 import gestionale.shared.User;
 import java.sql.*;
 import java.util.Vector;
@@ -87,6 +88,42 @@ public Contatto[] eseguiQueryContatto(String query) {
 }
 
 
+public Ordine[] eseguiQueryOrdine(String query) {
+	db.connetti();
+	Ordine[] ordinearray = null;
+	
+	Vector v = db.eseguiQuery(query);
+	
+	String[] record = null;
+	
+	try{
+		ordinearray = new Ordine[v.size()];
+		
+		for(int i=0; i<v.size();i++){
+			record = (String[]) v.get(i);
+			
+			ordinearray[i] = new Ordine();
+			
+			ordinearray[i].setID(record[0]);
+			ordinearray[i].setDataCreazioneOrdine(record[1]);
+			ordinearray[i].setDataInvioOrdine(record[2]);
+			ordinearray[i].setDataPartenzaMerce(record[3]);
+			ordinearray[i].setNote(record[4]);
+			ordinearray[i].setIDTrasportatore(record[5]);
+			ordinearray[i].setConvalidato(record[6]);
+			ordinearray[i].setTipoOrdine(record[7]);
+			
+			
+		}
+		
+	}catch(Exception e){
+		
+	}
+	
+	return ordinearray;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Funzione generica per eseguire le query
 //////////////////////////////
@@ -102,6 +139,10 @@ public boolean eseguiUpdate(String query) {
 	
 	return db.eseguiAggiornamento(query);
 }
+
+
+
+
 
 
 

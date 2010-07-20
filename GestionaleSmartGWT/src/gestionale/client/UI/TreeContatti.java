@@ -1,5 +1,6 @@
 package gestionale.client.UI;
 
+import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.client.Liste;
@@ -13,10 +14,14 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.Positioning;
 import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.types.TreeModelType;
+import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
+import com.smartgwt.client.widgets.menu.events.ClickHandler;
+import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeNode;
@@ -30,6 +35,8 @@ public class TreeContatti extends Tree{
 	private static TreeContatti thistree;
 	private static TreeGrid tg;
 	private static TreeNode root;
+	
+	private static String lastContactClicked;
     
 	private final static DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	
@@ -196,7 +203,7 @@ public class TreeContatti extends Tree{
 		tg = new TreeGrid();
         tg.setWidth100();
         tg.setHeight100(); 
-        tg.setShowEdges(true);
+        tg.setShowEdges(false);
         tg.setData(thistree);
         tg.setCanReorderRecords(true);  
         tg.setCanAcceptDroppedRecords(false);  
@@ -206,14 +213,76 @@ public class TreeContatti extends Tree{
 			
 			public void onNodeClick(NodeClickEvent event) {
 				System.out.println("Click: "+ event.getNode().getTitle());
-				
+				lastContactClicked = event.getNode().getTitle();
 				Menu menu = new Menu();
-				menu.addItem( new MenuItem("Ciao =)"));
+				
+				MenuItem mi_dettagli = new MenuItem("Mostra dettagli");
+				MenuItem mi_modifica = new MenuItem("Modifica Contatto");
+				MenuItem mi_rimuovi = new MenuItem("Rimuovi Contatto");
+				
+				
+				mi_dettagli.addClickHandler( new ClickHandler() {
+					public void onClick(MenuItemClickEvent event) {
+						System.out.println("Sorgente lieta: " + event.getSource() );
+						
+						Finestra window = new Finestra();  
+						window.setTitle("Dragging a window");  
+						window.setWidth(300);  
+						window.setHeight(230);  
+						window.setCanDragReposition(true);  
+						window.setCanDragResize(true);  
+						window.addItem(new Label("KISS"));  
+						          
+						Canvas canvasMain = new Canvas();  
+						canvasMain.addChild(window);  
+						canvasMain.draw();
+						
+					}
+				});
+				
+				mi_modifica.addClickHandler( new ClickHandler() {
+					public void onClick(MenuItemClickEvent event) {
+						System.out.println("Sorgente lieta: " + event.getSource() );
+						Contatto contatto = null;
+						for(int i=0; i<Liste.getVettoreContatti().size(); i++){
+							contatto = Liste.getVettoreContatti().get(i);
+							if( contatto.getRagioneSociale().equals(lastContactClicked)){
+								new PanelContatti(contatto);
+								break;
+							}
+						}
+					}
+				});
+				
+				mi_rimuovi.addClickHandler( new ClickHandler() {
+					public void onClick(MenuItemClickEvent event) {
+						if( Window.confirm("Sei sicuro di voler rimuovere: "+lastContactClicked+"?") ){
+							DB db = new DB();
+							Contatto contatto = null;
+							for(int i=0; i<Liste.getVettoreContatti().size(); i++){
+								contatto = Liste.getVettoreContatti().get(i);
+								if( contatto.getRagioneSociale().equals(lastContactClicked)){
+									String query = "DELETE FROM contatti WHERE ID='" + contatto.getID()+ "'";
+					        		db.eseguiUpdateToDB(query);
+					        		Liste.getVettoreContatti().remove(i);
+									break;
+								}
+							}
+			        		
+			        		
+			        		TreeContatti.aggiornaTreeContatti();
+						}
+					}
+				});
+				
+				
+				
+				menu.addItem( mi_dettagli );
+				menu.addItem( mi_modifica );
+				menu.addItem( mi_rimuovi );
 				
 				menu.setAutoDraw(true);
 				menu.showContextMenu();
-				//menu.show();
-				//menu.visibleAtPoint(300, event.getY());
 			}
 		});
         
@@ -255,5 +324,7 @@ public class TreeContatti extends Tree{
         
 		return tg;
 	}
+	
+	
 
 }

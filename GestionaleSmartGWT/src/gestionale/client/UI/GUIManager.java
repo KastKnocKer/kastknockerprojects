@@ -7,14 +7,15 @@ import gestionale.client.Liste;
 import gestionale.shared.Contatto;
 import gestionale.shared.User;
 
-
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.smartgwt.client.data.DataSource;
+import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.ListGridEditEvent;
+import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.types.VisibilityMode;
 import com.smartgwt.client.widgets.Button;
@@ -45,6 +46,7 @@ public class GUIManager {
 	
 	private static VLayout vLayoutMain;
 	private static VLayout vLayoutSx;
+	
 	private static TextItem usernameItem;
 	private static PasswordItem passwordItem;
 	private static TabSet topTabSet;
@@ -124,29 +126,43 @@ public class GUIManager {
 		hLayout.setHeight100();
 		
 		///Pannello laterale sinistro
-		vLayoutSx = new VLayout();
-		vLayoutSx.setWidth(150);
-		vLayoutSx.setHeight100();
+		//vLayoutSx = new VLayout();
+		//vLayoutSx.setWidth(150);
+		//vLayoutSx.setHeight100();
         //vLayout.setMembersMargin(0);  
         //vLayout.setLayoutMargin(10);
         //vLayout.setWidth100();  
-		vLayoutSx.setHeight100();
+		//vLayoutSx.setHeight100();
 		
 		final SectionStack sectionStack = new SectionStack();
 		
+		//sectionStack.setAlign(Alignment.CENTER);  
+		sectionStack.setOverflow(Overflow.HIDDEN);  
+		sectionStack.setShowResizeBar(true);
+		
 		sectionStack.setVisibilityMode(VisibilityMode.MULTIPLE);  
-		sectionStack.setWidth(250);  
+		sectionStack.setWidth(250); 
 		sectionStack.setHeight100();
 		
 		SectionStackSection sezioneContatti = new SectionStackSection("Contatti");  
 		sezioneContatti.setExpanded(true);
-		sectionStack.addSection(sezioneContatti);  
+		sectionStack.addSection(sezioneContatti);
+		
+		SectionStackSection sezioneOrdini = new SectionStackSection("Ordini");  
+		sezioneOrdini.setExpanded(false);
+		sectionStack.addSection(sezioneOrdini);
+		
+		SectionStackSection sezioneProdotti = new SectionStackSection("Prodotti");  
+		sezioneProdotti.setExpanded(false);
+		sectionStack.addSection(sezioneProdotti);
 		
 		TreeContatti tc = new TreeContatti();
 		sezioneContatti.addItem( tc.getTreeGrid() );
 		
+		ListGridOrdini lgo = new ListGridOrdini();
+		sezioneOrdini.addItem(lgo);
 		
-		vLayoutSx.addChild(sectionStack);
+		//vLayoutSx.addChild(sectionStack);
         
       ///Pannello laterale destro
         //topTabSet = new TabSet();
@@ -171,7 +187,8 @@ public class GUIManager {
         */
         
         
-        hLayout.addMember(vLayoutSx);
+        //hLayout.addMember(vLayoutSx);
+		hLayout.addMember(sectionStack);
         hLayout.addMember(topTabSet);
         vLayoutMain.addMember(hLayout);
         vLayoutMain.draw();

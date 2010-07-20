@@ -1,6 +1,7 @@
 package gestionale.client;
 
 import gestionale.shared.Contatto;
+import gestionale.shared.Ordine;
 import gestionale.shared.Prodotto;
 
 import java.util.Vector;
@@ -14,6 +15,7 @@ public class Liste {
 	private static Vector<Contatto> vettoreContatti = null;
 	private static Vector<Prodotto> vettoreProdotti = null;
 	private static Vector<String> 	vettoreTipoSoggetto = null;
+	private static Vector<Ordine> 	vettoreOrdini = null;
 	
 	private final DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	
@@ -23,8 +25,30 @@ public class Liste {
 		vettoreTipoSoggetto = new Vector<String>();
 		aggiornaVettoreContatti();
 		aggiornaVettoreTipoSoggetto();
+		aggiornaVettoreOrdini();
 	}
 	
+	private void aggiornaVettoreOrdini() {
+		String query = "SELECT * FROM ordini";
+		rpc.eseguiQueryOrdine(query,new AsyncCallback<Ordine[]>(){
+			
+			public void onFailure(Throwable caught) {
+				Window.alert("Errore: Caricamento da DB Ordini");
+			}
+
+			public void onSuccess(Ordine[] result) {
+				Vector<Ordine> v = new Vector<Ordine>();
+				
+				for(int i=0; i<result.length; i++){
+					v.add(result[i]);
+				}
+				
+				Liste.setVettoreOrdini(v);
+			}
+			
+		});
+	}
+
 	public void aggiornaVettoreContatti(){
 		String query = "SELECT * FROM contatti ORDER BY RagioneSociale";
 		rpc.eseguiQueryContatto(query,new AsyncCallback<Contatto[]>(){
@@ -87,6 +111,14 @@ public class Liste {
 
 	public static Vector<String> getVettoreTipoSoggetto() {
 		return vettoreTipoSoggetto;
+	}
+
+	public static void setVettoreOrdini(Vector<Ordine> vettoreOrdini) {
+		Liste.vettoreOrdini = vettoreOrdini;
+	}
+
+	public static Vector<Ordine> getVettoreOrdini() {
+		return vettoreOrdini;
 	}
 
 }

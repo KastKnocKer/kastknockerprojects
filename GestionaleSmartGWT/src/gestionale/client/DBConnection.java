@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.util.Vector;
 
 import gestionale.shared.Contatto;
+import gestionale.shared.Ordine;
 import gestionale.shared.User;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -18,4 +19,6 @@ public interface DBConnection extends RemoteService {
 	public String[][] eseguiQuery(String query);
 
 	public boolean eseguiUpdate(String query);
+
+	Ordine[] eseguiQueryOrdine(String query);
 }
