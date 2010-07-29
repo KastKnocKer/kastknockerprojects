@@ -4,6 +4,8 @@ import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.client.Liste;
+import gestionale.client.DataBase.DataSourceContatti;
+import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.shared.Contatto;
 
 import java.util.Vector;
@@ -11,11 +13,14 @@ import java.util.Vector;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.Positioning;
 import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.types.TreeModelType;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
+import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.menu.Menu;
@@ -24,6 +29,7 @@ import com.smartgwt.client.widgets.menu.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
+import com.smartgwt.client.widgets.tree.TreeGridField;
 import com.smartgwt.client.widgets.tree.TreeNode;
 import com.smartgwt.client.widgets.tree.events.LeafClickEvent;
 import com.smartgwt.client.widgets.tree.events.LeafClickHandler;
@@ -44,22 +50,12 @@ public class TreeContatti extends Tree{
 	public TreeContatti(){
 		super();
 		thistree=this;
-		/*
-		tnClienti = new TreeNode("Clienti");
-        tnClienti.setTitle("Clienti");
-        
-        tnFornitori = new TreeNode("Fornitori");
-        tnFornitori.setTitle("Fornitori");
-        
-        tnTrasportatori = new TreeNode("Trasportatori");
-        tnTrasportatori.setTitle("Trasportatori");
-		*/
         thistree.setModelType(TreeModelType.CHILDREN);  
         thistree.setNameProperty("Contatti");
         root = new TreeNode("Root");
     	thistree.setRoot(root);
         
-		this.aggiornaTreeContatti();
+		//this.aggiornaTreeContatti();
 
 		
 		
@@ -111,85 +107,11 @@ public class TreeContatti extends Tree{
 			tna[i].setChildren(tnMatrix[i]);
 		}
 
+	
+
+		
 		root.setChildren(tna);
 		
-		
-		/*
-		
-		Vector<String> vs = new Vector<String>();
-		Contatto c;
-		
-		for(int i = 0; i<v.size(); i++){
-        	c = v.get(i);
-        	if( vs.contains(c.getTipoSoggetto()) ){
-        		vs.add(c.getTipoSoggetto());
-        	}
-        }
-		
-		TreeNode[] tn = new TreeNode[vs.size()];
-		for(int i=0; i<vs.size(); i++){
-			tn[i] = new TreeNode(vs.get(i));
-			tn[i].setTitle(vs.get(i));
-		}
-		root.setChildren(tn);*/
-		/*
-		rpc.eseguiQuery("SELECT * FROM tiposoggetto", new AsyncCallback<String[][]>(){
-			
-			public void onFailure(Throwable caught) {
-				Window.alert("Errore: Caricamento da DB Contatti");
-			}
-
-			public void onSuccess(String[][] result) {
-				TreeNode[] tn = new TreeNode[result.length];
-					for(int i=0; i<result.length; i++){
-						tn[i] = new TreeNode(result[i][0]);
-						tn[i].setTitle(result[i][0]);
-					}
-				root.setChildren(tn);
-			}	
-		});*/
-		
-		
-		
-		
-		/*
-        
-        Vector<Contatto> v = Liste.getVettoreContatti();
-        
-        for(int i = 0; i<v.size(); i++){
-        	Contatto c = v.get(i);
-        	c.getTipoSoggetto()
-        }
-        
-        tna_Clienti = new TreeNode[v.size()];
-        tna_Fornitori = new TreeNode[v.size()];
-        tna_Trasportatori = new TreeNode[v.size()];
-        
-        int c=0,f=0,t=0;
-        for(int i=0; i<v.size();i++){
-        	Contatto contatto = v.get(i);
-        	TreeNode tn = new TreeNode(contatto.getRagioneSociale());
-        	tn.setTitle(contatto.getRagioneSociale());
-        	
-        	
-        	if(contatto.getTipoSoggetto().equals("Cliente")){
-        		tna_Clienti[c]=tn; c++;
-        	}
-        	else if(contatto.getTipoSoggetto().equals("Fornitore")){
-        		tna_Fornitori[f]=tn; f++;
-        	}
-        	else if(contatto.getTipoSoggetto().equals("Trasportatore")){
-        		tna_Trasportatori[t]=tn; t++;
-        	}
-        	
-        	tnClienti.setChildren(tna_Clienti);
-            tnFornitori.setChildren(tna_Fornitori);
-            tnTrasportatori.setChildren(tna_Trasportatori);
-        	        	
-        	
-        }
-        
-       */
 		
         if(tg != null) {
         	tg.sort(0, SortDirection.DESCENDING);
@@ -201,19 +123,25 @@ public class TreeContatti extends Tree{
 	public TreeGrid getTreeGrid(){
 		
 		tg = new TreeGrid();
-        tg.setWidth100();
-        tg.setHeight100(); 
-        tg.setShowEdges(false);
-        tg.setData(thistree);
-        tg.setCanReorderRecords(true);  
-        tg.setCanAcceptDroppedRecords(false);  
-        tg.setCanDragRecordsOut(true); 
         
-        tg.addNodeClickHandler(new NodeClickHandler() {
+        tg.setLoadDataOnDemand(false);  
+		tg.setWidth100();
+        tg.setHeight100(); 
+        tg.setDataSource( DataSourceContatti.getIstance() );  
+        //tg.setCanEdit(true);  
+        tg.setAutoFetchData(true);
+        tg.setAutoSaveEdits(true);
+        tg.setCanFreezeFields(true);  
+        tg.setCanReparentNodes(true);
+        tg.setCanDrag(false);
+		
+        TreeGridField nameField = new TreeGridField("Name");
+        tg.setFields(nameField);
+        
+        tg.addRecordClickHandler(new RecordClickHandler() {
 			
-			public void onNodeClick(NodeClickEvent event) {
-				System.out.println("Click: "+ event.getNode().getTitle());
-				lastContactClicked = event.getNode().getTitle();
+        	public void onRecordClick(RecordClickEvent event) {
+				lastContactClicked = event.getRecord().getAttribute("Name");
 				Menu menu = new Menu();
 				
 				MenuItem mi_dettagli = new MenuItem("Mostra dettagli");
@@ -226,16 +154,21 @@ public class TreeContatti extends Tree{
 						System.out.println("Sorgente lieta: " + event.getSource() );
 						
 						Finestra window = new Finestra();  
-						window.setTitle("Dragging a window");  
+						window.setTitle(lastContactClicked);
+						Contatto contatto = null;
+						for(int i=0; i<Liste.getVettoreContatti().size(); i++){
+							contatto = Liste.getVettoreContatti().get(i);
+							if( contatto.getRagioneSociale().equals(lastContactClicked)){
+								window.addItem(new Label(contatto.getHtmlText()));
+								break;
+							}
+						}
 						window.setWidth(300);  
-						window.setHeight(230);  
+						window.setHeight(230);
 						window.setCanDragReposition(true);  
 						window.setCanDragResize(true);  
-						window.addItem(new Label("KISS"));  
-						          
-						Canvas canvasMain = new Canvas();  
-						canvasMain.addChild(window);  
-						canvasMain.draw();
+						window.centerInPage();
+						window.draw();
 						
 					}
 				});
@@ -285,42 +218,7 @@ public class TreeContatti extends Tree{
 				menu.showContextMenu();
 			}
 		});
-        
-        /*
-        tg.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
-			public void onRecordDoubleClick(RecordDoubleClickEvent event) {
-				
-				Menu menu = new Menu();
-				menu.addItem( new MenuItem("KAKAK"));
-				menu.visibleAtPoint(event.getX(), event.getY());
-				
-				System.out.println("Click: "+ event.getRecord().);/*
-				if( event.isRightButtonDown() ) Window.alert("Right");
-				if( event.isLeftButtonDown() ) Window.alert("Left");
-				if( event.isAltKeyDown() ) Window.alert("AltDown");
-				
-				
-			}
-		});*/
-        
-        /*
-         tg.addLeafClickHandler(new LeafClickHandler() {
-        	
-			public void onLeafClick(LeafClickEvent event) {
-				System.out.println("Click: "+ event.getLeaf().getTitle());
-				Vector<Contatto> v = Liste.getVettoreContatti();
-				Contatto c = null;
-				for(int i=0;i<v.size();i++){
-					c = v.get(i);
-					if(c.getRagioneSociale().equals(event.getLeaf().getTitle())) break;
-				}
-				
-				new PanelContatti(c);		//Crea e aggiunge automaticamente il tabpanel
-			}
-		});
-         */
-		
-        
+
         
 		return tg;
 	}

@@ -479,6 +479,11 @@ ImgButton removeEmail = new ImgButton();
 					}
 					contatto.seteMail( stringa );
 					
+					stringa = richTextEditor.getValue();
+					contatto.setNote( stringa );
+					
+					
+					
 					
 					
 					

@@ -69,6 +69,8 @@ public class Contatto implements IsSerializable {
 	        if(stringResult!=null){ 
 	        	corpoHtml=new String(corpoHtml + stringResult);
 	        }
+	        
+	    corpoHtml = corpoHtml + "<br>" + this.getNote();
         
         return corpoHtml;
 	}

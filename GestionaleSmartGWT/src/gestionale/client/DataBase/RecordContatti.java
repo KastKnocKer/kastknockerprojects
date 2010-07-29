@@ -27,17 +27,7 @@ public class RecordContatti extends  TreeNode {
 		 setAttribute("tiposoggetto", contatto.getTipoSoggetto());
 		 setAttribute("provvigione", contatto.getProvvigione());
 		 setAttribute("note", contatto.getNote());
-		 	
-	/*	 setAttribute("continent", continent);
-		 setAttribute("continent", continent);
-		 setAttribute("continent", continent);
-		 setAttribute("continent", continent);
-		 setAttribute("continent", continent);
-		 setAttribute("continent", continent);
-		 setAttribute("continent", continent);
-		 setAttribute("continent", continent);
-		 setAttribute("continent", continent);*/
-		 
+	 
 		 
 	 }
 		   

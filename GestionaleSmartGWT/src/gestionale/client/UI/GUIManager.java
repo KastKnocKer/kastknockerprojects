@@ -1,46 +1,30 @@
 package gestionale.client.UI;
 
-import java.util.Vector;
 
 import gestionale.client.DB;
-import gestionale.client.Liste;
-import gestionale.shared.Contatto;
 import gestionale.shared.User;
 
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.smartgwt.client.data.DataSource;
-import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.types.VisibilityMode;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
-import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
-import com.smartgwt.client.widgets.grid.CellFormatter;
-import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridField;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
-import com.smartgwt.client.widgets.tree.TreeGrid;
-import com.smartgwt.client.widgets.tree.TreeGridField;
-import com.smartgwt.client.widgets.tree.events.DataArrivedEvent;
-import com.smartgwt.client.widgets.tree.events.DataArrivedHandler;
 
 public class GUIManager {
 	
@@ -158,6 +142,26 @@ public class GUIManager {
 		
 		TreeContatti tc = new TreeContatti();
 		sezioneContatti.addItem( tc.getTreeGrid() );
+		
+		//Tasto Cerca
+		DynamicForm fp = new DynamicForm();
+		
+		final TextItem ti_cerca = new TextItem();
+		ti_cerca.setTitle("Cerca");
+
+		ti_cerca.addKeyPressHandler(new KeyPressHandler() {
+			
+			public void onKeyPress(KeyPressEvent event) {
+				if(event.getCharacterValue() == 13){
+					System.out.println("Cerca: " + ti_cerca.getValue());
+				}
+				
+			}
+		});
+
+		fp.setFields(new FormItem[]{ti_cerca});
+		sezioneContatti.addItem(fp);
+		//Tasto Cerca
 		
 		ListGridOrdini lgo = new ListGridOrdini();
 		sezioneOrdini.addItem(lgo);

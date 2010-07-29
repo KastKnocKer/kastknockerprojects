@@ -24,7 +24,7 @@ public class ProdottoOBJ {
 	
 	public ProdottoOBJ(){
 		super();
-		aggiornaFromDB();
+		//aggiornaFromDB();
 	}
 	
 	public static void aggiornaFromDB(){

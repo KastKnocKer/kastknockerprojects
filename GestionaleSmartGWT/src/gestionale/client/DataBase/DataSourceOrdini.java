@@ -1,19 +1,13 @@
 package gestionale.client.DataBase;
 
-import java.util.Vector;
-
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
-import gestionale.client.Liste;
-import gestionale.shared.Contatto;
 import gestionale.shared.Ordine;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Widget;
 import com.smartgwt.client.data.DataSource;
-import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.grid.ListGrid;
 
 public class DataSourceOrdini extends DataSource{
