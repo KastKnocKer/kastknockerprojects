@@ -2,6 +2,8 @@ package gestionale.client.UI;
 
 
 import gestionale.client.DB;
+import gestionale.client.DataBase.DataSourceContatti;
+import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.shared.User;
 
 import com.google.gwt.user.client.ui.Image;
@@ -81,9 +83,6 @@ public class GUIManager {
         });  
         
         clearGUI();
-        //vLayoutMain.addMember(form, 300);
-        //vLayoutMain.addMember(swapButton);  
-        //vLayoutMain.draw(); 
         
         Image img = new Image("MIAMilano.jpg");
         
@@ -95,6 +94,10 @@ public class GUIManager {
 	
 	public static void visualizzaSchermataPrincipale(){
 		clearGUI();
+		
+		//Carico i dati
+		DataSourceProdotti.getIstance();
+		DataSourceContatti.getIstance();
 		
 		Menubar MB = new Menubar();
 		
@@ -129,7 +132,7 @@ public class GUIManager {
 		sectionStack.setHeight100();
 		
 		SectionStackSection sezioneContatti = new SectionStackSection("Contatti");  
-		sezioneContatti.setExpanded(true);
+		sezioneContatti.setExpanded(false);
 		sectionStack.addSection(sezioneContatti);
 		
 		SectionStackSection sezioneOrdini = new SectionStackSection("Ordini");  
@@ -141,7 +144,7 @@ public class GUIManager {
 		sectionStack.addSection(sezioneProdotti);
 		
 		TreeContatti tc = new TreeContatti();
-		sezioneContatti.addItem( tc.getTreeGrid() );
+		sezioneContatti.addItem( tc );
 		
 		//Tasto Cerca
 		DynamicForm fp = new DynamicForm();
@@ -154,6 +157,7 @@ public class GUIManager {
 			public void onKeyPress(KeyPressEvent event) {
 				if(event.getCharacterValue() == 13){
 					System.out.println("Cerca: " + ti_cerca.getValue());
+					TreeContatti.selezionaContattoFromRagioneSociale(ti_cerca.getValue().toString());
 				}
 				
 			}

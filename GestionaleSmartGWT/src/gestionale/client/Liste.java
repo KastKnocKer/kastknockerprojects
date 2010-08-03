@@ -72,7 +72,7 @@ public class Liste {
 		
 	}
 	
-	public void aggiornaVettoreTipoSoggetto(){
+	public void aggiornaVettoreTipoSoggetto(){/*
 		rpc.eseguiQuery("SELECT * FROM tiposoggetto", new AsyncCallback<String[][]>(){
 			
 			public void onFailure(Throwable caught) {
@@ -86,7 +86,13 @@ public class Liste {
 				}
 				Liste.setVettoreTipoSoggetto(v);
 			}	
-		});
+		});*/
+		vettoreTipoSoggetto = new Vector<String>();
+		vettoreTipoSoggetto.add("Cliente");
+		vettoreTipoSoggetto.add("Fornitore");
+		vettoreTipoSoggetto.add("Intermediario");
+		vettoreTipoSoggetto.add("Trasportatore");
+		
 	}
 
 	public static void setVettoreContatti(Vector<Contatto> vettoreContatti) {

@@ -17,19 +17,19 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
-public class DataSourceContatti extends DataSource{
+public class DSPROVA extends DataSource{
 	
-	private static DataSourceContatti istance = null;
+	private static DSPROVA istance = null;
 	private static  DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	
-	public static DataSourceContatti getIstance(){
+	public static DSPROVA getIstance(){
 		if (istance == null) {  
-            istance = new DataSourceContatti();  
+            istance = new DSPROVA();  
         } 
 		return istance;
 	}
 	
-	public DataSourceContatti(){
+	public DSPROVA(){
 		super();
 		setID(id);  
         setTitleField("Name");

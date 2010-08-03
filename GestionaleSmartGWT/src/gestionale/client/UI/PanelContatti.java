@@ -505,13 +505,13 @@ ImgButton removeEmail = new ImgButton();
 	        		  DB db = new DB();
 	        		  String query = "INSERT INTO contatti (`RagioneSociale`,`Precisazione`,`PIVA`,`Logo`,`Indirizzo`,`Telefono`,`Cellulare`,`Fax`,`Email`,`SitoWeb`,`TipoSoggetto`,`Provvigione`,`Note`) VALUES ('"+contatto.getRagioneSociale()+"','"+contatto.getPrecisazione()+"','"+contatto.getPIVA()+"','"+contatto.getLogo()+"','"+contatto.getIndirizzo()+"','"+contatto.getTelefono()+"','"+contatto.getCellulare()+"','"+contatto.getFax()+"','"+contatto.geteMail()+"','"+contatto.getSitoWeb()+"','"+contatto.getTipoSoggetto()+"','"+contatto.getProvvigione()+"','"+contatto.getNote()+"')";
 	        		  db.eseguiUpdateToDB(query);
-	        		  TreeContatti.aggiornaTreeContatti();
+	        		  //TreeContatti.aggiornaTreeContatti();
 	        		  
 	        		  //dialog.removeFromParent();
 	        		  //Aggiornare albero
 	        	  }
 	        	  
-	        	  TreeContatti.aggiornaTreeContatti();
+	        	 // TreeContatti.aggiornaTreeContatti();
 	        	  thisPanel.closePanel();
 	        	  
 	          }
@@ -543,7 +543,7 @@ ImgButton removeEmail = new ImgButton();
 				        			}
 				        		}
 				        		
-				        		TreeContatti.aggiornaTreeContatti();
+				        		//TreeContatti.aggiornaTreeContatti();
 					        	thisPanel.closePanel();	
 							}
 						}});

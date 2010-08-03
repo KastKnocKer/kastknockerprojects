@@ -4,43 +4,27 @@ import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.client.Liste;
+import gestionale.client.DataBase.DSPROVA;
 import gestionale.client.DataBase.DataSourceContatti;
-import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.shared.Contatto;
-
-import java.util.Vector;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.smartgwt.client.types.Alignment;
-import com.smartgwt.client.types.Positioning;
-import com.smartgwt.client.types.SortDirection;
-import com.smartgwt.client.types.TreeModelType;
-import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.data.Record;
+import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
-import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
-import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
-import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeGridField;
-import com.smartgwt.client.widgets.tree.TreeNode;
-import com.smartgwt.client.widgets.tree.events.LeafClickEvent;
-import com.smartgwt.client.widgets.tree.events.LeafClickHandler;
-import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
-import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
-public class TreeContatti extends Tree{
+public class TreeContatti extends TreeGrid{
 	
-	private static TreeContatti thistree;
 	private static TreeGrid tg;
-	private static TreeNode root;
 	
 	private static String lastContactClicked;
     
@@ -49,90 +33,18 @@ public class TreeContatti extends Tree{
     
 	public TreeContatti(){
 		super();
-		thistree=this;
-        thistree.setModelType(TreeModelType.CHILDREN);  
-        thistree.setNameProperty("Contatti");
-        root = new TreeNode("Root");
-    	thistree.setRoot(root);
-        
-		//this.aggiornaTreeContatti();
 
+		tg = this;
 		
-		
-		
-	}
-	
-	public static void aggiornaTreeContatti(){
-		
-		Vector<String> vts = Liste.getVettoreTipoSoggetto();
-		Vector<Contatto> v = Liste.getVettoreContatti();
-		Contatto c;
-		TreeNode[] tna = new TreeNode[vts.size()];
-		TreeNode[][] tnMatrix = new TreeNode[vts.size()][v.size()];
-		
-		int[] indici = new int[v.size()];
-		
-		for(int i=0; i<vts.size(); i++){
-			indici[i] = 0;
-		}
-		
-		TreeNode tn;
-		
-		for(int i=0; i<vts.size(); i++){
-			tn = new TreeNode( vts.get(i) );
-			tn.setTitle( vts.get(i) );
-			tna[i] = tn;
-			System.out.println("LALALALA" + vts.get(i) );
-		}
-		
-		
-		for( int i=0; i<v.size(); i++){
-			c = v.get(i);
-			for(int k=0; k<vts.size(); k++){
-				if( c.getTipoSoggetto().equals(tna[k].getTitle()) ){
-					tn = new TreeNode( c.getRagioneSociale() );
-					tn.setTitle(c.getRagioneSociale());
-					tnMatrix[k][ indici[k] ] = tn;
-					indici[k]++;
-					break;
-				}
-				
-				
-			}
-			
-			
-		}
-		
-		for( int i=0; i<vts.size(); i++){
-			tna[i].setChildren(tnMatrix[i]);
-		}
-
-	
-
-		
-		root.setChildren(tna);
-		
-		
-        if(tg != null) {
-        	tg.sort(0, SortDirection.DESCENDING);
-        	tg.sort(0, SortDirection.ASCENDING);
-        	
-        }
-	}
-	
-	public TreeGrid getTreeGrid(){
-		
-		tg = new TreeGrid();
-        
-        tg.setLoadDataOnDemand(false);  
+		tg.setLoadDataOnDemand(false);  
 		tg.setWidth100();
         tg.setHeight100(); 
-        tg.setDataSource( DataSourceContatti.getIstance() );  
+        tg.setDataSource( DSPROVA.getIstance() );  
         //tg.setCanEdit(true);  
         tg.setAutoFetchData(true);
         tg.setAutoSaveEdits(true);
         tg.setCanFreezeFields(true);  
-        tg.setCanReparentNodes(true);
+        //tg.setCanReparentNodes(true);
         tg.setCanDrag(false);
 		
         TreeGridField nameField = new TreeGridField("Name");
@@ -203,7 +115,7 @@ public class TreeContatti extends Tree{
 							}
 			        		
 			        		
-			        		TreeContatti.aggiornaTreeContatti();
+			        		//TreeContatti.aggiornaTreeContatti();
 						}
 					}
 				});
@@ -219,10 +131,87 @@ public class TreeContatti extends Tree{
 			}
 		});
 
-        
+		
+		
+		
+		
+		
+	}
+	/*
+	public static void aggiornaTreeContatti(){
+		
+		Vector<String> vts = Liste.getVettoreTipoSoggetto();
+		Vector<Contatto> v = Liste.getVettoreContatti();
+		Contatto c;
+		TreeNode[] tna = new TreeNode[vts.size()];
+		TreeNode[][] tnMatrix = new TreeNode[vts.size()][v.size()];
+		
+		int[] indici = new int[v.size()];
+		
+		for(int i=0; i<vts.size(); i++){
+			indici[i] = 0;
+		}
+		
+		TreeNode tn;
+		
+		for(int i=0; i<vts.size(); i++){
+			tn = new TreeNode( vts.get(i) );
+			tn.setTitle( vts.get(i) );
+			tna[i] = tn;
+			System.out.println("LALALALA" + vts.get(i) );
+		}
+		
+		
+		for( int i=0; i<v.size(); i++){
+			c = v.get(i);
+			for(int k=0; k<vts.size(); k++){
+				if( c.getTipoSoggetto().equals(tna[k].getTitle()) ){
+					tn = new TreeNode( c.getRagioneSociale() );
+					tn.setTitle(c.getRagioneSociale());
+					tnMatrix[k][ indici[k] ] = tn;
+					indici[k]++;
+					break;
+				}
+				
+				
+			}
+			
+			
+		}
+		
+		for( int i=0; i<vts.size(); i++){
+			tna[i].setChildren(tnMatrix[i]);
+		}
+
+	
+
+		
+		root.setChildren(tna);
+		
+		
+        if(tg != null) {
+        	tg.sort(0, SortDirection.DESCENDING);
+        	tg.sort(0, SortDirection.ASCENDING);
+        	
+        }
+	}
+	*/
+	public TreeGrid getTreeGrid(){
 		return tg;
 	}
-	
+
+	public static void selezionaContattoFromRagioneSociale(String stringa){
+		System.out.println("FUUUU");
+		RecordList lg = tg.getRecordList();
+		tg.deselectAllRecords();
+		for(int i=0; i<lg.getLength(); i++){
+			Record record = lg.get(i);
+			if( record.getAttribute("ragionesociale").toLowerCase().equals(stringa.toLowerCase())){
+				tg.selectRecord(record);
+				tg.scrollToRow(i);
+			}
+		}
+	}
 	
 
 }
