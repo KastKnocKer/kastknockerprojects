@@ -143,6 +143,10 @@ public class GUIManager {
 		sezioneProdotti.setExpanded(false);
 		sectionStack.addSection(sezioneProdotti);
 		
+		/////////////
+		sezioneProdotti.addItem(new ListGridContatti());
+		///////////7
+		
 		TreeContatti tc = new TreeContatti();
 		sezioneContatti.addItem( tc );
 		

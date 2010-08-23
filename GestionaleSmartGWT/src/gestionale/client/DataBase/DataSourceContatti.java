@@ -2,8 +2,6 @@ package gestionale.client.DataBase;
 
 import java.util.Vector;
 
-import org.eclipse.jdt.internal.compiler.ast.ThisReference;
-
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.client.Liste;
@@ -30,6 +28,7 @@ public class DataSourceContatti extends DataSource{
 	}
 	
 	public DataSourceContatti(){
+		/*
 		super();
 		setID(id);  
         setTitleField("Name");
@@ -43,25 +42,44 @@ public class DataSourceContatti extends DataSource{
 		 
 		DataSourceTextField PIDField = new DataSourceTextField("PID", "PID");
 		PIDField.setRequired(true);
-		PIDField.setForeignKey(id + ".ID");
+		//PIDField.setForeignKey(id + ".ID");
 		PIDField.setHidden(true);
-		PIDField.setRootValue("root");
+		//PIDField.setRootValue("root");
 		nameField.setCanEdit(true);
 		
-		PIDField.setGroup("PID");
-		 
-		 
-		setFields(nameField, IDField, PIDField);
-		 
+		//PIDField.setGroup("PID");
+		
+		*/
+		
+		setID(id); 
+		DataSourceTextField idField = new DataSourceTextField("id");  
+		idField.setHidden(true);  
+		idField.setPrimaryKey(true);
+		
+		DataSourceTextField ragionesocialeField = new DataSourceTextField("ragionesociale","ragionesociale");
+		DataSourceTextField precisazioneField = new DataSourceTextField("precisazione","precisazione");
+		DataSourceTextField pivaField = new DataSourceTextField("piva","piva");
+		DataSourceTextField logoField = new DataSourceTextField("logo","logo");
+		DataSourceTextField indirizzoField = new DataSourceTextField("indirizzo","indirizzo");
+		DataSourceTextField telefonoField = new DataSourceTextField("telefono","telefono");
+		DataSourceTextField cellulareField = new DataSourceTextField("cellulare","cellulare");
+		DataSourceTextField faxField = new DataSourceTextField("fax","fax");
+		DataSourceTextField emailField = new DataSourceTextField("email","email");
+		DataSourceTextField sitowebField = new DataSourceTextField("sitoweb","sitoweb");
+		DataSourceTextField tiposoggettoField = new DataSourceTextField("tiposoggetto","tiposoggetto");
+		DataSourceTextField provvigioneField = new DataSourceTextField("provvigione","provvigione");
+		DataSourceTextField noteField = new DataSourceTextField("note","note");
+		  
+        setFields(idField, ragionesocialeField, precisazioneField, pivaField, logoField, indirizzoField, telefonoField, cellulareField,faxField,emailField,sitowebField,tiposoggettoField,provvigioneField,noteField); 
+		
 		setClientOnly(true);
-		 
 		newRecords();
 		
 	}
 	
 	
 	public void newRecords(){
-	
+	/*
 		rpc.eseguiQuery("SELECT * FROM tiposoggetto", new AsyncCallback<String[][]>(){
 			
 			public void onFailure(Throwable caught) {
@@ -78,23 +96,19 @@ public class DataSourceContatti extends DataSource{
 					istance.addData(record);
 				}
 			}	
-		});
+		}); */
 		
 		rpc.eseguiQueryContatto("SELECT * FROM contatti", new AsyncCallback<Contatto[]>(){
 			
 			public void onFailure(Throwable caught) {
-				Window.alert("Errore: Caricamento da DB Prodotti");
+				Window.alert("Errore: Caricamento da DB contatti");
 			}
 
 			public void onSuccess(Contatto[] result) {
 
 				for(int i=0; i<result.length; i++){
-					Record record = new Record();
+					ListGridRecord record = new ListGridRecord();
 					Contatto contatto = result[i];
-					
-					record.setAttribute("ID", contatto.getID());
-					record.setAttribute("Name", contatto.getRagioneSociale());
-					record.setAttribute("PID", contatto.getTipoSoggetto());
 					
 					record.setAttribute("id", contatto.getID());
 					record.setAttribute("ragionesociale", contatto.getRagioneSociale());

@@ -46,6 +46,7 @@ public class TreeContatti extends TreeGrid{
         tg.setCanFreezeFields(true);  
         //tg.setCanReparentNodes(true);
         tg.setCanDrag(false);
+        tg.groupBy("tiposoggetto");
 		
         TreeGridField nameField = new TreeGridField("Name");
         tg.setFields(nameField);
