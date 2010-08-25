@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import gestionale.client.DB;
 import gestionale.client.Liste;
+import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceContattiCampiVari;
 import gestionale.client.DataBase.DataSourceContattiIndirizzi;
 import gestionale.shared.Contatto;
@@ -501,17 +502,9 @@ ImgButton removeEmail = new ImgButton();
 	        		  //dialog.removeFromParent();
 	        		  
 	        	  }else{
-	        		  Liste.getVettoreContatti().add(contatto);
-	        		  DB db = new DB();
-	        		  String query = "INSERT INTO contatti (`RagioneSociale`,`Precisazione`,`PIVA`,`Logo`,`Indirizzo`,`Telefono`,`Cellulare`,`Fax`,`Email`,`SitoWeb`,`TipoSoggetto`,`Provvigione`,`Note`) VALUES ('"+contatto.getRagioneSociale()+"','"+contatto.getPrecisazione()+"','"+contatto.getPIVA()+"','"+contatto.getLogo()+"','"+contatto.getIndirizzo()+"','"+contatto.getTelefono()+"','"+contatto.getCellulare()+"','"+contatto.getFax()+"','"+contatto.geteMail()+"','"+contatto.getSitoWeb()+"','"+contatto.getTipoSoggetto()+"','"+contatto.getProvvigione()+"','"+contatto.getNote()+"')";
-	        		  db.eseguiUpdateToDB(query);
-	        		  //TreeContatti.aggiornaTreeContatti();
-	        		  
-	        		  //dialog.removeFromParent();
-	        		  //Aggiornare albero
+	        		  DataSourceContatti.aggiungiContatto(contatto);
 	        	  }
 	        	  
-	        	 // TreeContatti.aggiornaTreeContatti();
 	        	  thisPanel.closePanel();
 	        	  
 	          }

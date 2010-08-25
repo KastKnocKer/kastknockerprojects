@@ -2,23 +2,23 @@ package gestionale.client.DataBase;
 
 import java.util.Vector;
 
+import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
-import gestionale.client.Liste;
 import gestionale.shared.Contatto;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
-import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 public class DataSourceContatti extends DataSource{
 	
-	private static DataSourceContatti istance = null;
-	private static  DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+	private static 	DataSourceContatti 	istance = null;
+	private static  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+	private static  Vector<Contatto>	vettoreContatti = null;
 	
 	public static DataSourceContatti getIstance(){
 		if (istance == null) {  
@@ -28,29 +28,6 @@ public class DataSourceContatti extends DataSource{
 	}
 	
 	public DataSourceContatti(){
-		/*
-		super();
-		setID(id);  
-        setTitleField("Name");
-		DataSourceTextField nameField = new DataSourceTextField("Name", "Name");  
-		nameField.setRequired(true);
-		 
-		DataSourceTextField IDField = new DataSourceTextField("ID", "ID");  
-		IDField.setRequired(true);
-		IDField.setPrimaryKey(true);
-		IDField.setHidden(true);
-		 
-		DataSourceTextField PIDField = new DataSourceTextField("PID", "PID");
-		PIDField.setRequired(true);
-		//PIDField.setForeignKey(id + ".ID");
-		PIDField.setHidden(true);
-		//PIDField.setRootValue("root");
-		nameField.setCanEdit(true);
-		
-		//PIDField.setGroup("PID");
-		
-		*/
-		
 		setID(id); 
 		DataSourceTextField idField = new DataSourceTextField("id");  
 		idField.setHidden(true);  
@@ -79,36 +56,22 @@ public class DataSourceContatti extends DataSource{
 	
 	
 	public void newRecords(){
-	/*
-		rpc.eseguiQuery("SELECT * FROM tiposoggetto", new AsyncCallback<String[][]>(){
-			
-			public void onFailure(Throwable caught) {
-				Window.alert("Errore: Caricamento da DB Contatti");
-			}
-
-			public void onSuccess(String[][] result) {
-				for(int i=0 ; i<result.length; i++){
-					Record record = new Record();
-					System.out.println("AMAMELO" + result[i][0]);
-					record.setAttribute("ID", result[i][0]);
-					record.setAttribute("Name", result[i][0]);
-					record.setAttribute("PID", "root");
-					istance.addData(record);
-				}
-			}	
-		}); */
 		
-		rpc.eseguiQueryContatto("SELECT * FROM contatti", new AsyncCallback<Contatto[]>(){
+			rpc.eseguiQueryContatto("SELECT * FROM contatti", new AsyncCallback<Contatto[]>(){
 			
 			public void onFailure(Throwable caught) {
 				Window.alert("Errore: Caricamento da DB contatti");
 			}
 
 			public void onSuccess(Contatto[] result) {
-
+				
+				vettoreContatti = new Vector<Contatto>();
+				
 				for(int i=0; i<result.length; i++){
 					ListGridRecord record = new ListGridRecord();
 					Contatto contatto = result[i];
+					
+					vettoreContatti.add(contatto);
 					
 					record.setAttribute("id", contatto.getID());
 					record.setAttribute("ragionesociale", contatto.getRagioneSociale());
@@ -132,31 +95,56 @@ public class DataSourceContatti extends DataSource{
 		
 	}
 	
-	
-	
-	
-private static RecordContatti[] records;
-	
-	public static RecordContatti[] getRecords() {  
-		if (records == null) {  
-		records = getNewRecords();  
-		}
-		return records;  
+	public static Vector<Contatto> getVettoreContatti(){
+		return vettoreContatti;
+		
 	}
+	
+	public static void aggiungiContatto(Contatto contatto){
+		//Aggiungo al database
+		DB db = new DB();
+		String query = "INSERT INTO contatti (`RagioneSociale`,`Precisazione`,`PIVA`,`Logo`,`Indirizzo`,`Telefono`,`Cellulare`,`Fax`,`Email`,`SitoWeb`,`TipoSoggetto`,`Provvigione`,`Note`) VALUES ('"+contatto.getRagioneSociale()+"','"+contatto.getPrecisazione()+"','"+contatto.getPIVA()+"','"+contatto.getLogo()+"','"+contatto.getIndirizzo()+"','"+contatto.getTelefono()+"','"+contatto.getCellulare()+"','"+contatto.getFax()+"','"+contatto.geteMail()+"','"+contatto.getSitoWeb()+"','"+contatto.getTipoSoggetto()+"','"+contatto.getProvvigione()+"','"+contatto.getNote()+"')";
+		db.eseguiUpdateToDB(query);
+		//Aggiungo al Vettore
+		vettoreContatti.add(contatto);
+		//Aggiungo ai listgridrecords
+		ListGridRecord record = new ListGridRecord();
+		record.setAttribute("id", contatto.getID());
+		record.setAttribute("ragionesociale", contatto.getRagioneSociale());
+		record.setAttribute("precisazione", contatto.getPrecisazione());
+		record.setAttribute("piva", contatto.getPIVA());
+		record.setAttribute("logo", contatto.getLogo());
+		record.setAttribute("indirizzo", contatto.getIndirizzo());
+		record.setAttribute("telefono", contatto.getTelefono());
+		record.setAttribute("cellulare", contatto.getCellulare());
+		record.setAttribute("fax", contatto.getFax());
+		record.setAttribute("email", contatto.geteMail());
+		record.setAttribute("sitoweb", contatto.getSitoWeb());
+		record.setAttribute("tiposoggetto", contatto.getTipoSoggetto());
+		record.setAttribute("provvigione", contatto.getProvvigione());
+		record.setAttribute("note", contatto.getNote());
+		istance.addData(record);
+	}
+	
+	public static void rimuoviContatto(ListGridRecord record){
+		Contatto contatto = null;
+		for(int i=0; i<vettoreContatti.size(); i++){
+			contatto = vettoreContatti.get(i);
+			if(contatto.getRagioneSociale().equals(record.getAttribute("ragionesociale"))){
+				DB db = new DB();
+				String query = "DELETE FROM contatti WHERE ID='" + contatto.getID()+ "'";
+        		db.eseguiUpdateToDB(query);
+        		vettoreContatti.remove(i);
+				istance.removeData(record);
+				break;
+			}
+		}
+		
+	}
+	
+	
 	
 
-	 public static RecordContatti[] getNewRecords() {
-		 
-		 Vector<Contatto> v = Liste.getVettoreContatti();
-		 RecordContatti[] records = new RecordContatti[v.size()];
-		 
-		 for(int i=0; i<v.size(); i++){
-			 records[i] = new RecordContatti( v.get(i) );
-		 }
-		  
-		         
-		  return records;
-	}
 
 	
 }

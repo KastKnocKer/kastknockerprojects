@@ -23,9 +23,9 @@ public class Liste {
 		vettoreContatti = new Vector<Contatto>();
 		vettoreProdotti = new Vector<Prodotto>();
 		vettoreTipoSoggetto = new Vector<String>();
-		aggiornaVettoreContatti();
+		//aggiornaVettoreContatti();
 		aggiornaVettoreTipoSoggetto();
-		aggiornaVettoreOrdini();
+		//aggiornaVettoreOrdini();
 	}
 	
 	private void aggiornaVettoreOrdini() {

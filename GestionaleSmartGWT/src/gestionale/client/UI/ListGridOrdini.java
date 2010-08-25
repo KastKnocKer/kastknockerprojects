@@ -6,6 +6,7 @@ import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.shared.Contatto;
 
 import com.google.gwt.user.client.Window;
+import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.widgets.events.DoubleClickEvent;
 import com.smartgwt.client.widgets.events.DoubleClickHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -28,16 +29,20 @@ public class ListGridOrdini extends ListGrid{
 		this.setWidth100();
 		this.setHeight100(); 
 		this.setShowEdges(false);
-		this.setData(DataSourceOrdini.getRecords(this));
-		this.setCanReorderRecords(true);  
+		this.setDataSource(DataSourceOrdini.getIstance());
+		this.setCanReorderFields(false); 
 		this.setCanAcceptDroppedRecords(false);  
-		this.setCanDragRecordsOut(true);
+		this.setCanDragRecordsOut(false);
 		
-		ListGridField campo = new ListGridField("datacreazioneordine", "Ordini");  
-		campo.setCanEdit(false);  
-		this.setFields(campo); 
-		lgo = this;
-		
+		ListGridField campo = new ListGridField("datacreazioneordine", "Ordini");
+		ListGridField idcampo = new ListGridField("idn", "ID");
+		campo.setCanEdit(false);
+		idcampo.setHidden(true);
+		this.setFields(campo,idcampo);
+		this.fetchData();
+		this.sort("idn", SortDirection.DESCENDING);
+		this.setCanSort(false);
+		this.setCanDrag(false);
 		
 		//////////////
 		this.addDoubleClickHandler(new  DoubleClickHandler() {
@@ -53,7 +58,6 @@ public class ListGridOrdini extends ListGrid{
 				
 				mi_dettagli.addClickHandler( new ClickHandler() {
 					public void onClick(MenuItemClickEvent event) {
-						lgo.aggiorna();
 					}
 				});
 				
@@ -84,10 +88,6 @@ public class ListGridOrdini extends ListGrid{
 			}
 		});
 		/////////////
-	}
-	
-	public void aggiorna(){
-		this.setData(DataSourceOrdini.getRecords(this));
 	}
 
 }

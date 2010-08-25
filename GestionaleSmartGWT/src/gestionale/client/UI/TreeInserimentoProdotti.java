@@ -137,6 +137,8 @@ public class TreeInserimentoProdotti extends TreeGrid{
 				String id = record.getAttribute("ID");
 				System.out.println("RECORD: " + record.getAttribute("Tipo") + " " + record.getAttribute("ID"));
 				
+				if(event.getNewValue() == null) return;
+				
 				if (tipo.equals("Tipologia")){
 					query = "UPDATE prodotto_tipologia SET Tipologia='"+ event.getNewValue() +"' WHERE ID="+ id.substring(1) +";";
 				}else if (tipo.equals("Varieta")){
@@ -364,7 +366,7 @@ public class TreeInserimentoProdotti extends TreeGrid{
 		db.eseguiUpdateToDB(query);
 		
 		DataSourceProdotti.getIstance().addData(nr);
-		tg.fetchData();
+		//tg.fetchData();
 	}
 	
 	

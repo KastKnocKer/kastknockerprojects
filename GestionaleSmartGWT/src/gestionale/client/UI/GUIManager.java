@@ -3,6 +3,7 @@ package gestionale.client.UI;
 
 import gestionale.client.DB;
 import gestionale.client.DataBase.DataSourceContatti;
+import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.shared.User;
 
@@ -98,6 +99,7 @@ public class GUIManager {
 		//Carico i dati
 		DataSourceProdotti.getIstance();
 		DataSourceContatti.getIstance();
+		DataSourceOrdini.getIstance();
 		
 		Menubar MB = new Menubar();
 		
@@ -123,6 +125,10 @@ public class GUIManager {
 		
 		final SectionStack sectionStack = new SectionStack();
 		
+		sectionStack.setCanReorderSections(true); 	//
+		sectionStack.setCanResizeSections(true);	//
+		
+		
 		//sectionStack.setAlign(Alignment.CENTER);  
 		sectionStack.setOverflow(Overflow.HIDDEN);  
 		sectionStack.setShowResizeBar(true);
@@ -144,11 +150,13 @@ public class GUIManager {
 		sectionStack.addSection(sezioneProdotti);
 		
 		/////////////
-		sezioneProdotti.addItem(new ListGridContatti());
+		ListGridContatti listgridcontatti = new ListGridContatti();
+		sezioneContatti.addItem( listgridcontatti );
+		
+		//sezioneProdotti.addItem();
 		///////////7
 		
-		TreeContatti tc = new TreeContatti();
-		sezioneContatti.addItem( tc );
+		
 		
 		//Tasto Cerca
 		DynamicForm fp = new DynamicForm();

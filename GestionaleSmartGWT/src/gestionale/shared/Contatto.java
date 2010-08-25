@@ -88,7 +88,7 @@ public class Contatto implements IsSerializable {
 			
 			temporanea=stringa.substring(indiceA+1,indiceB);
 			stringa = stringa.substring(indiceB+1);
-			String[] vetString = new String[9];
+			String[] vetString = new String[10];
 			System.out.println("Temporanea: " + temporanea);
 			
 			indiceA = temporanea.indexOf('+');
@@ -116,7 +116,10 @@ public class Contatto implements IsSerializable {
 			vetString[7] = temporanea.substring(indiceA+1, indiceB); // Regione
 			
 			indiceA = temporanea.indexOf('+', indiceB+1);
-			vetString[8] = temporanea.substring(indiceB+1); // Stato
+			vetString[8] = temporanea.substring(indiceB+1, indiceA); // Stato
+			
+			indiceB = temporanea.indexOf('+', indiceA+1);
+			vetString[9] = temporanea.substring(indiceA+1); // Campo aggiuntivo
 			
 			temp = temp + "<b>" + vetString[0] + "</b>" + ":" + "<br>";
 			temp = temp + vetString[1] + ", " + vetString[2] + "<br>";
