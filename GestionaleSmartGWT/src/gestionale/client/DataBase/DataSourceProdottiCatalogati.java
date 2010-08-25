@@ -20,7 +20,6 @@ public class DataSourceProdottiCatalogati extends DataSource{
 
 	
 	public static DataSourceProdottiCatalogati getIstance(){
-		System.out.println("MA QUANTA CE NERA?");
 		if (istance == null) {  
             istance = new DataSourceProdottiCatalogati();  
         } 
@@ -41,9 +40,7 @@ public class DataSourceProdottiCatalogati extends DataSource{
         DataSourceTextField varietaField = new DataSourceTextField("Varietà", "varieta");  
         DataSourceTextField sottovarietaField = new DataSourceTextField("Sottovarieta", "sottovarieta");  
         DataSourceTextField calibroField = new DataSourceTextField("Calibro", "calibro");  
-        
-		
-		 
+             
 		setFields(IDField, categoriaField, tipologiaField, varietaField, sottovarietaField, calibroField);
 		 
 		setClientOnly(true);

@@ -13,6 +13,8 @@ import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 public class DataSourceProdotti extends DataSource{
+	
+	public static int ready = 0;
 	private static int IDMaxTipologia = 0;
 	private static int IDMaxVarieta = 0;
 	private static int IDMaxSottoVarieta = 0;
@@ -47,7 +49,6 @@ public class DataSourceProdotti extends DataSource{
 		PIDField.setForeignKey(id + ".ID");
 		PIDField.setHidden(true);
 		PIDField.setRootValue("root");
-		nameField.setCanEdit(true);
 		 
 		 
 		setFields(nameField, IDField, PIDField);
@@ -63,7 +64,7 @@ public class DataSourceProdotti extends DataSource{
 
 
 	 public static void getNewRecords() {
-		 
+		 ready = 0;
 		 rpc.eseguiQuery("SELECT * FROM prodotto_categoria", new AsyncCallback<String[][]>(){
 				
 				public void onFailure(Throwable caught) {
@@ -82,6 +83,7 @@ public class DataSourceProdotti extends DataSource{
 							System.out.println("Categoria: "+result[i][1]);
 							
 						}
+					ready++;
 				}	
 			});
 			////////////////////////////////
@@ -104,6 +106,7 @@ public class DataSourceProdotti extends DataSource{
 							IDMaxTipologia = Integer.parseInt(result[i][0]);
 						}
 					}
+				ready++;
 			}	
 			});
 			////////////////////////////////
@@ -126,6 +129,7 @@ public class DataSourceProdotti extends DataSource{
 							IDMaxVarieta = Integer.parseInt(result[i][0]);
 						}
 					}
+				ready++;
 			}	
 			});
 			////////////////////////////////
@@ -148,6 +152,7 @@ public class DataSourceProdotti extends DataSource{
 							IDMaxSottoVarieta = Integer.parseInt(result[i][0]);
 						}
 					}
+				ready++;
 			}	
 			});
 			////////////////////////////////
@@ -170,63 +175,11 @@ public class DataSourceProdotti extends DataSource{
 							IDMaxCalibro = Integer.parseInt(result[i][0]);
 						}
 					}
+				ready++;
 			}	
-			});/*
-			////////////////////////////////
-			/*
-			rpc.eseguiQuery("SELECT * FROM prodotto_imballaggio", new AsyncCallback<String[][]>(){
+			});
+	 	}	
 			
-			public void onFailure(Throwable caught) {
-				Window.alert("Errore: Caricamento da DB Contatti");
-			}
-			
-			public void onSuccess(String[][] result) {
-					for(int i=0; i<result.length; i++){
-						//tabImballaggio.add( result[i] );
-					}
-			}	
-			});*/
-		 
-		 /*
-		 String query = "SELECT * FROM ordini";
-		 
-			rpc.eseguiQueryOrdine(query,new AsyncCallback<Ordine[]>(){
-				
-				public void onFailure(Throwable caught) {
-					Window.alert("Errore: Caricamento da DB Ordini");
-				}
-
-				public void onSuccess(Ordine[] result) {
-					records = new RecordOrdini[result.length];
-					
-					for(int i=0; i<result.length; i++){
-						records[i] = new RecordOrdini( result[i] );
-					}
-					
-					if(lg!=null) lg.setData(records);
-					
-				}
-				
-			});*/
-		 
-		 
-		
-	}
-	 
-	 
-	 /*
-	   public static RecordOrdini[] getNewRecords() {
-		 Vector<Ordine> v = Liste.getVettoreOrdini();
-		 RecordOrdini[] records = new RecordOrdini[v.size()];
-		        
-		 for(int i=0; i<v.size(); i++){
-			 records[i] = new RecordOrdini( v.get(i) );
-		 }
-		 
-		  return records;
-	}
-	  */
-
 		public static int getIDMaxTipologia(){
 			return IDMaxTipologia;
 		}

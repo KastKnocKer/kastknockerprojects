@@ -25,7 +25,7 @@ public class ListGridProdotti extends ListGrid{
 		
 		ListGridField categoriaField = new ListGridField("categoria", "Categoria");  
         ListGridField tipologiaField = new ListGridField("tipologia", "Tipologia");  
-        ListGridField varietaField = new ListGridField("varietà", "Varieta");  
+        ListGridField varietaField = new ListGridField("varieta", "Varieta");  
         ListGridField sottovarietaField = new ListGridField("sottovarieta", "Sottovarieta");  
         ListGridField calibroField = new ListGridField("calibro", "Calibro");  
         

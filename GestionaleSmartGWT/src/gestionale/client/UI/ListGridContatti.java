@@ -10,11 +10,15 @@ import com.google.gwt.user.client.Window;
 import com.smartgwt.client.types.GroupStartOpen;
 import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.events.ShowContextMenuEvent;
+import com.smartgwt.client.widgets.events.ShowContextMenuHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.ClickHandler;
@@ -78,6 +82,103 @@ public class ListGridContatti extends ListGrid{
 		this.fetchData();
 		this.setCanDrag(false);*/
 		
+		//CLICK DESTRO
+		addRowContextClickHandler(new RowContextClickHandler() {
+			
+			public void onRowContextClick(RowContextClickEvent event) {
+				lastContactClicked = event.getRecord();
+				System.out.println("Contatto cliccato: " + lastContactClicked );
+				Menu menu = new Menu();
+				
+				MenuItem mi_dettagli = new MenuItem("Mostra dettagli");
+				MenuItem mi_modifica = new MenuItem("Modifica Contatto");
+				MenuItem mi_rimuovi = new MenuItem("Rimuovi Contatto");
+				
+				
+				mi_dettagli.addClickHandler( new ClickHandler() {
+					public void onClick(MenuItemClickEvent event) {
+						System.out.println("Sorgente lieta: " + event.getSource() );
+						
+						Finestra window = new Finestra();  
+						window.setTitle(lastContactClicked.getAttribute("ragionesociale"));
+						Contatto contatto = null;
+						for(int i=0; i<DataSourceContatti.getVettoreContatti().size(); i++){
+							contatto = DataSourceContatti.getVettoreContatti().get(i);
+							if( contatto.getRagioneSociale().equals(lastContactClicked.getAttribute("ragionesociale"))){
+								window.addItem(new Label(contatto.getHtmlText()));
+								break;
+							}
+						}
+						window.setWidth(300);  
+						window.setHeight(230);
+						window.setCanDragReposition(true);  
+						window.setCanDragResize(true);  
+						window.centerInPage();
+						window.draw();
+						
+					}
+				});
+				
+				mi_modifica.addClickHandler( new ClickHandler() {
+					public void onClick(MenuItemClickEvent event) {
+						System.out.println("Sorgente lieta: " + event.getSource() );
+						Contatto contatto = null;
+						for(int i=0; i<DataSourceContatti.getVettoreContatti().size(); i++){
+							contatto = DataSourceContatti.getVettoreContatti().get(i);
+							if( contatto.getRagioneSociale().equals(lastContactClicked.getAttribute("ragionesociale"))){
+								new PanelContatti(contatto);
+								break;
+							}
+						}
+					}
+				});
+				
+				mi_rimuovi.addClickHandler( new ClickHandler() {
+					public void onClick(MenuItemClickEvent event) {
+						if( Window.confirm("Sei sicuro di voler rimuovere: "+lastContactClicked.getAttribute("ragionesociale")+"?") ){
+							DataSourceContatti.rimuoviContatto(lastContactClicked);
+						}
+					}
+				});
+				
+				
+				
+				menu.addItem( mi_dettagli );
+				menu.addItem( mi_modifica );
+				menu.addItem( mi_rimuovi );
+				
+				menu.setAutoDraw(true);
+				menu.showContextMenu();
+			}
+		});
+		
+		//DCLICK
+		addRecordClickHandler(new RecordClickHandler() {
+			
+			public void onRecordClick(RecordClickEvent event) {
+				
+				lastContactClicked = (ListGridRecord) event.getRecord();
+				
+				Finestra window = new Finestra();  
+				window.setTitle(lastContactClicked.getAttribute("ragionesociale"));
+				Contatto contatto = null;
+				for(int i=0; i<DataSourceContatti.getVettoreContatti().size(); i++){
+					contatto = DataSourceContatti.getVettoreContatti().get(i);
+					if( contatto.getRagioneSociale().equals(lastContactClicked.getAttribute("ragionesociale"))){
+						window.addItem(new Label(contatto.getHtmlText()));
+						break;
+					}
+				}
+				window.setWidth(300);  
+				window.setHeight(230);
+				window.setCanDragReposition(true);  
+				window.setCanDragResize(true);  
+				window.centerInPage();
+				window.draw();
+			}
+		});
+		
+		/*
 		addRecordClickHandler(new RecordClickHandler() {
 			
         	public void onRecordClick(RecordClickEvent event) {
@@ -146,7 +247,7 @@ public class ListGridContatti extends ListGrid{
 				menu.showContextMenu();
 			}
 		});
-		
+		*/
 		
 	}
 }

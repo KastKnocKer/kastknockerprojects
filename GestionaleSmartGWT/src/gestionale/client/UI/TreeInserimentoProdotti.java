@@ -3,6 +3,7 @@ package gestionale.client.UI;
 import gestionale.client.DB;
 import gestionale.client.DataBase.DataSourceProdotti;
 
+import com.google.gwt.user.client.Timer;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.Window;
@@ -13,17 +14,25 @@ import com.smartgwt.client.widgets.events.KeyPressHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.CellContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.CellContextClickHandler;
+import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
+import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
 import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
 import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
 import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeGridField;
+import com.smartgwt.client.widgets.tree.events.NodeContextClickEvent;
+import com.smartgwt.client.widgets.tree.events.NodeContextClickHandler;
 
 public class TreeInserimentoProdotti extends TreeGrid{
 	
@@ -33,42 +42,55 @@ public class TreeInserimentoProdotti extends TreeGrid{
 	public TreeInserimentoProdotti(){
 		super();
 		tg = this;
-		setLoadDataOnDemand(false);  
-        setWidth100();
-        setHeight100(); 
-        setDataSource( DataSourceProdotti.getIstance() );  
-        setCanEdit(true);  
-        setAutoFetchData(true);
-        setAutoSaveEdits(true);
-        setCanFreezeFields(true);  
-        setCanReparentNodes(true); 
+        tg.setWidth100();
+        tg.setHeight100(); 
+        tg.setCanEdit(true);
+        tg.setAutoSaveEdits(true);
+        tg.setCanFreezeFields(true);  
+        tg.setCanReparentNodes(true);
+        
+        tg.setLoadDataOnDemand(false);  
+          
+        tg.setCanReorderRecords(true);  
+        tg.setCanAcceptDroppedRecords(true);  
+        tg.setShowDropIcons(false);  
+        tg.setShowOpenIcons(false);  
+        
 		
         TreeGridField nameField = new TreeGridField("Name");
-        //nameField.setCanEdit(true);
-        //nameField.setFrozen(true);
-        
+        nameField.setCanEdit(true);
         setFields(nameField);
-        
-        this.addRecordClickHandler(new RecordClickHandler() {
-			
-			public void onRecordClick(RecordClickEvent event) {
-				
-			}
-			
-		});
+        tg.setCanEdit(true);
         
         
-        this.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
-			
-        	public void onRecordDoubleClick(RecordDoubleClickEvent event) {
-        		
-        		if(event.isCtrlKeyDown()){
-        			return;
+        //Aspetta che siano completamente caricati i dati dal db
+        new Timer(){
+        	public void run() {
+        		if(DataSourceProdotti.ready == 5){
+        			setDataSource( DataSourceProdotti.getIstance() );
+        			fetchData();
+        			System.out.println("GOGOGOG");
+        		}else{
+        			this.schedule(500);
         		}
-        		
+			}
+        	
+        }.schedule(500);
+        
+        this.addCellDoubleClickHandler(new CellDoubleClickHandler() {
+			
+			public void onCellDoubleClick(CellDoubleClickEvent event) {
+				System.out.println("COSA SEI?: "  + event.getSource());
+			}
+		});
+
+       
+        this.addCellContextClickHandler(new CellContextClickHandler() {
+			
+			public void onCellContextClick(CellContextClickEvent event) {
+				
 				selezionato = event.getRecord();
-        		
-				String tipo = selezionato.getAttribute("Tipo");
+        		String tipo = selezionato.getAttribute("Tipo");
 				
 				
 				Menu menu = new Menu();
@@ -110,23 +132,18 @@ public class TreeInserimentoProdotti extends TreeGrid{
 					menu.showContextMenu();
 					
 				}else if (tipo.equals("Calibro")){
-					menu.addItem( mi_aggiungi_tn );
+					//menu.addItem( mi_aggiungi_tn );
 					menu.addItem( mi_rimuovi_tn );					
 					menu.setAutoDraw(true);
 					menu.showContextMenu();
 					
-				}else if (tipo.equals("Imballaggio")){
-					menu.addItem( mi_aggiungi_tn );
-					menu.addItem( mi_rimuovi_tn );					
-					menu.setAutoDraw(true);
-					menu.showContextMenu();
-					
-				}	
+				}
+				
 			}
-
-			
 		});
-      
+        
+        
+        
         this.addEditorExitHandler(new EditorExitHandler() {
 			
 			public void onEditorExit(EditorExitEvent event) {
@@ -147,8 +164,6 @@ public class TreeInserimentoProdotti extends TreeGrid{
 					query = "UPDATE prodotto_sottovarieta SET Sottovarieta='"+ event.getNewValue() +"' WHERE ID="+ id.substring(2) +";";
 				}else if (tipo.equals("Calibro")){
 					query = "UPDATE prodotto_calibro SET Calibro='"+ event.getNewValue() +"' WHERE ID="+ id.substring(2) +";";
-				}else if (tipo.equals("Imballaggio")){
-					query = "UPDATE prodotto_imballaggio SET Imballaggio='"+ event.getNewValue() +"' WHERE ID="+ id.substring(1) +";";
 				}
 
 				
@@ -159,106 +174,8 @@ public class TreeInserimentoProdotti extends TreeGrid{
 	}
 	
 	
-	public TreeGrid getTreeGrid(){/*
-		tg = new TreeGrid();
-        tg.setWidth100();
-        tg.setHeight100();
-        tg.setCanEdit(true);
-        //tg.setAutoFetchData(true);
-        TreeGridField nameField = new TreeGridField("Name", 150);
-        tg.setFields(nameField);
-        tg.setData( DataSourceProdotti.getIstance() );*/
-		/*
-		EmployeeXmlDS employeesDS = EmployeeXmlDS.getInstance();  
-		  
-        final TreeGrid treeGrid = new TreeGrid();  
-        treeGrid.setLoadDataOnDemand(false);  
-        treeGrid.setWidth(500);  
-        treeGrid.setHeight(400);  
-        treeGrid.setDataSource(employeesDS);  
-        treeGrid.setCanEdit(true);  
-        treeGrid.setAutoFetchData(true);  
-        treeGrid.setCanFreezeFields(true);  
-        treeGrid.setCanReparentNodes(true);          
-  
-        TreeGridField nameField = new TreeGridField("Name");  
-        nameField.setFrozen(true);  
-        treeGrid.setFields(nameField);  
-  
-    
-        treeGrid.draw();  
-        
-     
-  
-/*
-        tg.addNodeClickHandler(new NodeClickHandler() {
-			
-			public void onNodeClick(NodeClickEvent event) {
-				tn_selezionato = event.getNode();
-				
-				
-				String tipo = tn_selezionato.getAttribute("Tipo");
-				
-				Menu menu = new Menu();
-				
-				MenuItem mi_aggiungi_tn = new MenuItem("Aggiungi voce");
-				mi_aggiungi_tn.addClickHandler(new ClickHandler() {
-					
-					public void onClick(MenuItemClickEvent event) {
-						InsertItem(tn_selezionato);
-					}
-				});
-				
-				MenuItem mi_rimuovi_tn = new MenuItem("Rimuovi voce");
-				
-				
-				
-				
-				if(tipo.equals("Categoria")){
-					menu.addItem( mi_aggiungi_tn );
-					menu.setAutoDraw(true);
-					menu.showContextMenu();
-					
-				}else if (tipo.equals("Tipologia")){
-					menu.addItem( mi_aggiungi_tn );
-					menu.addItem( mi_rimuovi_tn );					
-					menu.setAutoDraw(true);
-					menu.showContextMenu();
-					
-				}else if (tipo.equals("Varieta")){
-					menu.addItem( mi_aggiungi_tn );
-					menu.addItem( mi_rimuovi_tn );					
-					menu.setAutoDraw(true);
-					menu.showContextMenu();
-					
-				}else if (tipo.equals("SottoVarieta")){
-					menu.addItem( mi_aggiungi_tn );
-					menu.addItem( mi_rimuovi_tn );					
-					menu.setAutoDraw(true);
-					menu.showContextMenu();
-					
-				}else if (tipo.equals("Calibro")){
-					menu.addItem( mi_aggiungi_tn );
-					menu.addItem( mi_rimuovi_tn );					
-					menu.setAutoDraw(true);
-					menu.showContextMenu();
-					
-				}else if (tipo.equals("Imballaggio")){
-					menu.addItem( mi_aggiungi_tn );
-					menu.addItem( mi_rimuovi_tn );					
-					menu.setAutoDraw(true);
-					menu.showContextMenu();
-					
-				}
-				
-				
-				
-			}
-		});
-        
-        */
-        
-        return tg;
+	public TreeGrid getTreeGrid(){
+		return tg;
 	}
 	
 
@@ -318,16 +235,16 @@ public class TreeInserimentoProdotti extends TreeGrid{
 	
 	public void insertItem(String name){
 		
-		final ListGridRecord nr = new ListGridRecord();
 		String tipo = selezionato.getAttribute("Tipo");
+		String PID 	= selezionato.getAttribute("ID");
 		
-		nr.setAttribute("PID", selezionato.getAttribute("ID"));
+		final ListGridRecord nr = new ListGridRecord();
+		nr.setAttribute("PID", PID);
 		nr.setAttribute("Name", name);
 		
 		DB db = new DB();
 		String query = null;
-		//"INSERT INTO contatti (`RagioneSociale`,`Precisazione`,`PIVA`,`Logo`,`Indirizzo`,`Telefono`,`Cellulare`,`Fax`,`Email`,`SitoWeb`,`TipoSoggetto`,`Provvigione`,`Note`) VALUES ('"+contatto.getRagioneSociale()+"','"+contatto.getPrecisazione()+"','"+contatto.getPIVA()+"','"+contatto.getLogo()+"','"+contatto.getIndirizzo()+"','"+contatto.getTelefono()+"','"+contatto.getCellulare()+"','"+contatto.getFax()+"','"+contatto.geteMail()+"','"+contatto.getSitoWeb()+"','"+contatto.getTipoSoggetto()+"','"+contatto.getProvvigione()+"','"+contatto.getNote()+"')";
-		String PID 	= selezionato.getAttribute("ID");
+		
 		
 		if(tipo.equals("Categoria")){
 			String id = DataSourceProdotti.getNewIDMaxTipologia();
@@ -335,30 +252,30 @@ public class TreeInserimentoProdotti extends TreeGrid{
 			nr.setAttribute("ID", "T"+id);
 			PID = PID.substring(1);
 			query = "INSERT INTO prodotto_tipologia (`ID`,`Tipologia`,`IDCategoria`) VALUES ('"+ id +"','"+ name +"','"+ PID +"')";
+		
 		}else if (tipo.equals("Tipologia")){
 			String id = DataSourceProdotti.getNewIDMaxVarieta();
 			nr.setAttribute("Tipo", "Varieta");
 			nr.setAttribute("ID", "V"+id);
 			PID = PID.substring(1);
 			query = "INSERT INTO prodotto_varieta (`ID`,`Varieta`,`IDTipologia`) VALUES ('"+ id +"','"+ name +"','"+ PID +"')";
+		
 		}else if (tipo.equals("Varieta")){
 			String id = DataSourceProdotti.getNewIDMaxSottoVarieta();
 			nr.setAttribute("Tipo", "SottoVarieta");
 			nr.setAttribute("ID", "SV"+id);
 			PID = PID.substring(1);
 			query = "INSERT INTO prodotto_sottovarieta (`ID`,`Sottovarieta`,`IDVarieta`) VALUES ('"+ id +"','"+ name +"','"+ PID +"')";
+		
 		}else if (tipo.equals("SottoVarieta")){
 			String id = DataSourceProdotti.getNewIDMaxCalibro();
 			nr.setAttribute("Tipo", "Calibro");
-			nr.setAttribute("ID", "C"+id);
+			nr.setAttribute("ID", "CA"+id);
 			PID = PID.substring(2);
 			query = "INSERT INTO prodotto_calibro (`ID`,`Calibro`,`IDSottovarieta`) VALUES ('"+ id +"','"+ name +"','"+ PID +"')";
+		
 		}else if (tipo.equals("Calibro")){
-			String id = DataSourceProdotti.getNewIDMaxImballaggio();
-			nr.setAttribute("Tipo", "Imballaggio");
-			nr.setAttribute("ID", "I"+id);
-			PID = PID.substring(1);
-			query = "INSERT INTO prodotto_imballaggio (`ID`,`Imballaggio`,`IDCalibro`) VALUES ('"+ id +"','"+ name +"','"+ PID +"')";
+			
 		}else if (tipo.equals("Imballaggio")){
 			// NIENTE
 		}
@@ -366,7 +283,6 @@ public class TreeInserimentoProdotti extends TreeGrid{
 		db.eseguiUpdateToDB(query);
 		
 		DataSourceProdotti.getIstance().addData(nr);
-		//tg.fetchData();
 	}
 	
 	
