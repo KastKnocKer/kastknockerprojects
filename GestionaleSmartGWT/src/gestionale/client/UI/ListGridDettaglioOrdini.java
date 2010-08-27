@@ -25,11 +25,11 @@ import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
 import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
-public class ListGridOrdini extends ListGrid{
+public class ListGridDettaglioOrdini extends ListGrid{
 	
-	private  ListGridOrdini lgo;
+	private  ListGridDettaglioOrdini lgo;
 	
-	public ListGridOrdini(){
+	public ListGridDettaglioOrdini(){
 		super();
 		
 		this.setWidth100();

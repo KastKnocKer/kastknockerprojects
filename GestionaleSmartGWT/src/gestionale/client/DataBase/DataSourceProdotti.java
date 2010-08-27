@@ -34,10 +34,12 @@ public class DataSourceProdotti extends DataSource{
 	}
 	
 	public DataSourceProdotti(){
+		this.
 		setID(id);  
-        setTitleField("Name"); 
-		DataSourceTextField nameField = new DataSourceTextField("RagioneSociale", "ragionesociale");  
+        setTitleField("Name");
+		DataSourceTextField nameField = new DataSourceTextField("Name", "Name");  
 		nameField.setRequired(true);
+		nameField.setCanEdit(true);
 		 
 		DataSourceTextField IDField = new DataSourceTextField("ID", "ID");  
 		IDField.setRequired(true);
@@ -49,13 +51,14 @@ public class DataSourceProdotti extends DataSource{
 		PIDField.setForeignKey(id + ".ID");
 		PIDField.setHidden(true);
 		PIDField.setRootValue("root");
+		
 		 
 		 
-		setFields(nameField, IDField, PIDField);
+		 setFields(nameField, IDField, PIDField);
 		 
-		setClientOnly(true);
+		 setClientOnly(true);
 		 
-		getNewRecords();
+		 getNewRecords();
 	}
 	
 	public static void addRecord(ListGridRecord lgr){

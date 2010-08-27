@@ -42,47 +42,28 @@ public class TreeInserimentoProdotti extends TreeGrid{
 	public TreeInserimentoProdotti(){
 		super();
 		tg = this;
-        tg.setWidth100();
-        tg.setHeight100(); 
-        tg.setCanEdit(true);
-        tg.setAutoSaveEdits(true);
-        tg.setCanFreezeFields(true);  
-        tg.setCanReparentNodes(true);
-        
-        tg.setLoadDataOnDemand(false);  
-          
-        tg.setCanReorderRecords(true);  
-        tg.setCanAcceptDroppedRecords(true);  
-        tg.setShowDropIcons(false);  
-        tg.setShowOpenIcons(false);  
-        
 		
-        TreeGridField nameField = new TreeGridField("Name");
-        nameField.setCanEdit(true);
-        setFields(nameField);
-        tg.setCanEdit(true);
+        setWidth100();
+        setHeight100();
+
+        setCanReparentNodes(true);
+        setCanFreezeFields(true);
+        setAutoSaveEdits(true);
+        
+        setLoadDataOnDemand(false);  
+        setCanReorderRecords(false);  
+        setCanAcceptDroppedRecords(false);  
+        setShowDropIcons(false);  
+        setShowOpenIcons(false);
         
         
-        //Aspetta che siano completamente caricati i dati dal db
-        new Timer(){
-        	public void run() {
-        		if(DataSourceProdotti.ready == 5){
-        			setDataSource( DataSourceProdotti.getIstance() );
-        			fetchData();
-        			System.out.println("GOGOGOG");
-        		}else{
-        			this.schedule(500);
-        		}
-			}
-        	
-        }.schedule(500);
-        
-        this.addCellDoubleClickHandler(new CellDoubleClickHandler() {
+       this.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
+		
+		public void onRecordDoubleClick(RecordDoubleClickEvent event) {
 			
-			public void onCellDoubleClick(CellDoubleClickEvent event) {
-				System.out.println("COSA SEI?: "  + event.getSource());
-			}
-		});
+		}
+	});
+       
 
        
         this.addCellContextClickHandler(new CellContextClickHandler() {
@@ -170,6 +151,25 @@ public class TreeInserimentoProdotti extends TreeGrid{
 				db.eseguiUpdateToDB(query);
 			}
 		});
+        
+        
+      //Aspetta che siano completamente caricati i dati dal db
+        new Timer(){
+        	public void run() {
+        		if(DataSourceProdotti.ready == 5){
+        			setDataSource( DataSourceProdotti.getIstance() );
+        			
+        			TreeGridField nameField = new TreeGridField("Name");
+        	        nameField.setCanEdit(true);
+        	        setFields(nameField);
+        	        
+        	        fetchData();
+        		}else{
+        			this.schedule(500);
+        		}
+			}
+        	
+        }.schedule(500);
         
 	}
 	

@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
+import gestionale.shared.Prodotto;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -18,6 +19,7 @@ public class DataSourceProdottiCatalogati extends DataSource{
 	
 	private static  DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 
+	private static Vector<Prodotto> vProdottiCatalogati = null;
 	
 	public static DataSourceProdottiCatalogati getIstance(){
 		if (istance == null) {  
@@ -56,7 +58,8 @@ public class DataSourceProdottiCatalogati extends DataSource{
 	 public static void getNewRecords() {
 		 String query = "SELECT cal.ID, cat.Categoria, tip.Tipologia, var.Varieta, svar.Sottovarieta, cal.Calibro " +
 		 		"FROM prodotto_categoria cat JOIN prodotto_tipologia tip JOIN prodotto_varieta var JOIN prodotto_sottovarieta svar JOIN prodotto_calibro cal " +
-		 		"ON cat.ID = tip.IDCategoria AND tip.ID = var.IDTipologia AND var.ID = svar.IDVarieta AND svar.ID = cal.IDSottovarieta";
+		 		"ON cat.ID = tip.IDCategoria AND tip.ID = var.IDTipologia AND var.ID = svar.IDVarieta AND svar.ID = cal.IDSottovarieta " +
+		 		"ORDER BY cat.Categoria, tip.Tipologia, var.Varieta, svar.Sottovarieta, cal.Calibro";
 		 
 		 rpc.eseguiQuery(query, new AsyncCallback<String[][]>(){
 
@@ -67,6 +70,7 @@ public class DataSourceProdottiCatalogati extends DataSource{
 
 			public void onSuccess(String[][] result) {
 				String[] stringa = null;
+				Vector<Prodotto> v = new Vector<Prodotto>();
 				System.out.println("RISULTATO MAGICA QUERY");
 				
 				for(int i=0; i<result.length; i++){
@@ -80,13 +84,29 @@ public class DataSourceProdottiCatalogati extends DataSource{
 					record.setAttribute("sottovarieta", stringa[4]);
 					record.setAttribute("calibro", stringa[5]);
 					
+					Prodotto prodotto = new Prodotto();
+					prodotto.setID(stringa[0]);
+					prodotto.setCategoria(stringa[1]);
+					prodotto.setTipologia(stringa[2]);
+					prodotto.setVarieta(stringa[3]);
+					prodotto.setSottoVarieta(stringa[4]);
+					prodotto.setCalibro(stringa[5]);
+					
+					v.add(prodotto);
+					
 					addRecord(record);
 					
 				}
+				vProdottiCatalogati = v;
 			}
 			 
 		 });
 		 
+	}
+
+
+	public static Vector<Prodotto> getvProdottiCatalogati() {
+		return vProdottiCatalogati;
 	}
 	 
 	 

@@ -5,6 +5,7 @@ import gestionale.client.DB;
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.client.DataBase.DataSourceProdotti;
+import gestionale.client.DataBase.DataSourceProdottiCatalogati;
 import gestionale.shared.User;
 
 import com.google.gwt.user.client.ui.Image;
@@ -98,6 +99,7 @@ public class GUIManager {
 		
 		//Carico i dati
 		DataSourceProdotti.getIstance();
+		DataSourceProdottiCatalogati.getIstance();
 		DataSourceContatti.getIstance();
 		DataSourceOrdini.getIstance();
 		
@@ -110,7 +112,6 @@ public class GUIManager {
 		
 		///Pannello secondario
 		HLayout hLayout = new HLayout();
-		//hLayout.setShowEdges(true);
 		hLayout.setWidth100();  
 		hLayout.setHeight100();
 		
@@ -128,8 +129,6 @@ public class GUIManager {
 		sectionStack.setCanReorderSections(true); 	//
 		sectionStack.setCanResizeSections(true);	//
 		
-		
-		//sectionStack.setAlign(Alignment.CENTER);  
 		sectionStack.setOverflow(Overflow.HIDDEN);  
 		sectionStack.setShowResizeBar(true);
 		
