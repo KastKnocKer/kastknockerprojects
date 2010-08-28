@@ -8,12 +8,29 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.smartgwt.client.types.Overflow;
+import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.Scrollbar;
+import com.smartgwt.client.widgets.events.DoubleClickEvent;
+import com.smartgwt.client.widgets.events.DoubleClickHandler;
+import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.FormItem;
+import com.smartgwt.client.widgets.form.fields.SpinnerItem;
+import com.smartgwt.client.widgets.form.fields.TextAreaItem;
+import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
+import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.layout.VLayout;
+import com.smartgwt.client.widgets.menu.IMenuButton;
+import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
+import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceProdotti;
@@ -26,8 +43,14 @@ public class PanelOrdine extends TabSet{
 	
 	private Tab tab;
 	private Tab tabTabella;
+	private Tab tabTabellaComplessiva;
 	private Tab tabFiltroClienti;
 	private Tab tabFiltroProdotti;
+	private TabSet thisTabSet;
+	
+	private Layout panelTabella;
+	
+	private DynamicForm form;
 	
 	private PanelOrdine thisPanel;
 	private ListGridDettaglioOrdini lgdettaglioordini;
@@ -47,54 +70,64 @@ public class PanelOrdine extends TabSet{
 	
 	public PanelOrdine(String idOrdine){
 		super();
+		thisTabSet = this;
 		if(idOrdine == null){
 	
 		}else{
 			
 		}
+
 		
 		vettoreContattiFiltrato	=		new Vector<Contatto>();
 		vettoreProdottiDaVisualizzare =	new Vector<String[]>();
-		
-		vettoreContattiFiltrato	=		DataSourceContatti.getVettoreContatti();
-		vettoreProdottiDaVisualizzare.add(new String[] {"Frutta","Arance"});
-		vettoreProdottiDaVisualizzare.add(new String[] {"Frutta","Arance"});
-		
-		
+
+		vettoreContattiFiltrato = DataSourceContatti.getVettoreContatti();
 		
 		thisPanel=this;
 		this.setHeight100();
 		this.setWidth100();
 		//this.setShowCustomScrollbars(true);
 		//this.setShowEdges(true);
-		this.setShowResizeBar(true);
+		//this.setShowResizeBar(true);
 		
 		ftClienti = new FlexTable();
 		
-		this.creaTabella();
+		tabTabella				= new Tab("Composizione Ordine");
+		tabTabellaComplessiva	= new Tab("Visualizzazione Ordine");
+		tabFiltroClienti		= new Tab("Filtro Clienti");
+		tabFiltroProdotti		= new Tab("Filtro Prodotti");
 		
-		
-		tabTabella			= new Tab("Ordine");
-		tabFiltroClienti	= new Tab("Filtro Clienti");
-		tabFiltroProdotti	= new Tab("Filtro Prodotti");
-		
-		Layout panelTabella = new Layout();
+		panelTabella = new Layout();
 		panelTabella.addMember(ftClienti);
-		Layout panelFiltroClienti = new Layout();
-		panelFiltroClienti.addMember(new ListGridProdotti());
+
 		Layout panelFiltroProdotti = new Layout();
 		panelFiltroProdotti.addMember(new ListGridContatti());
 		
+		
 		tabTabella.setPane(panelTabella);
-		tabFiltroClienti.setPane(panelFiltroClienti);
-		tabFiltroProdotti.setPane(panelFiltroProdotti);
+		tabFiltroClienti.setPane(new PanelFiltroContatti(vettoreContattiFiltrato));
+		tabFiltroProdotti.setPane(new PanelFiltroProdotti(vettoreProdottiDaVisualizzare));
+		
+		
 		
 		this.addTab(tabTabella);
+		this.addTab(tabTabellaComplessiva);
 		this.addTab(tabFiltroClienti);
 		this.addTab(tabFiltroProdotti);
 		
 		
+		
 		this.addToTabPanel("Visualizzazione Ordine: " + idOrdine, true);
+		
+		this.addTabSelectedHandler(new TabSelectedHandler() {
+			
+			public void onTabSelected(TabSelectedEvent event) {
+				if(event.getTab() == tabTabella){
+					((PanelOrdine) thisTabSet).creaTabella();
+				}
+				
+			}
+		});
 	}
 	
 	
@@ -126,17 +159,9 @@ public class PanelOrdine extends TabSet{
 	}
 	
 	private void addProdotto(String categoria, String tipologia){
-		/*
-		new Timer(){
-
-			public void run() {
-				Vector<Prodotto> v = DataSourceProdottiCatalogati.getvProdottiCatalogati();
-				if(v == null) schedule(500);
-			}
-			
-		}.schedule(500);
-		*/
-		 FlexCellFormatter cellFormatter = ftClienti.getFlexCellFormatter();
+		System.out.println("Aggiungo prodotto: "+categoria + tipologia);
+		
+		FlexCellFormatter cellFormatter = ftClienti.getFlexCellFormatter();
 		 Vector<Prodotto> v = DataSourceProdottiCatalogati.getvProdottiCatalogati();
 		 Vector<Prodotto> vTemp = new Vector<Prodotto>();
 		 
@@ -149,7 +174,7 @@ public class PanelOrdine extends TabSet{
 		 }
 		 
 		 
-		    cellFormatter.setColSpan(0, indiceTipologia, vTemp.size()); ftClienti.setText(0, indiceTipologia, prodotto.getTipologia()); indiceTipologia++;
+		 cellFormatter.setColSpan(0, indiceTipologia, vTemp.size()); ftClienti.setText(0, indiceTipologia, tipologia); indiceTipologia++;
 		    
 		    String lastVar = "";
 		    String lastSVar = "";
@@ -242,11 +267,38 @@ public class PanelOrdine extends TabSet{
 	    	addProdotto(prodotto[0], prodotto[1]);
 	    }
 	    
-	    
+	    aggiornaTabella();
 	}
 	
 	//Carica i dati degli ordini nella tabella già pronta
 	private void aggiornaTabella(){
+		
+		FlexCellFormatter cellFormatter = ftClienti.getFlexCellFormatter();
+		int row = ftClienti.getRowCount();
+		int col = indiceCalibro;
+		for(int j=1; j<col; j++)
+			for(int i=4; i<row; i++){
+				//ftClienti.setText(i, j, "");
+				Label label = new Label();
+				label.setWidth(27);
+				label.setHeight(25);
+				label.addDoubleClickHandler(new DoubleClickHandler() {
+					
+					public void onDoubleClick(DoubleClickEvent event) {
+						((Label) event.getSource()).setContents("222");
+						((Label) event.getSource()).setTooltip("KAKSKSKDKASDASD");
+						
+					}
+				});
+				
+				ftClienti.setWidget(i, j, label);
+			}
+		
+		
+		panelTabella.destroy();
+		panelTabella = new Layout();
+		panelTabella.addMember(ftClienti);
+		tabTabella.setPane(panelTabella);
 		
 	}
 }

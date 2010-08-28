@@ -135,7 +135,7 @@ public class DataSourceContatti extends DataSource{
 				String query = "DELETE FROM contatti WHERE ID='" + contatto.getID()+ "'";
         		db.eseguiUpdateToDB(query);
         		vettoreContatti.remove(i);
-				istance.removeData(record);
+				//istance.removeData(record);
 				break;
 			}
 		}

@@ -2,6 +2,7 @@ package gestionale.client.UI;
 
 
 import gestionale.client.DB;
+import gestionale.client.SessioneUtente;
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.client.DataBase.DataSourceProdotti;
@@ -77,6 +78,7 @@ public class GUIManager {
 								user.setPassword( (String) passwordItem.getValue() );
 								usernameItem.setValue("a");
 								usernameItem.setValue("a");
+								SessioneUtente.setUsername( (String) usernameItem.getValue() );
 								DB db = new DB();
 								db.eseguiAutentificazione(user);
 
