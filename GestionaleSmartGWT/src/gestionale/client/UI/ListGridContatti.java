@@ -36,7 +36,6 @@ public class ListGridContatti extends ListGrid{
 		this.setHeight100(); 
 		this.setShowEdges(false);
 		setGroupStartOpen(GroupStartOpen.NONE);
-		setGroupByField("tiposoggetto");
 		setDataSource(DataSourceContatti.getIstance());
 		this.setCanReorderFields(false); 
 		this.setCanAcceptDroppedRecords(false);  
@@ -50,9 +49,12 @@ public class ListGridContatti extends ListGrid{
 		setFields(nameField, tiposoggettoField);
 		
 		this.setAutoFetchData(true);
-		this.sort("ragionesociale", SortDirection.ASCENDING);
+		this.setGroupByField("tiposoggetto");
+		this.setSortDirection(SortDirection.ASCENDING);
+		//this.sort("ragionesociale", SortDirection.ASCENDING);
+		//this.groupBy("tiposoggetto");
 		this.setCanDrag(false);
-		
+
 		
 		
 		//CLICK DESTRO
@@ -109,9 +111,7 @@ public class ListGridContatti extends ListGrid{
 				mi_rimuovi.addClickHandler( new ClickHandler() {
 					public void onClick(MenuItemClickEvent event) {
 						if( Window.confirm("Sei sicuro di voler rimuovere: "+lastContactClicked.getAttribute("ragionesociale")+"?") ){
-							thisGrid.removeSelectedData();
 							DataSourceContatti.rimuoviContatto(lastContactClicked);
-					
 						}
 					}
 				});

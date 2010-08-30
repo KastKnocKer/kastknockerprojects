@@ -66,7 +66,10 @@ public class PanelOrdine extends TabSet{
 	
 	private Vector<Contatto> vettoreContattiFiltrato = null;
 	private Vector<String[]> vettoreProdottiDaVisualizzare = null;
+	private String[] arrayCodProd = null;
+	private String[] arrayDescProd = null;
 	
+	private String idOrdine;
 	
 	public PanelOrdine(String idOrdine){
 		super();
@@ -76,7 +79,11 @@ public class PanelOrdine extends TabSet{
 		}else{
 			
 		}
-
+		
+		this.idOrdine = idOrdine;
+		
+		arrayCodProd = new String[1000];
+		arrayDescProd = new String[1000];
 		
 		vettoreContattiFiltrato	=		new Vector<Contatto>();
 		vettoreProdottiDaVisualizzare =	new Vector<String[]>();
@@ -99,12 +106,16 @@ public class PanelOrdine extends TabSet{
 		
 		panelTabella = new Layout();
 		panelTabella.addMember(ftClienti);
+		
+		Layout panelTabellaComplessiva = new Layout();
+		panelTabellaComplessiva.addMember(new ListGridDettaglioOrdini(idOrdine));
 
 		Layout panelFiltroProdotti = new Layout();
 		panelFiltroProdotti.addMember(new ListGridContatti());
 		
 		
 		tabTabella.setPane(panelTabella);
+		tabTabellaComplessiva.setPane(panelTabellaComplessiva);
 		tabFiltroClienti.setPane(new PanelFiltroContatti(vettoreContattiFiltrato));
 		tabFiltroProdotti.setPane(new PanelFiltroProdotti(vettoreProdottiDaVisualizzare));
 		
@@ -226,7 +237,10 @@ public class PanelOrdine extends TabSet{
 		    	}
 		    	
 		    	
-		    	ftClienti.setText(3, indiceCalibro, prodotto.getCalibro());		indiceCalibro++;
+		    	ftClienti.setText(3, indiceCalibro, prodotto.getCalibro());
+		    	arrayCodProd[indiceCalibro] = prodotto.getID();
+		    	arrayDescProd[indiceCalibro] = prodotto.getTipologia() + " " +prodotto.getVarieta() +"  "+  prodotto.getSottoVarieta() +"  "+ prodotto.getCalibro();
+		    	indiceCalibro++;
 		    }
 		    
 		    /*
@@ -258,7 +272,7 @@ public class PanelOrdine extends TabSet{
 		Contatto contatto = null;
 	    for(int i=0; i<vettoreContattiFiltrato.size(); i++){
 	    	contatto = vettoreContattiFiltrato.get(i);
-	    	ftClienti.setText(i+4, 0, contatto.getRagioneSociale());
+	    	ftClienti.setHTML(i+4, 0, "<b>"+contatto.getRagioneSociale()+"</b>");
 	    }
 	    
 	    //Prepara i prodotti
@@ -279,17 +293,10 @@ public class PanelOrdine extends TabSet{
 		for(int j=1; j<col; j++)
 			for(int i=4; i<row; i++){
 				//ftClienti.setText(i, j, "");
-				Label label = new Label();
+				LabelOrdinazione label = new LabelOrdinazione(idOrdine, arrayCodProd[j], vettoreContattiFiltrato.get(i-4).getID());
 				label.setWidth(27);
 				label.setHeight(25);
-				label.addDoubleClickHandler(new DoubleClickHandler() {
-					
-					public void onDoubleClick(DoubleClickEvent event) {
-						((Label) event.getSource()).setContents("222");
-						((Label) event.getSource()).setTooltip("KAKSKSKDKASDASD");
-						
-					}
-				});
+				label.setTooltip("Cliente: " + vettoreContattiFiltrato.get(i-4).getRagioneSociale() +"\nProdotto: " + arrayDescProd[j]);
 				
 				ftClienti.setWidget(i, j, label);
 			}

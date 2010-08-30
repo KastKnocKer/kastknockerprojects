@@ -2,6 +2,7 @@ package gestionale.client.UI;
 
 import gestionale.client.DB;
 import gestionale.client.Liste;
+import gestionale.client.DataBase.DataSourceDettaglioOrdini;
 import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.shared.Contatto;
 import gestionale.shared.Ordine;
@@ -29,13 +30,13 @@ public class ListGridDettaglioOrdini extends ListGrid{
 	
 	private  ListGridDettaglioOrdini lgo;
 	
-	public ListGridDettaglioOrdini(){
+	public ListGridDettaglioOrdini(String IDOrdine){
 		super();
 		
 		this.setWidth100();
 		this.setHeight100(); 
 		this.setShowEdges(false);
-		this.setDataSource(DataSourceOrdini.getIstance());
+		this.setDataSource(new DataSourceDettaglioOrdini(IDOrdine));
 		this.setCanReorderFields(false); 
 		this.setCanAcceptDroppedRecords(false);  
 		this.setCanDragRecordsOut(false);
@@ -44,9 +45,9 @@ public class ListGridDettaglioOrdini extends ListGrid{
 		ListGridField idcampo = new ListGridField("idn", "ID");
 		campo.setCanEdit(false);
 		idcampo.setHidden(true);
-		this.setFields(campo,idcampo);
+		//this.setFields(campo,idcampo);
 		this.fetchData();
-		this.sort("idn", SortDirection.DESCENDING);
+		//this.sort("idn", SortDirection.DESCENDING);
 		this.setCanSort(false);
 		this.setCanDrag(false);
 		
