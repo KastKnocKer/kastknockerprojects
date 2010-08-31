@@ -1,44 +1,95 @@
 package gestionale.client.DataBase;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
+import gestionale.shared.Contatto;
+import gestionale.shared.DettaglioOrdine;
 import gestionale.shared.Ordine;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 public class DataSourceDettaglioOrdini extends DataSource{
 	
-	private static Vector<Ordine> vettoreOrdini;
+	private static Vector<Ordine> vettoreDettaglioOrdini;
 	private static DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	private static DataSourceDettaglioOrdini istance;
 	
-	private String idOrdine;
+	private String idOrdine,idCliente,idProdotto;
+	private boolean dettaglioSelezionato = false;
 	
-	public DataSourceDettaglioOrdini(String idOrdine){
+	public DataSourceDettaglioOrdini(String idOrdine, String idCliente, String idProdotto){
 		this.idOrdine = idOrdine;
+		this.idCliente = idCliente;
+		this.idProdotto = idProdotto;
+		
+		if(idCliente != null || idProdotto != null) dettaglioSelezionato = true;
+		
 		setID(id); 
 		DataSourceTextField idField = new DataSourceTextField("id","id");
 		idField.setRequired(true);
 		idField.setPrimaryKey(true);
+		idField.setHidden(true);
 		
 		DataSourceIntegerField idnField = new DataSourceIntegerField("idn","idn");
-
+		idnField.setHidden(true);
+		
 		DataSourceTextField idordineField = new DataSourceTextField("idOrdine","idOrdine");
+		idordineField.setHidden(true);
 		DataSourceTextField idprodottoField = new DataSourceTextField("idProdotto","idProdotto");
 		DataSourceTextField idclienteField = new DataSourceTextField("idCliente","idCliente");
 		DataSourceTextField idimballaggioField = new DataSourceTextField("idImballaggio","idImballaggio");
-		DataSourceTextField quantitaField = new DataSourceTextField("quantita","quantita");
+		DataSourceTextField idfornitoreField = new DataSourceTextField("idFornitore","idFornitore");
+		DataSourceTextField idtrasportatoreField = new DataSourceTextField("idTrasportatore","idTrasportatore");
+		DataSourceIntegerField quantitaField = new DataSourceIntegerField("quantita","Quantita");
+		DataSourceTextField fornitoreField = new DataSourceTextField("fornitore","Fornitore");
+		DataSourceTextField trasportatoreField = new DataSourceTextField("trasportatore","Trasportatore");
 		DataSourceTextField userField = new DataSourceTextField("user","user");
 		 
-        setFields(idField, idnField, idordineField, idprodottoField, idclienteField, idimballaggioField, quantitaField, userField); 
+        setFields(idField, idnField, idordineField, idprodottoField, idclienteField, idimballaggioField, quantitaField, userField, fornitoreField, trasportatoreField); 
 		
+        
+        if(dettaglioSelezionato){
+			Vector<Contatto> vF = DataSourceContatti.getVettoreFornitori();
+			Vector<Contatto> vT = DataSourceContatti.getVettoreTrasportatori();
+			
+			final Map<String, String> mapFornitori = new HashMap<String, String>();
+			final Map<String, String> mapTrasportatori = new HashMap<String, String>();
+			
+			/*
+	        departments.put("Marketing", new String[]{"Advertising", "Community Relations"});  
+	        departments.put("Sales", new String[]{"Channed Sales", "Direct Sales"});  
+	        departments.put("Manufacturing", new String[]{"Design", "Development", "QA"});  
+	        departments.put("Services", new String[]{"Support", "Consulting"});
+	        */
+			
+			String[] aF = new String[vF.size()];
+			String[] aT = new String[vT.size()];
+			
+			for(int i=0; i<vF.size(); i++){
+				aF[i] = vF.get(i).getRagioneSociale();
+				mapFornitori.put(vF.get(i).getRagioneSociale(), vF.get(i).getID());
+			}
+			
+			for(int i=0; i<vT.size(); i++){
+				aT[i] = vT.get(i).getRagioneSociale();
+				mapTrasportatori.put(vF.get(i).getRagioneSociale(), vF.get(i).getID());
+			}
+			
+			fornitoreField.setValueMap(aF);
+			trasportatoreField.setValueMap(mapTrasportatori);
+			
+		}
+        
 		setClientOnly(true);
 		this.getNewRecords();
 	}
@@ -49,28 +100,37 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		 
 		 String query = "SELECT * FROM ordine_dettaglio WHERE IDOrdine = " + idOrdine;
 		 
-			rpc.eseguiQuery(query,new AsyncCallback<String[][]>(){
+		 if(dettaglioSelezionato){
+			 query = "SELECT * FROM ordine_dettaglio WHERE IDOrdine = " + idOrdine + " AND IDProdotto = " +idProdotto+ " AND IDCliente = "+idCliente;
+		 }
+		 
+			rpc.eseguiQueryDettaglioOrdine(query,new AsyncCallback<DettaglioOrdine[]>(){
 
 				public void onFailure(Throwable caught) {
 					Window.alert("Errore: Caricamento da DB Dettaglio Ordini");
 				}
 
-				public void onSuccess(String[][] result) {
+				public void onSuccess(DettaglioOrdine[] result) {
 					
-					String[] record = null;
+					DettaglioOrdine record = null;
 					ListGridRecord lgr = null;
 					
 					for(int i=0; i<result.length; i++){
 						record = result[i];
 						lgr = new ListGridRecord();
 						
-						lgr.setAttribute("id", record[0]);
-						lgr.setAttribute("idOrdine", record[1]);
-						lgr.setAttribute("idProdotto", record[2]);
-						lgr.setAttribute("idCliente", record[3]);
-						lgr.setAttribute("idImballaggio", record[5]);
-						lgr.setAttribute("quantita", record[4]);
-						lgr.setAttribute("user", record[6]);
+						lgr.setAttribute("id", record.getId());
+						
+						lgr.setAttribute("idOrdine", record.getId_Ordine());
+						lgr.setAttribute("idProdotto", record.getId_Prodotto());
+						lgr.setAttribute("idCliente", record.getId_Cliente());
+						lgr.setAttribute("idImballaggio", record.getId_Imballaggio());
+						lgr.setAttribute("idFornitore", record.getId_Fornitore());
+						lgr.setAttribute("idTrasportatore", record.getId_Trasportatore());
+						
+						lgr.setAttribute("quantita", record.getQuantita());
+						lgr.setAttribute("user", record.getUtente());
+						
 								
 						addData(lgr);
 					}
@@ -79,80 +139,41 @@ public class DataSourceDettaglioOrdini extends DataSource{
 	}
 	 
 	 
-	 public static void aggiungiOrdine(final Ordine ordine){
+	 public static void aggiungiDettaglioOrdine(Record record){
 		 
-		 String query = "INSERT INTO ordini (`DataCreazioneOrdine`,`DataInvioOrdine`,`DataPartenzaMerce`,`Note`,`IDTrasportatore`,`Convalidato`,`TipoOrdine`) VALUES ('"+ordine.getDataCreazioneOrdine()+"','"+ordine.getDataInvioOrdine()+"','"+ordine.getDataPartenzaMerce()+"','"+ordine.getNote()+"','"+ordine.getIDTrasportatore()+"','"+ordine.getConvalidato()+"','"+ordine.getTipoOrdine()+"')";
-			
+		 String query = "INSERT INTO ordine_dettaglio (`IDOrdine`, `IDProdotto`,`IDCliente`,`Quantita`,`IDImballaggio`,`User`,`IDFornitore`,`IDTrasportatore`) VALUES ('"+record.getAttribute("idOrdine")+"','"+record.getAttribute("idProdotto")+"','"+record.getAttribute("idCliente")+"','"+record.getAttribute("quantita")+"','"+record.getAttribute("idImballaggio")+"','"+record.getAttribute("user")+"','"+record.getAttribute("fornitore")+"','"+record.getAttribute("trasportatore")+"')";
+
 		 rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
 
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
 				
 			}
 
 			public void onSuccess(Boolean result) {
-				String query = "SELECT * FROM ordini WHERE DataCreazioneOrdine = '"+ordine.getDataCreazioneOrdine()+"' AND " +
-						"DataInvioOrdine = '"+ordine.getDataInvioOrdine()+"' AND " +
-								"DataPartenzaMerce = '"+ordine.getDataPartenzaMerce()+"' AND " +
-										"Note = '"+ordine.getNote()+"' AND " +
-												"IDTrasportatore = '"+ordine.getIDTrasportatore()+"' AND " +
-														"Convalidato = 0 AND " +
-																"TipoOrdine = '"+ordine.getTipoOrdine()+"' ";
-				rpc.eseguiQueryOrdine(query,new AsyncCallback<Ordine[]>(){
-					
-					public void onFailure(Throwable caught) {
-						Window.alert("Errore: Caricamento da DB Ordini");
-					}
-
-					public void onSuccess(Ordine[] result) {
-						vettoreOrdini = new Vector<Ordine>();
-						
-						for(int i=0; i<result.length; i++){
-							
-							Ordine ordine = result[i];
-							
-							vettoreOrdini.add(ordine);
-							
-							ListGridRecord record = new ListGridRecord();
-							record.setAttribute("id",ordine.getID());
-							record.setAttribute("datacreazioneordine",ordine.getDataCreazioneOrdine());
-							record.setAttribute("datainvioordine",ordine.getDataInvioOrdine());
-							record.setAttribute("datapartenzamerce",ordine.getDataPartenzaMerce());
-							record.setAttribute("note",ordine.getNote());
-							record.setAttribute("idtrasportatore",ordine.getIDTrasportatore());
-							record.setAttribute("convalidato",ordine.getConvalidato());
-							record.setAttribute("tipoordine",ordine.getTipoOrdine());
-							
-							istance.addData(record);
-						}
-						
-					}
-					
-				});
 				
 			}
 				
 				
 		});
 			
+	 }
+	 
+	 public static void modificaDettaglioOrdine(Record record){/*
+		 
+		 String query = "INSERT INTO ordine_dettaglio (`DataCreazioneOrdine`,`DataInvioOrdine`,`DataPartenzaMerce`,`Note`,`IDTrasportatore`,`Convalidato`,`TipoOrdine`) VALUES ('"+ordine.getDataCreazioneOrdine()+"','"+ordine.getDataInvioOrdine()+"','"+ordine.getDataPartenzaMerce()+"','"+ordine.getNote()+"','"+ordine.getIDTrasportatore()+"','"+ordine.getConvalidato()+"','"+ordine.getTipoOrdine()+"')";
 			
-			
-			
-		 /*
-		 	vettoreOrdini.add(ordine);
-			
-			ListGridRecord record = new ListGridRecord();
-			record.setAttribute("id",ordine.getID());
-			record.setAttribute("datacreazioneordine",ordine.getDataCreazioneOrdine());
-			record.setAttribute("datainvioordine",ordine.getDataInvioOrdine());
-			record.setAttribute("datapartenzamerce",ordine.getDataPartenzaMerce());
-			record.setAttribute("note",ordine.getNote());
-			record.setAttribute("idtrasportatore",ordine.getIDTrasportatore());
-			record.setAttribute("convalidato",ordine.getConvalidato());
-			record.setAttribute("tipoordine",ordine.getTipoOrdine());
-			
-			istance.addData(record);
-			*/
+		 rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
+
+			public void onFailure(Throwable caught) {
+				
+			}
+
+			public void onSuccess(Boolean result) {
+				
+			}
+				
+				
+		});*/
 			
 	 }
 

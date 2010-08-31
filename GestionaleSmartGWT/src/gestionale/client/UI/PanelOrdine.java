@@ -33,6 +33,7 @@ import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
 import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 
 import gestionale.client.DataBase.DataSourceContatti;
+import gestionale.client.DataBase.DataSourceDettaglioOrdini;
 import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.client.DataBase.DataSourceProdottiCatalogati;
 import gestionale.shared.Contatto;
@@ -50,13 +51,10 @@ public class PanelOrdine extends TabSet{
 	
 	private Layout panelTabella;
 	
-	private DynamicForm form;
 	
 	private PanelOrdine thisPanel;
 	private ListGridDettaglioOrdini lgdettaglioordini;
 	private FlexTable ftClienti;
-	private FlexTable ftProdotti;
-	private FlexTable ftOrdinazione;
 	
 	private int indiceTipologia;
 	private int indiceVarieta;
@@ -66,10 +64,13 @@ public class PanelOrdine extends TabSet{
 	
 	private Vector<Contatto> vettoreContattiFiltrato = null;
 	private Vector<String[]> vettoreProdottiDaVisualizzare = null;
+
 	private String[] arrayCodProd = null;
 	private String[] arrayDescProd = null;
 	
 	private String idOrdine;
+	
+	private DataSourceDettaglioOrdini dsdo = null;
 	
 	public PanelOrdine(String idOrdine){
 		super();
@@ -81,6 +82,7 @@ public class PanelOrdine extends TabSet{
 		}
 		
 		this.idOrdine = idOrdine;
+		dsdo = new DataSourceDettaglioOrdini(idOrdine,null,null);
 		
 		arrayCodProd = new String[1000];
 		arrayDescProd = new String[1000];
@@ -93,9 +95,6 @@ public class PanelOrdine extends TabSet{
 		thisPanel=this;
 		this.setHeight100();
 		this.setWidth100();
-		//this.setShowCustomScrollbars(true);
-		//this.setShowEdges(true);
-		//this.setShowResizeBar(true);
 		
 		ftClienti = new FlexTable();
 		
@@ -257,7 +256,8 @@ public class PanelOrdine extends TabSet{
 	
 	//Prepara la tabella con la lista dei clienti e dei prodotti
 	private void creaTabella(){
-		
+		dsdo = new DataSourceDettaglioOrdini(idOrdine,null,null);
+
 		ftClienti.removeAllRows();
 		
 		indiceTipologia		= 1;
@@ -297,6 +297,7 @@ public class PanelOrdine extends TabSet{
 				label.setWidth(27);
 				label.setHeight(25);
 				label.setTooltip("Cliente: " + vettoreContattiFiltrato.get(i-4).getRagioneSociale() +"\nProdotto: " + arrayDescProd[j]);
+				
 				
 				ftClienti.setWidget(i, j, label);
 			}

@@ -10,22 +10,46 @@ public class LabelOrdinazione extends Label{
 	private static DoubleClickHandler DCH = null;
 	
 	public LabelOrdinazione(String idCliente, String idProdotto, String idOrdine){
-		this.idCliente = idCliente;
-		this.idProdotto = idProdotto;
-		this.idOrdine = idOrdine;
+		this.setIdCliente(idCliente);
+		this.setIdProdotto(idProdotto);
+		this.setIdOrdine(idOrdine);
 		
 		if(DCH == null){
 			DCH = new DoubleClickHandler() {
 				
 				public void onDoubleClick(DoubleClickEvent event) {
 					LabelOrdinazione lo = (LabelOrdinazione) event.getSource();
-					lo.setContents("123");
+					new WindowDettaglioOrdini(lo);
 				}
 			};
 		}
 		
 		
 		this.addDoubleClickHandler(DCH);
+	}
+
+	public void setIdOrdine(String idOrdine) {
+		this.idOrdine = idOrdine;
+	}
+
+	public String getIdOrdine() {
+		return idOrdine;
+	}
+
+	public void setIdCliente(String idCliente) {
+		this.idCliente = idCliente;
+	}
+
+	public String getIdCliente() {
+		return idCliente;
+	}
+
+	public void setIdProdotto(String idProdotto) {
+		this.idProdotto = idProdotto;
+	}
+
+	public String getIdProdotto() {
+		return idProdotto;
 	}
 
 }

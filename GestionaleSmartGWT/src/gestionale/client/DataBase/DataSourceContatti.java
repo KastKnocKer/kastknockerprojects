@@ -19,6 +19,8 @@ public class DataSourceContatti extends DataSource{
 	private static 	DataSourceContatti 	istance = null;
 	private static  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	private static  Vector<Contatto>	vettoreContatti = null;
+	private static  Vector<Contatto>	vettoreFornitori = null;
+	private static  Vector<Contatto>	vettoreTrasportatori = null;
 	
 	public static DataSourceContatti getIstance(){
 		if (istance == null) {  
@@ -64,13 +66,17 @@ public class DataSourceContatti extends DataSource{
 
 			public void onSuccess(Contatto[] result) {
 				
-				vettoreContatti = new Vector<Contatto>();
+				Vector<Contatto> vettoreContatti = new Vector<Contatto>();
+				Vector<Contatto> vettoreFornitori = new Vector<Contatto>();
+				Vector<Contatto> vettoreTrasportatori = new Vector<Contatto>();
 				
 				for(int i=0; i<result.length; i++){
 					ListGridRecord record = new ListGridRecord();
 					Contatto contatto = result[i];
 					
 					vettoreContatti.add(contatto);
+					if(contatto.getTipoSoggetto().equals("Trasportatore")) vettoreTrasportatori.add(contatto);
+					if(contatto.getTipoSoggetto().equals("Fornitore")) vettoreFornitori.add(contatto);
 					
 					record.setAttribute("id", contatto.getID());
 					record.setAttribute("ragionesociale", contatto.getRagioneSociale());
@@ -89,6 +95,10 @@ public class DataSourceContatti extends DataSource{
 					
 					istance.addData(record);
 				}
+				
+				DataSourceContatti.vettoreContatti = vettoreContatti;
+				DataSourceContatti.vettoreFornitori = vettoreFornitori;
+				DataSourceContatti.vettoreTrasportatori = vettoreTrasportatori;
 			}	
 		});
 		
@@ -96,7 +106,14 @@ public class DataSourceContatti extends DataSource{
 	
 	public static Vector<Contatto> getVettoreContatti(){
 		return vettoreContatti;
-		
+	}
+	
+	public static Vector<Contatto> getVettoreFornitori(){
+		return vettoreFornitori;
+	}
+	
+	public static Vector<Contatto> getVettoreTrasportatori(){
+		return vettoreTrasportatori;
 	}
 	
 	public static void aggiungiContatto(Contatto contatto){
@@ -106,6 +123,9 @@ public class DataSourceContatti extends DataSource{
 		db.eseguiUpdateToDB(query);
 		//Aggiungo al Vettore
 		vettoreContatti.add(contatto);
+		if(contatto.getTipoSoggetto().equals("Trasportatore")) vettoreTrasportatori.add(contatto);
+		if(contatto.getTipoSoggetto().equals("Fornitore")) vettoreFornitori.add(contatto);
+		
 		//Aggiungo ai listgridrecords
 		ListGridRecord record = new ListGridRecord();
 		record.setAttribute("id", contatto.getID());

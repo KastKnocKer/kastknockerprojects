@@ -36,7 +36,7 @@ public class ListGridDettaglioOrdini extends ListGrid{
 		this.setWidth100();
 		this.setHeight100(); 
 		this.setShowEdges(false);
-		this.setDataSource(new DataSourceDettaglioOrdini(IDOrdine));
+		this.setDataSource(new DataSourceDettaglioOrdini(IDOrdine,null,null));
 		this.setCanReorderFields(false); 
 		this.setCanAcceptDroppedRecords(false);  
 		this.setCanDragRecordsOut(false);
