@@ -1,37 +1,124 @@
 package gestionale.client.UI;
 
-import gestionale.client.SessioneUtente;
-import gestionale.client.DataBase.DataSourceDettaglioOrdini;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
+import gestionale.client.SessioneUtente;
+import gestionale.client.DataBase.DataSourceContatti;
+import gestionale.client.DataBase.DataSourceDettaglioOrdini;
+import gestionale.shared.Contatto;
+
+import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
-import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.widgets.Button;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.ImgButton;
-import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.form.fields.SelectItem;  
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;  
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 
-public class WindowDettaglioOrdini extends Window{
+public class WindowDettaglioOrdini extends Finestra{
 
 	private WindowDettaglioOrdini thiswind;
 	
 	public WindowDettaglioOrdini(final LabelOrdinazione lo){
 		super();
 		thiswind = this;
-		final ListGrid lg = new ListGrid();
-		lg.setCanEdit(true);
-		lg.setAutoFetchData(true);
-		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdOrdine(), lo.getIdCliente(), lo.getIdProdotto()));
+		
+		final ListGrid lg =  new ListGrid() {
+			
+			
+			@Override
+			protected Canvas createRecordComponent(final ListGridRecord record, Integer colNum) {  
+  
+				String fieldName = this.getFieldName(colNum);  
+				System.out.println("FUCKING NOISE");
+                if (  fieldName.equals("Fornitore") ) {
+                	System.out.println("FUCKING VOICE");
+                	record.setAttribute("fornitore", "Scicchigno");
+                	return null;
+                    };
+                   
+                    return null;
+  
+            }  
+        };  
+		
+		
+		
+		
+		
 		
 		ListGridField quantita		= new ListGridField("quantita","Quantita");
 		ListGridField fornitore		= new ListGridField("fornitore","Fornitore");
 		ListGridField imballaggio	= new ListGridField("imballaggio","Imballaggio");
 		ListGridField trasportatore	= new ListGridField("trasportatore","Trasportatore");
+		
+		quantita.setRequired(true);
+		fornitore.setRequired(true);
+		imballaggio.setRequired(true);
+		trasportatore.setRequired(true);
+		
+		Vector<Contatto> vF = DataSourceContatti.getVettoreFornitori();
+		Vector<Contatto> vT = DataSourceContatti.getVettoreTrasportatori();
+		
+		final String[] aF = new String[vF.size()];	final String[] aFID = new String[vF.size()];
+		final String[] aT = new String[vT.size()];		final String[] aTID = new String[vT.size()];
+
+		SelectItem fornitoriSelectItem = new SelectItem(); 
+		SelectItem trasportatoriSelectItem = new SelectItem(); 
+		SelectItem imballaggiSelectItem = new SelectItem(); 
+		
+		for(int i=0; i<vF.size(); i++){
+			aF[i] = vF.get(i).getRagioneSociale();
+			aFID[i] = vF.get(i).getID();
+		}
+		for(int i=0; i<vT.size(); i++){
+			aT[i] = vT.get(i).getRagioneSociale();
+			aTID[i] = vT.get(i).getID();
+		}
+		
+		fornitoriSelectItem.setValueMap(aF);
+		trasportatoriSelectItem.setValueMap(aT);
+
+		fornitoriSelectItem.addChangedHandler(new ChangedHandler() {
+			public void onChanged(ChangedEvent event) {
+				System.out.println("RIGA: "+event.getValue());
+				//lg.getSelectedRecord().setAttribute("idfornitore", "GAY");
+			}
+		});
+		
+		trasportatoriSelectItem.addChangedHandler(new ChangedHandler() {
+			public void onChanged(ChangedEvent event) {
+				System.out.println("RIGA: "+event.getValue()+" RECORD: "+lg.getSelectedRecord()+event.getItem());
+				//lg.getSelectedRecord().setAttribute("idtrasportatore", "GAY");
+			}
+		});
+		
+		
+		
+		fornitore.setEditorType(fornitoriSelectItem);
+		trasportatore.setEditorType(trasportatoriSelectItem);
+		
+		  
+		
+		
+		lg.setShowRecordComponents(true);          
+		lg.setShowRecordComponentsByCell(true);
+  
+        lg.setShowAllRecords(true);
+		
+		lg.setCanEdit(true);
+		lg.setAutoFetchData(true);
+		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdordine(), lo.getIdcliente(), lo.getIdprodotto()));
 		
 		lg.setFields(quantita, fornitore, imballaggio,trasportatore);
 		lg.setAutoSaveEdits(false);
@@ -66,16 +153,46 @@ public class WindowDettaglioOrdini extends Window{
 		confermaButton.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
+				
+				if(lg.hasErrors()){
+					Window.alert("Sono presenti errori nei dati.\nPrima di proseguire controllare.");
+					return;
+				}
+				
 				int sum = 0;
 				int[] editrows = lg.getAllEditRows();
 				for(int i=0; i<editrows.length; i++){
 				Record record = lg.getEditedRecord(editrows[i]);
 				
 				System.out.println("RECORD: ??? : "+ record.getAttribute("id"));
-				record.setAttribute("idProdotto", lo.getIdProdotto());
-				record.setAttribute("idCliente", lo.getIdCliente());
-				record.setAttribute("idOrdine", lo.getIdOrdine());
+				record.setAttribute("idprodotto", lo.getIdprodotto());
+				record.setAttribute("idcliente", lo.getIdcliente());
+				record.setAttribute("idordine", lo.getIdordine());
 				record.setAttribute("user", SessioneUtente.getUsername());
+				
+				for(int k=0; i<aF.length;k++){
+					if(aF[k].equals(record.getAttribute("fornitore"))){
+						record.setAttribute("idfornitore", aFID[k] );
+						break;
+					}
+				}
+				
+				for(int k=0; i<aT.length;k++){
+					if(aT[k].equals(record.getAttribute("trasportatore"))){
+						record.setAttribute("idtrasportatore", aTID[k]);
+						break;
+					}
+				}
+				/*
+				for(int k=0; i<aF.length;k++){
+					if(aF[k].equals(record.getAttribute("fornitore"))){
+						record.setAttribute("idimballaggio", SessioneUtente.getUsername());
+						break;
+					}
+				}*/
+				
+				
+				
 				
 				
 					if(record.getAttribute("id") == null){
@@ -91,7 +208,7 @@ public class WindowDettaglioOrdini extends Window{
 				for(int i=0; i<rec.length; i++){
 					sum = sum + Integer.parseInt(rec[i].getAttribute("quantita"));
 				}
-				
+				lo.setBackgroundColor("#66FF33");
 				lo.setContents(Integer.toString(sum));
 				thiswind.destroy();
 			}

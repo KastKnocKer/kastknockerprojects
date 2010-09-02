@@ -37,6 +37,7 @@ import gestionale.client.DataBase.DataSourceDettaglioOrdini;
 import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.client.DataBase.DataSourceProdottiCatalogati;
 import gestionale.shared.Contatto;
+import gestionale.shared.DettaglioOrdine;
 import gestionale.shared.Ordine;
 import gestionale.shared.Prodotto;
 
@@ -50,9 +51,9 @@ public class PanelOrdine extends TabSet{
 	private TabSet thisTabSet;
 	
 	private Layout panelTabella;
+	private Layout panelTabellaComplessiva;
+	private Layout panelFiltroProdotti = new Layout();
 	
-	
-	private PanelOrdine thisPanel;
 	private ListGridDettaglioOrdini lgdettaglioordini;
 	private FlexTable ftClienti;
 	
@@ -70,13 +71,15 @@ public class PanelOrdine extends TabSet{
 	
 	private String idOrdine;
 	
+	private Vector<LabelOrdinazione> vLabel = null;
 	private DataSourceDettaglioOrdini dsdo = null;
+	
 	
 	public PanelOrdine(String idOrdine){
 		super();
 		thisTabSet = this;
 		if(idOrdine == null){
-	
+			this.destroy();
 		}else{
 			
 		}
@@ -89,10 +92,18 @@ public class PanelOrdine extends TabSet{
 		
 		vettoreContattiFiltrato	=		new Vector<Contatto>();
 		vettoreProdottiDaVisualizzare =	new Vector<String[]>();
-
-		vettoreContattiFiltrato = DataSourceContatti.getVettoreContatti();
 		
-		thisPanel=this;
+		vettoreContattiFiltrato = DataSourceContatti.getVettoreContatti();
+		//Contatto contatto = DataSourceContatti.getVettoreContatti().get(0);
+		//vettoreContattiFiltrato.add(contatto);
+		
+		
+		
+		vettoreProdottiDaVisualizzare.add(new String[] {"Frutta","A"});
+		vettoreProdottiDaVisualizzare.add(new String[] {"Frutta","Arance"});
+		vettoreProdottiDaVisualizzare.add(new String[] {"Frutta","Mele"});
+		
+		
 		this.setHeight100();
 		this.setWidth100();
 		
@@ -106,10 +117,11 @@ public class PanelOrdine extends TabSet{
 		panelTabella = new Layout();
 		panelTabella.addMember(ftClienti);
 		
-		Layout panelTabellaComplessiva = new Layout();
-		panelTabellaComplessiva.addMember(new ListGridDettaglioOrdini(idOrdine));
+		panelTabellaComplessiva = new Layout();
+		lgdettaglioordini = new ListGridDettaglioOrdini(idOrdine);
+		panelTabellaComplessiva.addMember(lgdettaglioordini);
 
-		Layout panelFiltroProdotti = new Layout();
+		panelFiltroProdotti = new Layout();
 		panelFiltroProdotti.addMember(new ListGridContatti());
 		
 		
@@ -134,6 +146,10 @@ public class PanelOrdine extends TabSet{
 			public void onTabSelected(TabSelectedEvent event) {
 				if(event.getTab() == tabTabella){
 					((PanelOrdine) thisTabSet).creaTabella();
+				}else if(event.getTab() == tabTabellaComplessiva){
+					lgdettaglioordini.destroy();
+					lgdettaglioordini = new ListGridDettaglioOrdini(PanelOrdine.this.idOrdine);
+					panelTabellaComplessiva.addMember(lgdettaglioordini);
 				}
 				
 			}
@@ -159,7 +175,7 @@ public class PanelOrdine extends TabSet{
         }
 		
 		tab = new Tab(tabName);
-		tab.setPane( thisPanel );
+		tab.setPane( thisTabSet );
         tab.setCanClose(canclose);
         GUIManager.getTopTabset().addTab(tab);
         GUIManager.getTopTabset().selectTab(tab);
@@ -172,10 +188,11 @@ public class PanelOrdine extends TabSet{
 		System.out.println("Aggiungo prodotto: "+categoria + tipologia);
 		
 		FlexCellFormatter cellFormatter = ftClienti.getFlexCellFormatter();
-		 Vector<Prodotto> v = DataSourceProdottiCatalogati.getvProdottiCatalogati();
-		 Vector<Prodotto> vTemp = new Vector<Prodotto>();
+		Vector<Prodotto> v = DataSourceProdottiCatalogati.getvProdottiCatalogati();
+		Vector<Prodotto> vTemp = new Vector<Prodotto>();
 		 
 		 Prodotto prodotto = null;
+		 
 		 for(int i=0; i<v.size(); i++){
 			 prodotto = v.get(i);
 			 if(prodotto.getCategoria().equals(categoria) && prodotto.getTipologia().equals(tipologia) ){
@@ -183,9 +200,10 @@ public class PanelOrdine extends TabSet{
 			 }
 		 }
 		 
+		 //Imposto il nome della tipologia del prodotto ed indico quante caselle deve occupare
+		 cellFormatter.setColSpan(0, indiceTipologia, vTemp.size());
+		 ftClienti.setText(0, indiceTipologia, tipologia); indiceTipologia++;
 		 
-		 cellFormatter.setColSpan(0, indiceTipologia, vTemp.size()); ftClienti.setText(0, indiceTipologia, tipologia); indiceTipologia++;
-		    
 		    String lastVar = "";
 		    String lastSVar = "";
 		    int indVar = 1;
@@ -200,58 +218,31 @@ public class PanelOrdine extends TabSet{
 		    		if(prodotto.getSottoVarieta().equals(lastSVar)){ //Stessa Varietà e Stessa Svarietà
 		    			indVar++;
 		    			indSVar++;
-		    			cellFormatter.setColSpan(1, indiceVarieta-1, indVar);
-		    			cellFormatter.setColSpan(2, indiceSottovarieta-1, indSVar);
 		    			
 		    		}else{ //Stessa Varietà e non Stessa Svarietà
 		    			ftClienti.setText(2, indiceSottovarieta, prodotto.getSottoVarieta());		indiceSottovarieta++;
-		    			lastSVar = prodotto.getSottoVarieta();
 		    			indVar++;
-		    			cellFormatter.setColSpan(1, indiceVarieta-1, indVar);
-		    			cellFormatter.setColSpan(2, indiceSottovarieta-1, indSVar);
 		    			indSVar = 1;
 		    		}
 		    		
-		    	}else{
-		    		
-		    		if(prodotto.getSottoVarieta().equals(lastSVar)){ //non Stessa Varietà e Stessa Svarietà
-		    			ftClienti.setText(1, indiceVarieta, prodotto.getVarieta());		indiceVarieta++;
-		    			lastVar = prodotto.getVarieta();
-		    			indSVar++;
-		    			cellFormatter.setColSpan(1, indiceVarieta-1, indVar);
-		    			cellFormatter.setColSpan(2, indiceSottovarieta-1, indSVar);
-		    			indVar = 1;
-		    			
-		    		}else{ //non Stessa Varietà e non Stessa Svarietà
+		    	}else{//non Stessa Varietà
 		    			ftClienti.setText(1, indiceVarieta, prodotto.getVarieta());		indiceVarieta++;
 		    			ftClienti.setText(2, indiceSottovarieta, prodotto.getSottoVarieta());		indiceSottovarieta++;
-		    			lastVar = prodotto.getVarieta();
-		    			lastSVar = prodotto.getSottoVarieta();
-		    			
-		    			cellFormatter.setColSpan(1, indiceVarieta-1, indVar);
-		    			cellFormatter.setColSpan(2, indiceSottovarieta-1, indSVar);
 		    			indVar = 1;
 		    		    indSVar = 1;
-		    		}
 		    	}
 		    	
+		    	cellFormatter.setColSpan(1, indiceVarieta-1, indVar);
+    			cellFormatter.setColSpan(2, indiceSottovarieta-1, indSVar);
 		    	
+		    	lastVar = prodotto.getVarieta();
+    			lastSVar = prodotto.getSottoVarieta();
+    			
 		    	ftClienti.setText(3, indiceCalibro, prodotto.getCalibro());
 		    	arrayCodProd[indiceCalibro] = prodotto.getID();
 		    	arrayDescProd[indiceCalibro] = prodotto.getTipologia() + " " +prodotto.getVarieta() +"  "+  prodotto.getSottoVarieta() +"  "+ prodotto.getCalibro();
 		    	indiceCalibro++;
 		    }
-		    
-		    /*
-		    cellFormatter.setColSpan(1, 1, 3); ftClienti.setText(1, 1, "Economy");
-		    cellFormatter.setColSpan(1, 2, 4); ftClienti.setText(1, 2, "Gallo");
-		    ftClienti.setText(2, 1, "1");
-		    ftClienti.setText(2, 2, "2");
-		    ftClienti.setText(2, 3, "3");
-		    ftClienti.setText(2, 4, "1");
-		    ftClienti.setText(2, 5, "2");
-		    ftClienti.setText(2, 6, "3");
-		    ftClienti.setText(2, 7, "4");*/
 	}
 	
 	//Prepara la tabella con la lista dei clienti e dei prodotti
@@ -265,7 +256,7 @@ public class PanelOrdine extends TabSet{
 		indiceSottovarieta	= 1;
 		indiceCalibro	= 1;
 		
-		//Prepara parte clienti
+		//Prepara clienti
 		ftClienti.addStyleName("cw-FlexTable");
 		ftClienti.setCellSpacing(5);
 		ftClienti.setCellPadding(3);
@@ -286,20 +277,24 @@ public class PanelOrdine extends TabSet{
 	
 	//Carica i dati degli ordini nella tabella già pronta
 	private void aggiornaTabella(){
-		
+		vLabel = new Vector<LabelOrdinazione>();
+
 		FlexCellFormatter cellFormatter = ftClienti.getFlexCellFormatter();
 		int row = ftClienti.getRowCount();
 		int col = indiceCalibro;
 		for(int j=1; j<col; j++)
 			for(int i=4; i<row; i++){
-				//ftClienti.setText(i, j, "");
-				LabelOrdinazione label = new LabelOrdinazione(idOrdine, arrayCodProd[j], vettoreContattiFiltrato.get(i-4).getID());
+
+				
+				String idProdotto = arrayCodProd[j];
+				String idCliente = vettoreContattiFiltrato.get(i-4).getID();
+				LabelOrdinazione label = new LabelOrdinazione(idOrdine, idCliente, idProdotto);
 				label.setWidth(27);
 				label.setHeight(25);
 				label.setTooltip("Cliente: " + vettoreContattiFiltrato.get(i-4).getRagioneSociale() +"\nProdotto: " + arrayDescProd[j]);
 				
-				
 				ftClienti.setWidget(i, j, label);
+				vLabel.add(label);
 			}
 		
 		
@@ -307,6 +302,49 @@ public class PanelOrdine extends TabSet{
 		panelTabella = new Layout();
 		panelTabella.addMember(ftClienti);
 		tabTabella.setPane(panelTabella);
+		
+		
+		
+		System.out.println("LABLES: "+vLabel.size());
+		for(int k=0; k<vLabel.size(); k++){
+			LabelOrdinazione lo = vLabel.get(k);
+			String lidP = lo.getIdprodotto();
+			String lidC = lo.getIdcliente();
+			System.out.println("LABEL"+ lidP +"  "+ lidC);
+		}
+		
+		
+		
+		new Timer(){
+
+			@Override
+			public void run() {
+				System.out.println("Run Timer");
+				DettaglioOrdine[] array = dsdo.getArrayDettaglioOrdini();
+				LabelOrdinazione lo = null;
+				if(array == null) {schedule(500);}else{
+				int num;
+				for(int i=0; i<array.length; i++){
+					
+					num = 0;
+					String idP = array[i].getId_Prodotto();
+					String idC = array[i].getId_Cliente();
+					System.out.println("I	: "+idP +" 		"+idC);
+					
+					for(int k=0; k<vLabel.size(); k++){
+						lo = vLabel.get(k);
+						String lidP = lo.getIdprodotto();
+						String lidC = lo.getIdcliente();
+						if(idP.equals(lidP) && idC.equals(lidC)){
+							lo.aumentaContatore( Integer.parseInt(array[i].getQuantita()) );
+							break;
+						}
+					}
+					
+				}
+			}}
+			
+		}.schedule(500);
 		
 	}
 }

@@ -2,6 +2,7 @@ package gestionale.server;
 
 import gestionale.client.DBConnection;
 import gestionale.shared.Contatto;
+import gestionale.shared.DettaglioOrdine;
 import gestionale.shared.Ordine;
 import gestionale.shared.User;
 import java.sql.*;
@@ -39,7 +40,7 @@ public User authenticateUser(User utente) {
 	User user = null;
 	
 	if(Integer.parseInt(record[0])==1) user = new User();
-	
+	db.disconnetti();
 	return user;
 	}
 
@@ -83,7 +84,7 @@ public Contatto[] eseguiQueryContatto(String query) {
 	
 	
 
-
+	db.disconnetti();
 	return contattoarray;
 }
 
@@ -120,9 +121,44 @@ public Ordine[] eseguiQueryOrdine(String query) {
 		
 	}
 	
+	db.disconnetti();
 	return ordinearray;
 }
 
+public DettaglioOrdine[] eseguiQueryDettaglioOrdine(String query) {
+	db.connetti();
+	DettaglioOrdine[] dettaglioordinearray = null;
+	
+	Vector<String[]> v = db.eseguiQuery(query);
+	
+	String[] record = null;
+	
+	try{
+		dettaglioordinearray = new DettaglioOrdine[v.size()];
+		
+		for(int i=0; i<v.size();i++){
+			record = v.get(i);
+			
+			dettaglioordinearray[i] = new DettaglioOrdine();
+			
+			dettaglioordinearray[i].setId(record[0]);
+			dettaglioordinearray[i].setId_Cliente(record[3]);
+			dettaglioordinearray[i].setId_Prodotto(record[2]);
+			dettaglioordinearray[i].setId_Fornitore(record[7]);
+			dettaglioordinearray[i].setId_Imballaggio(record[5]);
+			dettaglioordinearray[i].setId_Trasportatore(record[8]);
+			dettaglioordinearray[i].setId_Ordine(record[1]);
+			dettaglioordinearray[i].setQuantita(record[4]);
+			dettaglioordinearray[i].setUtente(record[6]);
+			
+		}
+		
+	}catch(Exception e){
+		
+	}
+	db.disconnetti();
+	return dettaglioordinearray;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Funzione generica per eseguire le query
@@ -139,6 +175,9 @@ public boolean eseguiUpdate(String query) {
 	
 	return db.eseguiAggiornamento(query);
 }
+
+
+
 
 
 

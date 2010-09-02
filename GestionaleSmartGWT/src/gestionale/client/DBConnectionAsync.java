@@ -1,8 +1,7 @@
 package gestionale.client;
 
-import java.sql.ResultSet;
-import java.util.Vector;
 import gestionale.shared.Contatto;
+import gestionale.shared.DettaglioOrdine;
 import gestionale.shared.Ordine;
 import gestionale.shared.User;
 
@@ -19,6 +18,8 @@ public interface DBConnectionAsync {
 	public void eseguiQuery(String query, AsyncCallback<String[][]> callback);
 
 	public void eseguiQueryOrdine(String query,AsyncCallback<Ordine[]> asyncCallback);
+
+	public void eseguiQueryDettaglioOrdine(String query,AsyncCallback<DettaglioOrdine[]> callback);
 
 	
 }

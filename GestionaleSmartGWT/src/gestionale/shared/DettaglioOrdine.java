@@ -1,6 +1,8 @@
 package gestionale.shared;
 
-public class DettaglioOrdine {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class DettaglioOrdine implements IsSerializable {
 	
 	private String Id,Id_Ordine,Id_Prodotto,Id_Cliente,Id_Imballaggio,Id_Fornitore,Id_Trasportatore,quantita,utente;
 	

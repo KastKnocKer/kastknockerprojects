@@ -6,13 +6,23 @@ import com.smartgwt.client.widgets.events.DoubleClickHandler;
 
 public class LabelOrdinazione extends Label{
 	
-	private String idCliente,idProdotto,idOrdine;
-	private static DoubleClickHandler DCH = null;
 	
-	public LabelOrdinazione(String idCliente, String idProdotto, String idOrdine){
-		this.setIdCliente(idCliente);
-		this.setIdProdotto(idProdotto);
-		this.setIdOrdine(idOrdine);
+	private static DoubleClickHandler DCH = null;
+	private String idordine = null;
+	private String idcliente = null;
+	private String idprodotto = null;
+	private int num = 0;
+	
+	
+	
+	public LabelOrdinazione(String idOrdine, String idCliente, String idProdotto){
+		setIdordine(idOrdine);
+		setIdprodotto(idProdotto);
+		setIdcliente(idCliente);
+		
+		num = 0;
+		
+		System.out.println("Creata Label: " + idordine +" "+ idcliente +" "+idprodotto);
 		
 		if(DCH == null){
 			DCH = new DoubleClickHandler() {
@@ -28,28 +38,47 @@ public class LabelOrdinazione extends Label{
 		this.addDoubleClickHandler(DCH);
 	}
 
-	public void setIdOrdine(String idOrdine) {
-		this.idOrdine = idOrdine;
+
+
+	public void setIdordine(String idordine) {
+		this.idordine = idordine;
 	}
 
-	public String getIdOrdine() {
-		return idOrdine;
+
+
+	public String getIdordine() {
+		return idordine;
 	}
 
-	public void setIdCliente(String idCliente) {
-		this.idCliente = idCliente;
+
+
+	public void setIdprodotto(String idprodotto) {
+		this.idprodotto = idprodotto;
 	}
 
-	public String getIdCliente() {
-		return idCliente;
+
+
+	public String getIdprodotto() {
+		return idprodotto;
 	}
 
-	public void setIdProdotto(String idProdotto) {
-		this.idProdotto = idProdotto;
+
+
+	public void setIdcliente(String idcliente) {
+		this.idcliente = idcliente;
 	}
 
-	public String getIdProdotto() {
-		return idProdotto;
+
+
+	public String getIdcliente() {
+		return idcliente;
 	}
+	
+	public void aumentaContatore(int valore) {
+		num = num + valore;
+		this.setContents(Integer.toString(num));
+	}
+
+	
 
 }
