@@ -1,6 +1,8 @@
 package gestionale.shared;
 
-public class Prodotto {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class Prodotto implements IsSerializable{
 	
 	private String ID;
 	private String Categoria;

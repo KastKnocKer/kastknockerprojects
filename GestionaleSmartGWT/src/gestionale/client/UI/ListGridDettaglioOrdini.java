@@ -9,6 +9,7 @@ import gestionale.shared.Ordine;
 
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.types.SortDirection;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.events.DoubleClickEvent;
 import com.smartgwt.client.widgets.events.DoubleClickHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -36,7 +37,7 @@ public class ListGridDettaglioOrdini extends ListGrid{
 		this.setWidth100();
 		this.setHeight100(); 
 		this.setShowEdges(false);
-		this.setDataSource(new DataSourceDettaglioOrdini(IDOrdine,null,null));
+		this.setDataSource(new DataSourceDettaglioOrdini(IDOrdine,null,null,DataSourceDettaglioOrdini.MOD_TabellaCompleta));
 		this.setCanReorderFields(false); 
 		this.setCanAcceptDroppedRecords(false);  
 		this.setCanDragRecordsOut(false);

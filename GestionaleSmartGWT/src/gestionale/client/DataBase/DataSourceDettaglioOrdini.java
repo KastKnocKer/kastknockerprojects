@@ -23,21 +23,27 @@ public class DataSourceDettaglioOrdini extends DataSource{
 	private static DataSourceDettaglioOrdini istance;
 	
 	private String idOrdine,idCliente,idProdotto;
-	private boolean dettaglioSelezionato = false;
+	private int modalita;
 	
 	private String[] aF;
 	private String[] aT;
 	private String[] aFID;
 	private String[] aTID;
 	
-	public DataSourceDettaglioOrdini(String idOrdine, String idCliente, String idProdotto){
+	public static final int MOD_TabellaComposizione = 1;
+	public static final int  MOD_TabellaDettaglio = 2;
+	public static final int MOD_TabellaCompleta = 3;
+	
+	public DataSourceDettaglioOrdini(String idOrdine, String idCliente, String idProdotto, int mod){
 		this.idOrdine = idOrdine;
 		this.idCliente = idCliente;
 		this.idProdotto = idProdotto;
+		this.modalita = mod;
 		
-		if(idCliente != null || idProdotto != null) dettaglioSelezionato = true;
 		
-		setID(id); 
+		
+		setID(id);
+		this.setCanMultiSort(true);
 		DataSourceTextField idField = new DataSourceTextField("id","id");
 		idField.setRequired(true);
 		idField.setPrimaryKey(true);
@@ -52,26 +58,30 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		DataSourceTextField idimballaggioField = new DataSourceTextField("idimballaggio","idImballaggio");
 		DataSourceTextField idfornitoreField = new DataSourceTextField("idfornitore","idFornitore");
 		DataSourceTextField idtrasportatoreField = new DataSourceTextField("idtrasportatore","idTrasportatore");
+		
 		DataSourceIntegerField quantitaField = new DataSourceIntegerField("quantita","Quantita");
 		DataSourceTextField fornitoreField = new DataSourceTextField("fornitore","Fornitore");
 		DataSourceTextField trasportatoreField = new DataSourceTextField("trasportatore","Trasportatore");
 		DataSourceTextField userField = new DataSourceTextField("user","user");
+		DataSourceTextField clienteField = new DataSourceTextField("cliente","Cliente");
+		DataSourceTextField prodottoField = new DataSourceTextField("descrizioneprodotto","Prodotto");
+		DataSourceTextField imballaggioField = new DataSourceTextField("descrizioneimballaggio","Imballaggio");
 		
-		//idordineField.setHidden(true);
-		//idprodottoField.setHidden(true);
-		//idclienteField.setHidden(true);
-		//idimballaggioField.setHidden(true);
-		//idfornitoreField.setHidden(true);
-		//idtrasportatoreField.setHidden(true);
-		//userField.setHidden(true);
+		idordineField.setHidden(true);
+		idprodottoField.setHidden(true);
+		idclienteField.setHidden(true);
+		idimballaggioField.setHidden(true);
+		idfornitoreField.setHidden(true);
+		idtrasportatoreField.setHidden(true);
+		userField.setHidden(true);
 		
 		
 		
 		
-        setFields(idField, idnField, idordineField, idprodottoField, idclienteField, idimballaggioField, quantitaField, userField, fornitoreField, trasportatoreField); 
+        setFields(clienteField, quantitaField, prodottoField, fornitoreField, trasportatoreField, imballaggioField, idField, idnField, idordineField, idprodottoField, idclienteField, idimballaggioField, userField); 
 		
     
-        if(dettaglioSelezionato){
+        if(modalita == MOD_TabellaDettaglio){
 			Vector<Contatto> vF = DataSourceContatti.getVettoreFornitori();
 			Vector<Contatto> vT = DataSourceContatti.getVettoreTrasportatori();
 			
@@ -97,16 +107,68 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		}
         
 		setClientOnly(true);
-		this.getNewRecords();
+		
+		if(mod == MOD_TabellaComposizione){
+			this.getNewRecords();
+		}else if (mod == MOD_TabellaDettaglio){
+			this.getNewRecords();
+		}else if(mod == MOD_TabellaCompleta){
+			this.getNewRecordsComplete();
+		}else return;
+		
+		
 	}
 
 	
 
-	 public void getNewRecords() {
+	 private void getNewRecordsComplete() {
+		 String query = "SELECT o.ID, o.Quantita, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.* FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto WHERE o.IDOrdine = '"+idOrdine+"';";
+		 
+		 rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(String[][] result) {
+				ListGridRecord lgr = null;
+				for(int i=0; i < result.length; i++){
+					String[] rec = result[i];
+					lgr = new ListGridRecord();
+					
+					lgr.setAttribute("id", rec[0]);
+					
+					lgr.setAttribute("quantita", rec[1]);
+					lgr.setAttribute("user", rec[2]);
+					lgr.setAttribute("cliente", rec[3]);
+					lgr.setAttribute("fornitore", rec[4]);
+					lgr.setAttribute("trasportatore", rec[5]);
+					lgr.setAttribute("idprodotto", rec[6]);
+					
+					lgr.setAttribute("descrizioneprodotto", rec[7]+" "+rec[8]+" "+rec[9]+" "+rec[10]+" "+rec[11]);
+					
+					addData(lgr);
+				}
+				
+			}
+			 
+			 
+			 
+		 });
+		 
+		
+	}
+
+
+
+	public void getNewRecords() {
 		 
 		 String query = "SELECT * FROM ordine_dettaglio WHERE IDOrdine = " + idOrdine;
 		 
-		 if(dettaglioSelezionato){
+		 if(modalita == MOD_TabellaDettaglio){
 			 query = "SELECT * FROM ordine_dettaglio WHERE IDOrdine = " + idOrdine + " AND IDProdotto = " +idProdotto+ " AND IDCliente = "+idCliente;
 		 }
 		 
@@ -137,7 +199,7 @@ public class DataSourceDettaglioOrdini extends DataSource{
 						lgr.setAttribute("quantita", record.getQuantita());
 						lgr.setAttribute("user", record.getUtente());
 						
-						if(dettaglioSelezionato){
+						if(modalita == MOD_TabellaDettaglio){
 							
 							for(int j=0; j<aFID.length; j++){
 								if(aFID[j].equals(record.getId_Fornitore())){
@@ -199,6 +261,24 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		});
 			
 	 }
+	 
+	 public static void rimuoviDettaglioOrdine(Record record){
+			String query = "DELETE FROM ordine_dettaglio WHERE ID = '"+record.getAttribute("id")+"'";
+
+			 rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
+
+				public void onFailure(Throwable caught) {
+					
+				}
+
+				public void onSuccess(Boolean result) {
+					
+				}
+					
+					
+			});
+				
+		 }
 
 
 

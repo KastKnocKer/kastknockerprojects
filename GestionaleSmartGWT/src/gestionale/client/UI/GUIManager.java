@@ -24,6 +24,7 @@ import com.smartgwt.client.widgets.form.fields.PasswordItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
 import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
@@ -39,6 +40,8 @@ public class GUIManager {
 	private static TextItem usernameItem;
 	private static PasswordItem passwordItem;
 	private static TabSet topTabSet;
+	
+	private static ListGridContatti listgridcontattiricercati;
 	
 	public GUIManager(){
 		vLayoutMain = new VLayout();
@@ -146,18 +149,21 @@ public class GUIManager {
 		sezioneOrdini.setExpanded(false);
 		sectionStack.addSection(sezioneOrdini);
 		
-		SectionStackSection sezioneProdotti = new SectionStackSection("Prodotti");  
-		sezioneProdotti.setExpanded(false);
-		sectionStack.addSection(sezioneProdotti);
-		
+		final SectionStackSection sezioneRisultatoRicerca = new SectionStackSection("Risultato Ricerca");  
+		sezioneRisultatoRicerca.setExpanded(false);
+		sectionStack.addSection(sezioneRisultatoRicerca);
 		/////////////
-		ListGridContatti listgridcontatti = new ListGridContatti();
+		final ListGridContatti listgridcontatti = new ListGridContatti();
 		sezioneContatti.addItem( listgridcontatti );
 		
-		//sezioneProdotti.addItem();
-		///////////7
 		
+		////////////
+		////////////
+		listgridcontattiricercati = new ListGridContatti();
+		listgridcontattiricercati.setData(new ListGridRecord[]{null});
+		sezioneRisultatoRicerca.addItem(listgridcontattiricercati);
 		
+		/////////////
 		
 		//Tasto Cerca
 		DynamicForm fp = new DynamicForm();
@@ -168,9 +174,26 @@ public class GUIManager {
 		ti_cerca.addKeyPressHandler(new KeyPressHandler() {
 			
 			public void onKeyPress(KeyPressEvent event) {
-				if(event.getCharacterValue() == 13){
+				System.out.println("PREMUTO: " + event.getKeyName());
+				if(event.getKeyName().equals("Enter")){
 					System.out.println("Cerca: " + ti_cerca.getValue());
-					TreeContatti.selezionaContattoFromRagioneSociale(ti_cerca.getValue().toString());
+					String cerca = ((String) ti_cerca.getValue());
+					if(cerca == null){
+						return;
+					}else{
+						cerca.toLowerCase();
+					}
+					
+					ListGridRecord[] records = listgridcontatti.getRecords();
+					ListGridRecord[] recordsSelected = new ListGridRecord[ records.length ];
+					int indice = 0;
+					for(int i=0; i<records.length; i++){
+						if( records[i].getAttribute("ragionesociale").toLowerCase().contains( (cerca)  ) ){
+							recordsSelected[indice] = records[i];
+							indice++;
+						}
+					}
+					listgridcontattiricercati.setData(recordsSelected);
 				}
 				
 			}

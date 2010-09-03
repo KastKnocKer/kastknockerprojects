@@ -14,6 +14,7 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.ImgButton;
+import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.SelectItem;  
@@ -22,12 +23,22 @@ import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.EditCompleteEvent;
+import com.smartgwt.client.widgets.grid.events.EditCompleteHandler;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
+import com.smartgwt.client.widgets.grid.events.RowEditorExitEvent;
+import com.smartgwt.client.widgets.grid.events.RowEditorExitHandler;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
+import com.smartgwt.client.widgets.menu.Menu;
+import com.smartgwt.client.widgets.menu.MenuItem;
+import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 
 public class WindowDettaglioOrdini extends Finestra{
 
 	private WindowDettaglioOrdini thiswind;
+	private Record lastDettaglioOrdineClicked;
 	
 	public WindowDettaglioOrdini(final LabelOrdinazione lo){
 		super();
@@ -35,21 +46,18 @@ public class WindowDettaglioOrdini extends Finestra{
 		
 		final ListGrid lg =  new ListGrid() {
 			
-			
 			@Override
-			protected Canvas createRecordComponent(final ListGridRecord record, Integer colNum) {  
-  
-				String fieldName = this.getFieldName(colNum);  
-				System.out.println("FUCKING NOISE");
-                if (  fieldName.equals("Fornitore") ) {
-                	System.out.println("FUCKING VOICE");
-                	record.setAttribute("fornitore", "Scicchigno");
-                	return null;
-                    };
-                   
-                    return null;
-  
-            }  
+			public void removeData(Record record) {
+			// my pre-remove code goes here
+				System.out.println("SelectedRecord: " + record.getAttribute("id"));
+				if( Window.confirm("Sei sicuro di voler rimuovere:\n\n"+record.getAttribute("quantita")+" "+record.getAttribute("fornitore")+" "+record.getAttribute("trasportatore")+" "+record.getAttribute("imballaggio")+" ?") ){
+					
+				}	
+				
+			super.removeData(record);
+			}
+			
+			  
         };  
 		
 		
@@ -117,13 +125,61 @@ public class WindowDettaglioOrdini extends Finestra{
         lg.setShowAllRecords(true);
 		
 		lg.setCanEdit(true);
+		lg.setCanRemoveRecords(true);
 		lg.setAutoFetchData(true);
-		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdordine(), lo.getIdcliente(), lo.getIdprodotto()));
+		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdordine(), lo.getIdcliente(), lo.getIdprodotto(),DataSourceDettaglioOrdini.MOD_TabellaDettaglio));
 		
 		lg.setFields(quantita, fornitore, imballaggio,trasportatore);
 		lg.setAutoSaveEdits(false);
 		lg.setWidth100();
 		lg.setHeight100();
+		
+		
+		
+		
+		//CLICK DESTRO
+		lg.addRowContextClickHandler(new RowContextClickHandler() {
+			
+			public void onRowContextClick(RowContextClickEvent event) {
+				lastDettaglioOrdineClicked = event.getRecord();
+				final int rowrecord = lg.getRecordIndex(lastDettaglioOrdineClicked);
+				System.out.println("Contatto cliccato: " + lastDettaglioOrdineClicked + " @ riga: "+rowrecord );
+				Menu menu = new Menu();
+				MenuItem mi_rimuovi = new MenuItem("Rimuovi Dettaglio Ordine");
+				
+				
+
+				mi_rimuovi.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
+
+					@Override
+					public void onClick(MenuItemClickEvent event) {
+						ListGridRecord lgr = (ListGridRecord) lg.getEditedRecord(rowrecord);
+						if( Window.confirm("Sei sicuro di voler rimuovere:\n\n"+lgr.getAttribute("quantita")+" "+lgr.getAttribute("fornitore")+" "+lgr.getAttribute("trasportatore")+" "+lgr.getAttribute("imballaggio")+" ?") ){
+							
+							System.out.println("SelectedRecord: " + lgr+ "  " +  lgr.getAttribute("id"));
+							
+							if(lgr.getAttribute("id") == null){
+								lg.removeSelectedData();
+							}else{
+								DataSourceDettaglioOrdini.rimuoviDettaglioOrdine(lgr);
+								lg.removeData(lgr);
+							}
+							
+						}
+					}
+					
+				});
+				
+				
+				
+				menu.addItem( mi_rimuovi );
+				
+				menu.setAutoDraw(true);
+				menu.showContextMenu();
+			}
+		});
+		
+		
 		
 		ImgButton addButton = new ImgButton();  
 		addButton.setSrc("[SKIN]actions/add.png");  
@@ -202,7 +258,8 @@ public class WindowDettaglioOrdini extends Finestra{
 					}
 					sum = sum + Integer.parseInt(record.getAttribute("quantita"));
 				}
-				
+				lg.saveAllEdits();
+				sum=0;
 				ListGridRecord[] rec =  lg.getRecords();
 				
 				for(int i=0; i<rec.length; i++){

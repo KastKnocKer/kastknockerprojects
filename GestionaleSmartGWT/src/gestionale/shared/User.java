@@ -2,7 +2,7 @@ package gestionale.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class User implements IsSerializable {
+public class User implements IsSerializable{
 	
 	private String username;
 	private String password;

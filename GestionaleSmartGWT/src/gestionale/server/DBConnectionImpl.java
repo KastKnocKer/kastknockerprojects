@@ -3,6 +3,7 @@ package gestionale.server;
 import gestionale.client.DBConnection;
 import gestionale.shared.Contatto;
 import gestionale.shared.DettaglioOrdine;
+import gestionale.shared.Imballaggio;
 import gestionale.shared.Ordine;
 import gestionale.shared.User;
 import java.sql.*;
@@ -142,15 +143,14 @@ public DettaglioOrdine[] eseguiQueryDettaglioOrdine(String query) {
 			dettaglioordinearray[i] = new DettaglioOrdine();
 			
 			dettaglioordinearray[i].setId(record[0]);
-			dettaglioordinearray[i].setId_Cliente(record[3]);
-			dettaglioordinearray[i].setId_Prodotto(record[2]);
-			dettaglioordinearray[i].setId_Fornitore(record[7]);
-			dettaglioordinearray[i].setId_Imballaggio(record[5]);
-			dettaglioordinearray[i].setId_Trasportatore(record[8]);
 			dettaglioordinearray[i].setId_Ordine(record[1]);
-			dettaglioordinearray[i].setQuantita(record[4]);
-			dettaglioordinearray[i].setUtente(record[6]);
-			
+			dettaglioordinearray[i].setId_Prodotto(record[2]);
+			dettaglioordinearray[i].setId_Cliente(record[3]);
+			dettaglioordinearray[i].setId_Fornitore(record[4]);
+			dettaglioordinearray[i].setId_Trasportatore(record[5]);
+			dettaglioordinearray[i].setId_Imballaggio(record[6]);
+			dettaglioordinearray[i].setUtente(record[7]);
+			dettaglioordinearray[i].setQuantita(record[8]);
 		}
 		
 	}catch(Exception e){
@@ -158,6 +158,41 @@ public DettaglioOrdine[] eseguiQueryDettaglioOrdine(String query) {
 	}
 	db.disconnetti();
 	return dettaglioordinearray;
+}
+
+
+public Imballaggio[] eseguiQueryImballaggio(String query) {
+	db.connetti();
+	Imballaggio[] imballaggioarray = null;
+	
+	Vector<String[]> v = db.eseguiQuery(query);
+	
+	String[] record = null;
+	
+	try{
+		imballaggioarray = new Imballaggio[v.size()];
+		
+		for(int i=0; i<v.size();i++){
+			record = v.get(i);
+			
+			imballaggioarray[i] = new Imballaggio();
+			
+			imballaggioarray[i].setID(record[0]);
+			imballaggioarray[i].setDescrizione(record[1]);
+			imballaggioarray[i].setLunghezza(record[2]);
+			imballaggioarray[i].setLarghezza(record[3]);
+			imballaggioarray[i].setAltezza(record[4]);
+			imballaggioarray[i].setTara(record[5]);
+			imballaggioarray[i].setMateriale(record[6]);
+			imballaggioarray[i].setMarchio(record[7]);
+			
+		}
+		
+	}catch(Exception e){
+		
+	}
+	db.disconnetti();
+	return imballaggioarray;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

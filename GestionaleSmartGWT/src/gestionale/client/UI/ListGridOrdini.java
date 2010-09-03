@@ -27,11 +27,12 @@ import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 public class ListGridOrdini extends ListGrid{
 	
-	private  ListGridOrdini lgo;
+	private ListGridOrdini thisListGrid;
+	private ListGridRecord selectedRecord;
 	
 	public ListGridOrdini(){
 		super();
-		
+		thisListGrid = this;
 		this.setWidth100();
 		this.setHeight100(); 
 		this.setShowEdges(false);
@@ -40,7 +41,7 @@ public class ListGridOrdini extends ListGrid{
 		this.setCanAcceptDroppedRecords(false);  
 		this.setCanDragRecordsOut(false);
 		
-		ListGridField campo = new ListGridField("datacreazioneordine", "Ordini");
+		ListGridField campo = new ListGridField("descrizioneordine", "Ordini");
 		ListGridField idcampo = new ListGridField("idn", "ID");
 		campo.setCanEdit(false);
 		idcampo.setHidden(true);
@@ -55,11 +56,11 @@ public class ListGridOrdini extends ListGrid{
 		this.addRowContextClickHandler(new RowContextClickHandler() {
 			
 			public void onRowContextClick(RowContextClickEvent event) {
-
+				selectedRecord = (ListGridRecord) event.getRecord();
+				
 				Menu menu = new Menu();
 				
 				MenuItem mi_dettagli = new MenuItem("Mostra Ordine");
-				MenuItem mi_modifica = new MenuItem("Modifica Ordine");
 				MenuItem mi_rimuovi = new MenuItem("Rimuovi Ordine");
 				
 				
@@ -68,19 +69,21 @@ public class ListGridOrdini extends ListGrid{
 					}
 				});
 				
-				mi_modifica.addClickHandler( new ClickHandler() {
+				mi_rimuovi.addClickHandler( new ClickHandler() {
+					
+					@Override
 					public void onClick(MenuItemClickEvent event) {
-						System.out.println("Sorgente lieta: " + event.getSource() );
-						Contatto contatto = null;
-						for(int i=0; i<Liste.getVettoreContatti().size(); i++){
-							contatto = Liste.getVettoreContatti().get(i);
+						String message = "Sei sicuro di rimuovere l'ordine: " + selectedRecord.getAttribute("datacreazioneordine") +" - "+ selectedRecord.getAttribute("tipoordine")+" ?";
+						if( Window.confirm(message) ){
+							DataSourceOrdini.rimuoviOrdine( selectedRecord.getAttribute("id") );
+							thisListGrid.removeData(selectedRecord);
+						}else{
 							
 						}
+						
 					}
 				});
-				
 				menu.addItem( mi_dettagli );
-				menu.addItem( mi_modifica );
 				menu.addItem( mi_rimuovi );
 				
 				menu.setAutoDraw(true);
