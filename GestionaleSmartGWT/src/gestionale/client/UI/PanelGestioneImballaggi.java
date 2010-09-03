@@ -1,27 +1,138 @@
 package gestionale.client.UI;
 
 import gestionale.client.DataBase.DataSourceImballaggi;
+import gestionale.shared.Imballaggio;
 
-import com.smartgwt.client.data.Record;
-import com.smartgwt.client.widgets.ImgButton;
-import com.smartgwt.client.widgets.events.ClickEvent;
-import com.smartgwt.client.widgets.events.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.smartgwt.client.widgets.Button;
+import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.FormItem;
+import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
+import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
-import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
-import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
-import com.smartgwt.client.widgets.grid.events.RowEditorExitEvent;
-import com.smartgwt.client.widgets.grid.events.RowEditorExitHandler;
-import com.smartgwt.client.widgets.layout.Layout;
-import com.smartgwt.client.widgets.layout.SectionStack;
-import com.smartgwt.client.widgets.layout.SectionStackSection;
+import com.smartgwt.client.widgets.layout.VLayout;
 
-public class PanelGestioneImballaggi extends Layout{
+public class PanelGestioneImballaggi extends VLayout{
+	
+	private TextItem larghezza;
+	private TextItem lunghezza;
+	private TextItem altezza;
+	private TextItem tara;
+	private TextItem materiale;
+	private TextItem marchio;
+	private DynamicForm form;
+	private ListGrid lg;
+	
 	
 	public PanelGestioneImballaggi(){
 		
-		final ListGrid lg = new ListGrid();
+		this.setWidth100();
+		this.setHeight100();
+		
+		lg = new ListGrid();
+		lg.setAutoFetchData(true);
 		lg.setDataSource(DataSourceImballaggi.getIstance());
+		
+		this.addMember(lg);
+		
+		form = new DynamicForm();
+		
+		larghezza = new TextItem();  
+				larghezza.setType("int");
+				larghezza.setName("larghezza");
+				larghezza.setTitle("Larghezza (cm)");
+				larghezza.setRequired(true);
+				
+		lunghezza = new TextItem();  
+				lunghezza.setType("int");
+				lunghezza.setName("lunghezza");
+				lunghezza.setTitle("Lunghezza (cm)");
+				lunghezza.setRequired(true);
+		
+		altezza = new TextItem();  
+				altezza.setType("int"); 
+				altezza.setName("altezza");
+				altezza.setTitle("Altezza (cm)");
+				altezza.setRequired(true);
+		
+		tara = new TextItem();  
+				tara.setType("int");
+				tara.setName("tara");
+				tara.setTitle("Tara (g)");
+				tara.setRequired(true);
+		
+		materiale = new TextItem();
+				materiale.setTitle("Materiale");
+				materiale.setName("materiale");
+				materiale.setRequired(true);
+		
+		marchio = new TextItem();
+				marchio.setTitle("Marchio");
+				marchio.setName("marchio");
+				marchio.setRequired(true);
+		
+		//Selez
+		ButtonItem button = new ButtonItem("Aggiungi");
+				
+				
+		form.setFields(new FormItem[]{larghezza,lunghezza,altezza,tara,materiale,marchio,button});
+		
+		this.addMember(form);
+		
+		button.addClickHandler(new ClickHandler() {  
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+				form.validate();
+				if(form.hasErrors()){
+					Window.alert("Campi non validi o mancanti!");
+					return;
+				}else{
+					Imballaggio imballaggio = new Imballaggio();
+					imballaggio.setLarghezza(	form.getValueAsString("larghezza")	);
+					imballaggio.setLunghezza(	form.getValueAsString("lunghezza")	);
+					imballaggio.setAltezza(		form.getValueAsString("altezza")	);
+					imballaggio.setTara(		form.getValueAsString("tara")		);
+					imballaggio.setMateriale(	form.getValueAsString("materiale")	);
+					imballaggio.setMarchio(		form.getValueAsString("marchio")	);
+					String descrizione = form.getValueAsString("larghezza")+"x"+form.getValueAsString("lunghezza")+"x"+form.getValueAsString("altezza")+" - "+form.getValueAsString("materiale")+" - "+form.getValueAsString("tara")+"g - "+form.getValueAsString("marchio");
+					imballaggio.setDescrizione(descrizione);
+					imballaggio.setIsSelezionato("1");
+					DataSourceImballaggi.aggiungiImballaggio(imballaggio);
+				}
+			}  
+        }); 
+
+		/*
+		button.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				form.validate();
+				if(form.hasErrors()){
+					Window.alert("Campi non validi o mancanti!");
+					return;
+				}else{
+					Imballaggio imballaggio = new Imballaggio();
+					imballaggio.setLarghezza((String) larghezza.getValue());
+					imballaggio.setLunghezza((String) lunghezza.getValue());
+					imballaggio.setAltezza((String) altezza.getValue());
+					imballaggio.setTara((String) tara.getValue());
+					imballaggio.setMateriale((String) materiale.getValue());
+					imballaggio.setMarchio((String) marchio.getValue());
+					
+					DataSourceImballaggi.aggiungiImballaggio(imballaggio);
+				}
+				
+				
+			}
+		});*/
+		
+		/*
+		 * 
+		
 		
 		ImgButton addButton = new ImgButton();  
 		addButton.setSrc("[SKIN]actions/add.png");  
@@ -48,25 +159,7 @@ public class PanelGestioneImballaggi extends Layout{
 		SS.setSections(section);
 		
 		this.addMember(SS);
-		
-		lg.addRowEditorExitHandler(new RowEditorExitHandler() {
-			
-			@Override
-			public void onRowEditorExit(RowEditorExitEvent event) {
-
-				Record record = (ListGridRecord) event.getRecord();
-				if(record == null) return;
-				System.out.println("Rec: " + record.getAttribute("id"));
-				if(record.getAttribute("id") == null){
-					//inserisci
-					System.out.println("INS");
-				}else{
-					//modifica
-					System.out.println("MOD");
-				}
-				
-			}
-		});
+		*/
 		
 		
 	}

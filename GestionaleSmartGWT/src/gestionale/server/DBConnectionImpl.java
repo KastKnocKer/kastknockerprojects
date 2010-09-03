@@ -163,6 +163,7 @@ public DettaglioOrdine[] eseguiQueryDettaglioOrdine(String query) {
 @Override
 public Imballaggio[] eseguiQueryImballaggio(String query) {
 	db.connetti();
+	System.out.println("Eseguo query: " + query);
 	Imballaggio[] imballaggioarray = null;
 	
 	Vector<String[]> v = db.eseguiQuery(query);
@@ -212,6 +213,9 @@ public boolean eseguiUpdate(String query) {
 	
 	return db.eseguiAggiornamento(query);
 }
+
+
+
 
 
 

@@ -7,7 +7,9 @@ import java.util.Vector;
 import gestionale.client.SessioneUtente;
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceDettaglioOrdini;
+import gestionale.client.DataBase.DataSourceImballaggi;
 import gestionale.shared.Contatto;
+import gestionale.shared.Imballaggio;
 
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
@@ -44,31 +46,22 @@ public class WindowDettaglioOrdini extends Finestra{
 		super();
 		thiswind = this;
 		
-		final ListGrid lg =  new ListGrid() {
-			
-			@Override
-			public void removeData(Record record) {
-			// my pre-remove code goes here
-				System.out.println("SelectedRecord: " + record.getAttribute("id"));
-				if( Window.confirm("Sei sicuro di voler rimuovere:\n\n"+record.getAttribute("quantita")+" "+record.getAttribute("fornitore")+" "+record.getAttribute("trasportatore")+" "+record.getAttribute("imballaggio")+" ?") ){
-					
-				}	
-				
-			super.removeData(record);
-			}
-			
-			  
-        };  
+		final ListGrid lg =  new ListGrid();
 		
 		
 		
 		
-		
+        
 		
 		ListGridField quantita		= new ListGridField("quantita","Quantita");
 		ListGridField fornitore		= new ListGridField("fornitore","Fornitore");
-		ListGridField imballaggio	= new ListGridField("imballaggio","Imballaggio");
+		ListGridField imballaggio	= new ListGridField("descrizioneimballaggio","Imballaggio");
 		ListGridField trasportatore	= new ListGridField("trasportatore","Trasportatore");
+		
+		quantita.setWidth("10%");
+		fornitore.setWidth("25%");
+		imballaggio.setWidth("40%");
+		trasportatore.setWidth("25%");
 		
 		quantita.setRequired(true);
 		fornitore.setRequired(true);
@@ -77,10 +70,13 @@ public class WindowDettaglioOrdini extends Finestra{
 		
 		Vector<Contatto> vF = DataSourceContatti.getVettoreFornitori();
 		Vector<Contatto> vT = DataSourceContatti.getVettoreTrasportatori();
+		Vector<Imballaggio> vI = DataSourceImballaggi.getVettoreImballaggi();
 		
 		final String[] aF = new String[vF.size()];	final String[] aFID = new String[vF.size()];
 		final String[] aT = new String[vT.size()];		final String[] aTID = new String[vT.size()];
+		final String[] aI = new String[vI.size()];		final String[] aIID = new String[vI.size()];
 
+		
 		SelectItem fornitoriSelectItem = new SelectItem(); 
 		SelectItem trasportatoriSelectItem = new SelectItem(); 
 		SelectItem imballaggiSelectItem = new SelectItem(); 
@@ -93,9 +89,14 @@ public class WindowDettaglioOrdini extends Finestra{
 			aT[i] = vT.get(i).getRagioneSociale();
 			aTID[i] = vT.get(i).getID();
 		}
+		for(int i=0; i<vI.size(); i++){
+			aI[i] = vI.get(i).getDescrizione();
+			aIID[i] = vI.get(i).getID();
+		}
 		
 		fornitoriSelectItem.setValueMap(aF);
 		trasportatoriSelectItem.setValueMap(aT);
+		imballaggiSelectItem.setValueMap(aI);
 
 		fornitoriSelectItem.addChangedHandler(new ChangedHandler() {
 			public void onChanged(ChangedEvent event) {
@@ -115,6 +116,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		
 		fornitore.setEditorType(fornitoriSelectItem);
 		trasportatore.setEditorType(trasportatoriSelectItem);
+		imballaggio.setEditorType(imballaggiSelectItem);
 		
 		  
 		
@@ -129,7 +131,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		lg.setAutoFetchData(true);
 		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdordine(), lo.getIdcliente(), lo.getIdprodotto(),DataSourceDettaglioOrdini.MOD_TabellaDettaglio));
 		
-		lg.setFields(quantita, fornitore, imballaggio,trasportatore);
+		lg.setFields(imballaggio,fornitore,trasportatore,quantita);
 		lg.setAutoSaveEdits(false);
 		lg.setWidth100();
 		lg.setHeight100();
@@ -239,13 +241,13 @@ public class WindowDettaglioOrdini extends Finestra{
 						break;
 					}
 				}
-				/*
-				for(int k=0; i<aF.length;k++){
-					if(aF[k].equals(record.getAttribute("fornitore"))){
-						record.setAttribute("idimballaggio", SessioneUtente.getUsername());
+				
+				for(int k=0; i<aI.length;k++){
+					if(aI[k].equals(record.getAttribute("imballaggio"))){
+						record.setAttribute("idimballaggio", aIID[k]);
 						break;
 					}
-				}*/
+				}
 				
 				
 				
@@ -279,8 +281,8 @@ public class WindowDettaglioOrdini extends Finestra{
 		this.setShowModalMask(true);
 		this.setCanDragReposition(true);  
 		this.setCanDragResize(true);
-		this.setWidth(400);
-		this.setHeight(200);
+		this.setWidth(600);
+		this.setHeight(300);
 		this.centerInPage();
 		this.addItem(SS);
 		this.addItem(confermaButton);

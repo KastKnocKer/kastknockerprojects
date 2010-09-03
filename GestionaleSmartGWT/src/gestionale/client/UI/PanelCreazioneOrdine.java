@@ -57,14 +57,16 @@ public class PanelCreazioneOrdine extends VLayout{
 		form.setAutoWidth();
 		form.setTitleOrientation(TitleOrientation.LEFT);
 		
-		dataCreazioneOrdine = new DateItem();  
+		dataCreazioneOrdine = new DateItem();
+		dataCreazioneOrdine.setInputFormat("YMD");
 		dataCreazioneOrdine.setDisabled(true);
 		dataCreazioneOrdine.setName("dataCreazioneOrdine");  
 		dataCreazioneOrdine.setTitle("Data creazione ordine");  
 		dataCreazioneOrdine.setRequired(true);  
 		dataCreazioneOrdine.setVisible(true);
 		
-		dataPartenzaMerce = new DateItem();  
+		dataPartenzaMerce = new DateItem();
+		//dataPartenzaMerce.setUseTextField(true);
 		dataPartenzaMerce.setName("dataPartenzaMerce");  
 		dataPartenzaMerce.setTitle("Data partenza merce");  
 		dataPartenzaMerce.setRequired(true);  

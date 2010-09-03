@@ -1,5 +1,30 @@
 /** Add css rules here for your application. */
 
+.FlexTable td {
+  border: 1px solid #BBBBBB;
+  padding: 3px;
+}
+
+.FlexTable_Odd_Row td {
+  background-color: #CCFAFC;
+}
+
+.FlexTable_Even_Row td {
+  background-color: #FFFFFF;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /** Example rules used by the template application (remove for your app) */
 h1 {

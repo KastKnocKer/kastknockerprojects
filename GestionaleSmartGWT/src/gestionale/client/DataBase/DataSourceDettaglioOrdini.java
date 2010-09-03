@@ -30,6 +30,8 @@ public class DataSourceDettaglioOrdini extends DataSource{
 	private String[] aFID;
 	private String[] aTID;
 	
+	private DataSourceDettaglioOrdini thisDataSource;
+	
 	public static final int MOD_TabellaComposizione = 1;
 	public static final int  MOD_TabellaDettaglio = 2;
 	public static final int MOD_TabellaCompleta = 3;
@@ -40,6 +42,7 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		this.idProdotto = idProdotto;
 		this.modalita = mod;
 		
+		thisDataSource = this;
 		
 		
 		setID(id);
@@ -108,10 +111,13 @@ public class DataSourceDettaglioOrdini extends DataSource{
         
 		setClientOnly(true);
 		
+		
+		
 		if(mod == MOD_TabellaComposizione){
 			this.getNewRecords();
 		}else if (mod == MOD_TabellaDettaglio){
-			this.getNewRecords();
+			//this.getNewRecordsComplete();
+			this.getNewRecordsComplete();
 		}else if(mod == MOD_TabellaCompleta){
 			this.getNewRecordsComplete();
 		}else return;
@@ -122,7 +128,7 @@ public class DataSourceDettaglioOrdini extends DataSource{
 	
 
 	 private void getNewRecordsComplete() {
-		 String query = "SELECT o.ID, o.Quantita, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.* FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto WHERE o.IDOrdine = '"+idOrdine+"';";
+		 String query = "SELECT o.ID, o.Quantita, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.*, i.Descrizione, i.ID, c.ID, c1.ID, c2.ID FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p JOIN imballaggio i ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto AND i.ID = o.IDImballaggio WHERE o.IDOrdine = '"+idOrdine+"';";
 		 
 		 rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
 
@@ -147,14 +153,27 @@ public class DataSourceDettaglioOrdini extends DataSource{
 					lgr.setAttribute("fornitore", rec[4]);
 					lgr.setAttribute("trasportatore", rec[5]);
 					lgr.setAttribute("idprodotto", rec[6]);
-					
 					lgr.setAttribute("descrizioneprodotto", rec[7]+" "+rec[8]+" "+rec[9]+" "+rec[10]+" "+rec[11]);
 					
+					lgr.setAttribute("descrizioneimballaggio", rec[12]);
+					
+					lgr.setAttribute("idimballaggio", rec[13]);
+					lgr.setAttribute("idcliente", rec[14]);
+					lgr.setAttribute("idfornitore", rec[15]);
+					lgr.setAttribute("idtrasportatore", rec[16]);
+					
+					//DATI INCOMPLETI
+					/*
+					array[i].setId(rec[0]);
+					array[i].setId_Cliente(rec[14]);
+					array[i].setId_Fornitore(rec[15]);
+					array[i].setId_Trasportatore(rec[16]);
+					array[i].setQuantita(rec[1]);
+					*/
 					addData(lgr);
 				}
-				
+				//thisDataSource.arrayDettaglioOrdini=array;
 			}
-			 
 			 
 			 
 		 });

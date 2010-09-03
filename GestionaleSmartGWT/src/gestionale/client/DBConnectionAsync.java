@@ -10,19 +10,20 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface DBConnectionAsync {
 	
-	public void authenticateUser(User utente, AsyncCallback<User> callback);
+	public void authenticateUser(User utente, AsyncCallback<User> asyncCallback);
 
-	public void eseguiQueryContatto(String query, AsyncCallback<Contatto[]> callback);
+	public void eseguiQueryContatto(String query, AsyncCallback<Contatto[]> asyncCallback);
 
-	public void eseguiQueryOrdine(String query,AsyncCallback<Ordine[]> Callback);
+	public void eseguiQueryOrdine(String query,AsyncCallback<Ordine[]> asyncCallback);
 
-	public void eseguiQueryDettaglioOrdine(String query,AsyncCallback<DettaglioOrdine[]> callback);
+	public void eseguiQueryDettaglioOrdine(String query,AsyncCallback<DettaglioOrdine[]> asyncCallback);
 	
-	public void eseguiQueryImballaggio(String query,AsyncCallback<Imballaggio[]> callback);
+	public void eseguiQueryImballaggio(String query,AsyncCallback<Imballaggio[]> asyncCallback);
 	
-	public void eseguiUpdate(String query, AsyncCallback<Boolean> callback);
+	public void eseguiUpdate(String query, AsyncCallback<Boolean> asyncCallback);
 
-	public void eseguiQuery(String query, AsyncCallback<String[][]> callback);
+	public void eseguiQuery(String query, AsyncCallback<String[][]> asyncCallback);
+
 
 	
 
