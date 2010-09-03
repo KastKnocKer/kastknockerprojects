@@ -131,6 +131,10 @@ public class MySQLAccess {
    public String getErrore() { return errore; }       // Ritorna il messaggio d'errore dell'ultima eccezione sollevata
 
 
+   // Esegue una query di selezione dati sul Database
+   // query: una stringa che rappresenta un'istruzione SQL di tipo SELECT da eseguire
+   // colonne: il numero di colonne di cui sarà composta la tupla del risultato
+   // ritorna una matrice di stringhe contenente tutti i dati del risultato
    public String[][] eseguiQueryStringArray(String query) {
 	      Vector v = null;
 	      String [] record;

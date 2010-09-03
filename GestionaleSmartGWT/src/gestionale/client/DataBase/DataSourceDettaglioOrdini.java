@@ -113,14 +113,14 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		
 		
 		
-		if(mod == MOD_TabellaComposizione){
+		if(modalita == MOD_TabellaComposizione){
 			this.getNewRecords();
-		}else if (mod == MOD_TabellaDettaglio){
+		}else if (modalita == MOD_TabellaDettaglio){
 			//this.getNewRecordsComplete();
 			this.getNewRecordsComplete();
-		}else if(mod == MOD_TabellaCompleta){
+		}else if(modalita == MOD_TabellaCompleta){
 			this.getNewRecordsComplete();
-		}else return;
+		}
 		
 		
 	}
@@ -128,7 +128,14 @@ public class DataSourceDettaglioOrdini extends DataSource{
 	
 
 	 private void getNewRecordsComplete() {
-		 String query = "SELECT o.ID, o.Quantita, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.*, i.Descrizione, i.ID, c.ID, c1.ID, c2.ID FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p JOIN imballaggio i ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto AND i.ID = o.IDImballaggio WHERE o.IDOrdine = '"+idOrdine+"';";
+		 String query = null;
+		 if(modalita == MOD_TabellaComposizione){
+				return;
+			}else if (modalita == MOD_TabellaDettaglio){
+				query = "SELECT o.ID, o.Quantita, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.*, i.Descrizione, i.ID, c.ID, c1.ID, c2.ID FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p JOIN imballaggio i ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto AND i.ID = o.IDImballaggio WHERE IDOrdine = " + idOrdine + " AND IDProdotto = " +idProdotto+ " AND IDCliente = "+idCliente;
+			}else if(modalita == MOD_TabellaCompleta){
+				query = "SELECT o.ID, o.Quantita, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.*, i.Descrizione, i.ID, c.ID, c1.ID, c2.ID FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p JOIN imballaggio i ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto AND i.ID = o.IDImballaggio WHERE o.IDOrdine = '"+idOrdine+"';";
+			}
 		 
 		 rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
 

@@ -48,11 +48,6 @@ public class WindowDettaglioOrdini extends Finestra{
 		
 		final ListGrid lg =  new ListGrid();
 		
-		
-		
-		
-        
-		
 		ListGridField quantita		= new ListGridField("quantita","Quantita");
 		ListGridField fornitore		= new ListGridField("fornitore","Fornitore");
 		ListGridField imballaggio	= new ListGridField("descrizioneimballaggio","Imballaggio");
@@ -118,9 +113,6 @@ public class WindowDettaglioOrdini extends Finestra{
 		trasportatore.setEditorType(trasportatoriSelectItem);
 		imballaggio.setEditorType(imballaggiSelectItem);
 		
-		  
-		
-		
 		lg.setShowRecordComponents(true);          
 		lg.setShowRecordComponentsByCell(true);
   
@@ -135,9 +127,6 @@ public class WindowDettaglioOrdini extends Finestra{
 		lg.setAutoSaveEdits(false);
 		lg.setWidth100();
 		lg.setHeight100();
-		
-		
-		
 		
 		//CLICK DESTRO
 		lg.addRowContextClickHandler(new RowContextClickHandler() {
@@ -181,19 +170,18 @@ public class WindowDettaglioOrdini extends Finestra{
 			}
 		});
 		
-		
-		
+
 		ImgButton addButton = new ImgButton();  
 		addButton.setSrc("[SKIN]actions/add.png");  
 		addButton.setSize(16);  
 		addButton.setShowFocused(false);  
 		addButton.setShowRollOver(false);  
 		addButton.setShowDown(false);  
-		addButton.addClickHandler(new ClickHandler() {  
+		addButton.addClickHandler(new ClickHandler() {
              public void onClick(ClickEvent event) {  
             	lg.startEditingNew();  
              }  
-         });
+        });
 		
 		SectionStack SS = new SectionStack();
 		SS.setWidth100();
@@ -217,7 +205,8 @@ public class WindowDettaglioOrdini extends Finestra{
 					return;
 				}
 				
-				int sum = 0;
+				int somma = 0;
+				
 				int[] editrows = lg.getAllEditRows();
 				for(int i=0; i<editrows.length; i++){
 				Record record = lg.getEditedRecord(editrows[i]);
@@ -243,7 +232,7 @@ public class WindowDettaglioOrdini extends Finestra{
 				}
 				
 				for(int k=0; i<aI.length;k++){
-					if(aI[k].equals(record.getAttribute("imballaggio"))){
+					if(aI[k].equals(record.getAttribute("descrizioneimballaggio"))){
 						record.setAttribute("idimballaggio", aIID[k]);
 						break;
 					}
@@ -258,17 +247,16 @@ public class WindowDettaglioOrdini extends Finestra{
 					}else{
 						DataSourceDettaglioOrdini.modificaDettaglioOrdine(record);
 					}
-					sum = sum + Integer.parseInt(record.getAttribute("quantita"));
+					somma = somma + Integer.parseInt(record.getAttribute("quantita"));
 				}
 				lg.saveAllEdits();
-				sum=0;
 				ListGridRecord[] rec =  lg.getRecords();
 				
 				for(int i=0; i<rec.length; i++){
-					sum = sum + Integer.parseInt(rec[i].getAttribute("quantita"));
+					somma = somma + Integer.parseInt(rec[i].getAttribute("quantita"));
 				}
 				lo.setBackgroundColor("#66FF33");
-				lo.setContents(Integer.toString(sum));
+				lo.setContents(Integer.toString(somma));
 				thiswind.destroy();
 			}
 		});

@@ -21,7 +21,7 @@ private String pass = "programma";
 
 public DBConnectionImpl() {
 	
-	//Connessione al database
+	//Imposta Connessione al database
 	db = new MySQLAccess("db_gestionale", "programma", "programma");
 	db.setPublicHost("localhost");
 	db.connetti();
@@ -198,19 +198,19 @@ public Imballaggio[] eseguiQueryImballaggio(String query) {
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////
+// Funzioni generiche per eseguire le query direttamente dall'applicazione client  //
 ////////////////////////////////////////////////////////////////////////////////////
-// Funzione generica per eseguire le query
-//////////////////////////////
 
 public String[][] eseguiQuery(String query) {
 	db.connetti();
+	System.out.println("SERVER Query:  "+query);
 	return db.eseguiQueryStringArray(query);
 }
 
 public boolean eseguiUpdate(String query) {
 	db.connetti();
-	System.out.println("SERVER:  "+query);
-	
+	System.out.println("SERVER QueryUpdate:  "+query);
 	return db.eseguiAggiornamento(query);
 }
 
