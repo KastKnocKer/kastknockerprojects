@@ -160,7 +160,7 @@ public DettaglioOrdine[] eseguiQueryDettaglioOrdine(String query) {
 	return dettaglioordinearray;
 }
 
-
+@Override
 public Imballaggio[] eseguiQueryImballaggio(String query) {
 	db.connetti();
 	Imballaggio[] imballaggioarray = null;
@@ -185,6 +185,7 @@ public Imballaggio[] eseguiQueryImballaggio(String query) {
 			imballaggioarray[i].setTara(record[5]);
 			imballaggioarray[i].setMateriale(record[6]);
 			imballaggioarray[i].setMarchio(record[7]);
+			imballaggioarray[i].setIsSelezionato(record[8]);
 			
 		}
 		
@@ -194,6 +195,7 @@ public Imballaggio[] eseguiQueryImballaggio(String query) {
 	db.disconnetti();
 	return imballaggioarray;
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Funzione generica per eseguire le query
@@ -210,6 +212,9 @@ public boolean eseguiUpdate(String query) {
 	
 	return db.eseguiAggiornamento(query);
 }
+
+
+
 
 
 

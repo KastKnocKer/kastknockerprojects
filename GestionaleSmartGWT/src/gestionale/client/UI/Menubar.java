@@ -87,6 +87,13 @@ public class Menubar extends ToolStrip{
 			}
 		});
 	    
+	    MenuItem visualGestImballaggiMI =new MenuItem("Gestione Imballaggi");
+	    visualGestImballaggiMI.addClickHandler( new ClickHandler() {
+			public void onClick(MenuItemClickEvent event) {
+				GUIManager.addToTabPanel("Gestione Imballaggi", new PanelGestioneImballaggi(), true);
+			}
+		});
+	    
 	    
 	    
 	    
@@ -95,6 +102,7 @@ public class Menubar extends ToolStrip{
 	    
 	    visualizzaMenu.addItem( visualGestProdottiMI );
 	    visualizzaMenu.addItem( visualCatalogoProdottiMI );
+	    visualizzaMenu.addItem( visualGestImballaggiMI );
 	    
 
 	    

@@ -4,6 +4,7 @@ package gestionale.client.UI;
 import gestionale.client.DB;
 import gestionale.client.SessioneUtente;
 import gestionale.client.DataBase.DataSourceContatti;
+import gestionale.client.DataBase.DataSourceImballaggi;
 import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.client.DataBase.DataSourceProdottiCatalogati;
@@ -107,6 +108,7 @@ public class GUIManager {
 		DataSourceProdottiCatalogati.getIstance();
 		DataSourceContatti.getIstance();
 		DataSourceOrdini.getIstance();
+		DataSourceImballaggi.getIstance();
 		
 		Menubar MB = new Menubar();
 		

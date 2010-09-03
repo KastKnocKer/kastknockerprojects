@@ -2,6 +2,8 @@ package gestionale.client.DataBase;
 
 import java.util.Vector;
 
+import org.eclipse.jdt.internal.compiler.ast.ThisReference;
+
 import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
@@ -35,29 +37,24 @@ public class DataSourceImballaggi extends DataSource{
 		idField.setHidden(true);  
 		idField.setPrimaryKey(true);
 		
-		DataSourceTextField ragionesocialeField = new DataSourceTextField("ragionesociale","ragionesociale");
-		DataSourceTextField precisazioneField = new DataSourceTextField("precisazione","precisazione");
-		DataSourceTextField pivaField = new DataSourceTextField("piva","piva");
-		DataSourceTextField logoField = new DataSourceTextField("logo","logo");
-		DataSourceTextField indirizzoField = new DataSourceTextField("indirizzo","indirizzo");
-		DataSourceTextField telefonoField = new DataSourceTextField("telefono","telefono");
-		DataSourceTextField cellulareField = new DataSourceTextField("cellulare","cellulare");
-		DataSourceTextField faxField = new DataSourceTextField("fax","fax");
-		DataSourceTextField emailField = new DataSourceTextField("email","email");
-		DataSourceTextField sitowebField = new DataSourceTextField("sitoweb","sitoweb");
-		DataSourceTextField tiposoggettoField = new DataSourceTextField("tiposoggetto","tiposoggetto");
-		DataSourceTextField provvigioneField = new DataSourceTextField("provvigione","provvigione");
-		DataSourceTextField noteField = new DataSourceTextField("note","note");
-		  
-        setFields(idField, ragionesocialeField, precisazioneField, pivaField, logoField, indirizzoField, telefonoField, cellulareField,faxField,emailField,sitowebField,tiposoggettoField,provvigioneField,noteField); 
+		DataSourceTextField descrizioneField = new DataSourceTextField("descrizione","Descrizione");
+		descrizioneField.setCanEdit(false);
+		DataSourceTextField lunghezzaField = new DataSourceTextField("lunghezza","Lunghezza");
+		DataSourceTextField larghezzaField = new DataSourceTextField("larghezza","Larghezza");
+		DataSourceTextField altezzaField = new DataSourceTextField("altezza","Altezza");
+		DataSourceTextField taraField = new DataSourceTextField("tara","Tara");
+		DataSourceTextField materialeField = new DataSourceTextField("materiale","Materiale");
+		DataSourceTextField marchioField = new DataSourceTextField("marchio","Marchio");
+			
+		setFields(idField, descrizioneField, lunghezzaField, larghezzaField, altezzaField, taraField, materialeField, marchioField); 
 		
 		setClientOnly(true);
 		newRecords();
 	}
 	
 	
+	
 	public void newRecords(){
-			//rpc.eseguiQueryContatto("SELECT * FROM contatti", new AsyncCallback<Contatto[]>()});
 		String query = "SELECT * FROM imballaggio";
 		rpc.eseguiQueryImballaggio(query, new AsyncCallback<Imballaggio[]>(){
 

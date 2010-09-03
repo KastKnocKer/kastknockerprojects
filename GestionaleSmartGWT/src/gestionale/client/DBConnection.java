@@ -14,19 +14,19 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("DBConnection")
 public interface DBConnection extends RemoteService {
 	
-	public User authenticateUser(User utente);
+	public User 				authenticateUser(User utente);
 	
-	public Contatto[] eseguiQueryContatto(String query);
+	public Contatto[] 			eseguiQueryContatto(String query);
 	
-	public Ordine[] eseguiQueryOrdine(String query);
+	public Ordine[] 			eseguiQueryOrdine(String query);
 	
-	public DettaglioOrdine[] eseguiQueryDettaglioOrdine(String query);
+	public DettaglioOrdine[] 	eseguiQueryDettaglioOrdine(String query);
 	
-	public Imballaggio[] eseguiQueryImballaggio(String query);
+	public Imballaggio[] 		eseguiQueryImballaggio(String query);
 
-	public String[][] eseguiQuery(String query);
+	public String[][] 			eseguiQuery(String query);
 
-	public boolean eseguiUpdate(String query);
+	public boolean 				eseguiUpdate(String query);
 
 	
 }
