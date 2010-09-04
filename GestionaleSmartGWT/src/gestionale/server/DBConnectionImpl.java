@@ -6,9 +6,13 @@ import gestionale.shared.DettaglioOrdine;
 import gestionale.shared.Imballaggio;
 import gestionale.shared.Ordine;
 import gestionale.shared.User;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.sql.*;
 import java.util.Vector;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.itextpdf.text.DocumentException;
 
 public class DBConnectionImpl extends RemoteServiceServlet implements DBConnection {
 
@@ -114,6 +118,7 @@ public Ordine[] eseguiQueryOrdine(String query) {
 			ordinearray[i].setIDTrasportatore(record[5]);
 			ordinearray[i].setConvalidato(record[6]);
 			ordinearray[i].setTipoOrdine(record[7]);
+			ordinearray[i].setIDFornitore(record[8]);
 			
 			
 		}
@@ -212,6 +217,14 @@ public boolean eseguiUpdate(String query) {
 	db.connetti();
 	System.out.println("SERVER QueryUpdate:  "+query);
 	return db.eseguiAggiornamento(query);
+}
+
+
+//Chiamata per la creazione dei pdf
+public boolean eseguiCreazioneDocumentiOrdine(String IDOrdine) {
+
+
+	return false;
 }
 
 

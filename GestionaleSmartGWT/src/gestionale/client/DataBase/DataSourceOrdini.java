@@ -90,6 +90,7 @@ public class DataSourceOrdini extends DataSource{
 						record.setAttribute("datapartenzamerce",ordine.getDataPartenzaMerce());
 						record.setAttribute("note",ordine.getNote());
 						record.setAttribute("idtrasportatore",ordine.getIDTrasportatore());
+						record.setAttribute("idfornitore",ordine.getIDFornitore());
 						record.setAttribute("convalidato",ordine.getConvalidato());
 						record.setAttribute("tipoordine",ordine.getTipoOrdine());
 						record.setAttribute("descrizioneordine",ordine.getDataCreazioneOrdine()+" - ["+ordine.getTipoOrdine()+"]");
@@ -111,7 +112,7 @@ public class DataSourceOrdini extends DataSource{
 	 
 	 public static void aggiungiOrdine(final Ordine ordine){
 		 
-		 String query = "INSERT INTO ordini (`DataCreazioneOrdine`,`DataInvioOrdine`,`DataPartenzaMerce`,`Note`,`IDTrasportatore`,`Convalidato`,`TipoOrdine`) VALUES ('"+ordine.getDataCreazioneOrdine()+"','"+ordine.getDataInvioOrdine()+"','"+ordine.getDataPartenzaMerce()+"','"+ordine.getNote()+"','"+ordine.getIDTrasportatore()+"','"+ordine.getConvalidato()+"','"+ordine.getTipoOrdine()+"')";
+		 String query = "INSERT INTO ordini (`DataCreazioneOrdine`,`DataInvioOrdine`,`DataPartenzaMerce`,`Note`,`IDTrasportatore`,`Convalidato`,`TipoOrdine`,`IDFornitore`) VALUES ('"+ordine.getDataCreazioneOrdine()+"','"+ordine.getDataInvioOrdine()+"','"+ordine.getDataPartenzaMerce()+"','"+ordine.getNote()+"','"+ordine.getIDTrasportatore()+"','"+ordine.getConvalidato()+"','"+ordine.getTipoOrdine()+"','"+ordine.getIDFornitore()+"')";
 			
 		 rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
 
@@ -121,13 +122,7 @@ public class DataSourceOrdini extends DataSource{
 			}
 
 			public void onSuccess(Boolean result) {
-				String query = "SELECT * FROM ordini WHERE DataCreazioneOrdine = '"+ordine.getDataCreazioneOrdine()+"' AND " +
-						"DataInvioOrdine = '"+ordine.getDataInvioOrdine()+"' AND " +
-								"DataPartenzaMerce = '"+ordine.getDataPartenzaMerce()+"' AND " +
-										"Note = '"+ordine.getNote()+"' AND " +
-												"IDTrasportatore = '"+ordine.getIDTrasportatore()+"' AND " +
-														"Convalidato = 0 AND " +
-																"TipoOrdine = '"+ordine.getTipoOrdine()+"' ";
+				String query = "SELECT * FROM ordini WHERE ID = (SELECT MAX(ID) FROM ordini)";
 				rpc.eseguiQueryOrdine(query,new AsyncCallback<Ordine[]>(){
 					
 					public void onFailure(Throwable caught) {
@@ -150,6 +145,7 @@ public class DataSourceOrdini extends DataSource{
 							record.setAttribute("datapartenzamerce",ordine.getDataPartenzaMerce());
 							record.setAttribute("note",ordine.getNote());
 							record.setAttribute("idtrasportatore",ordine.getIDTrasportatore());
+							record.setAttribute("idfornitore",ordine.getIDFornitore());
 							record.setAttribute("convalidato",ordine.getConvalidato());
 							record.setAttribute("tipoordine",ordine.getTipoOrdine());
 							
@@ -183,4 +179,13 @@ public class DataSourceOrdini extends DataSource{
  			 }
  		 }
 	 }
+
+	public static Ordine getOrdineByID(String idordine) {
+		for(int i=0; i<vettoreOrdini.size(); i++){
+			if(idordine.equals( vettoreOrdini.get(i).getID() )){
+				return vettoreOrdini.get(i);
+			}
+		}
+		return null;
+	}
 }

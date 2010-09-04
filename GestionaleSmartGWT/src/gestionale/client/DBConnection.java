@@ -28,6 +28,8 @@ public interface DBConnection extends RemoteService {
 
 	public boolean 				eseguiUpdate(String query);
 	
+	public boolean 				eseguiCreazioneDocumentiOrdine(String IDOrdine);
+	
 	
 	
 }

@@ -97,6 +97,7 @@ public class GUIManager {
         RootPanel.get("centro0").add(img);
         RootPanel.get("centro1").add(form);
         RootPanel.get("centro2").add(swapButton);
+        
 		
 	}
 	
@@ -240,7 +241,7 @@ public class GUIManager {
         vLayoutMain.draw();
         
 
-
+       
 	}
 	
 	public static void addToTabPanel(String tabName, Canvas pannello, boolean canclose){

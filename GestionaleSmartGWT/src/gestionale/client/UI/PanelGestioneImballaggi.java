@@ -1,9 +1,11 @@
 package gestionale.client.UI;
 
+import gestionale.client.DataBase.DataSourceDettaglioOrdini;
 import gestionale.client.DataBase.DataSourceImballaggi;
 import gestionale.shared.Imballaggio;
 
 import com.google.gwt.user.client.Window;
+import com.smartgwt.client.data.Record;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
@@ -12,7 +14,13 @@ import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
 import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.VLayout;
+import com.smartgwt.client.widgets.menu.Menu;
+import com.smartgwt.client.widgets.menu.MenuItem;
+import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 
 public class PanelGestioneImballaggi extends VLayout{
 	
@@ -25,6 +33,8 @@ public class PanelGestioneImballaggi extends VLayout{
 	private DynamicForm form;
 	private ListGrid lg;
 	
+	private Record lastImballaggioClicked;
+	
 	
 	public PanelGestioneImballaggi(){
 		
@@ -34,6 +44,49 @@ public class PanelGestioneImballaggi extends VLayout{
 		lg = new ListGrid();
 		lg.setAutoFetchData(true);
 		lg.setDataSource(DataSourceImballaggi.getIstance());
+		
+		lg.addRowContextClickHandler(new RowContextClickHandler() {
+			
+			public void onRowContextClick(RowContextClickEvent event) {
+
+				lastImballaggioClicked = event.getRecord();
+				final int rowrecord = lg.getRecordIndex(lastImballaggioClicked);
+				System.out.println("Contatto cliccato: " + lastImballaggioClicked + " @ riga: "+rowrecord );
+				Menu menu = new Menu();
+				MenuItem mi_rimuovi = new MenuItem("Rimuovi Imballaggio");
+				
+				
+
+				mi_rimuovi.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
+
+					@Override
+					public void onClick(MenuItemClickEvent event) {
+						ListGridRecord lgr = (ListGridRecord) lg.getEditedRecord(rowrecord);
+						if( Window.confirm("Sei sicuro di voler rimuovere:\n\n"+lgr.getAttribute("descrizione")+" ?") ){
+							
+							System.out.println("SelectedRecord: " + lgr+ "  " +  lgr.getAttribute("id"));
+							
+							if(lgr.getAttribute("id") == null){
+								//
+							}else{
+								DataSourceImballaggi.rimuoviImballaggio(lgr);
+								lg.removeData(lgr);
+							}
+							
+						}
+					}
+					
+				});
+				
+				
+				
+				menu.addItem( mi_rimuovi );
+				
+				menu.setAutoDraw(true);
+				menu.showContextMenu();
+				
+			}
+		});
 		
 		this.addMember(lg);
 		

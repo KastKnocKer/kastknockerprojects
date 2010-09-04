@@ -95,17 +95,21 @@ public class PanelCreazioneOrdine extends VLayout{
 		
 		
 		
-		Vector<Contatto> vettTrasp = DataSourceContatti.getVettoreTrasportatori();
-		Vector<Contatto> vettForn = DataSourceContatti.getVettoreFornitori();
+		final Vector<Contatto> vettTrasp = DataSourceContatti.getVettoreTrasportatori();
+		final Vector<Contatto> vettForn = DataSourceContatti.getVettoreFornitori();
 		String[] trasportatori = new String[vettTrasp.size()];
 		String[] fornitori = new String[vettForn.size()];
+		final String[] trasportatoriID = new String[vettTrasp.size()];
+		final String[] fornitoriID = new String[vettForn.size()];
 		
 		for(int i=0; i<vettTrasp.size(); i++){
 			trasportatori[i] = vettTrasp.get(i).getRagioneSociale();
+			trasportatoriID[i] = vettTrasp.get(i).getID();
 		}
 		
 		for(int i=0; i<vettForn.size(); i++){
 			fornitori[i] = vettForn.get(i).getRagioneSociale();
+			fornitoriID[i] = vettForn.get(i).getID();
 		}
 		
 		Trasportatore.setValueMap( trasportatori );
@@ -135,10 +139,24 @@ public class PanelCreazioneOrdine extends VLayout{
 					
 					Ordine ordine = new Ordine();
 					
+					String temp = (String) Trasportatore.getValue();
+					for(int i=0; i<vettTrasp.size(); i++){
+						if(temp.equals(vettTrasp.get(i).getRagioneSociale())){
+							ordine.setIDTrasportatore(trasportatoriID[i]);
+							break;
+						}
+					}
+					temp = (String) Fornitore.getValue();
+					for(int i=0; i<vettForn.size(); i++){
+						if(temp.equals(vettForn.get(i).getRagioneSociale())){
+							ordine.setIDFornitore(fornitoriID[i]);
+							break;
+						}
+					}
+					
 					ordine.setDataCreazioneOrdine(dataCreazioneOrdine.getDisplayValue());
 					ordine.setDataPartenzaMerce(dataPartenzaMerce.getDisplayValue());
 					ordine.setNote((String) note.getValue());
-					ordine.setIDTrasportatore((String) Trasportatore.getValue());
 					ordine.setConvalidato("0");
 					ordine.setTipoOrdine((String) TipoOrdine.getValue());
 					

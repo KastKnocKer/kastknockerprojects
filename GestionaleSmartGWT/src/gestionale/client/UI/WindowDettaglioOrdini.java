@@ -8,8 +8,10 @@ import gestionale.client.SessioneUtente;
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceDettaglioOrdini;
 import gestionale.client.DataBase.DataSourceImballaggi;
+import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.shared.Contatto;
 import gestionale.shared.Imballaggio;
+import gestionale.shared.Ordine;
 
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
@@ -20,6 +22,7 @@ import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.SelectItem;  
+import com.smartgwt.client.widgets.form.fields.SelectOtherItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;  
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -41,10 +44,14 @@ public class WindowDettaglioOrdini extends Finestra{
 
 	private WindowDettaglioOrdini thiswind;
 	private Record lastDettaglioOrdineClicked;
+	private Ordine ordine;
 	
 	public WindowDettaglioOrdini(final LabelOrdinazione lo){
 		super();
 		thiswind = this;
+		
+		ordine = DataSourceOrdini.getOrdineByID(lo.getIdordine());
+		System.out.println("TROVATO: "+ ordine.getIDFornitore()+"  "+ordine.getIDTrasportatore());
 		
 		final ListGrid lg =  new ListGrid();
 		
@@ -74,15 +81,22 @@ public class WindowDettaglioOrdini extends Finestra{
 		
 		SelectItem fornitoriSelectItem = new SelectItem(); 
 		SelectItem trasportatoriSelectItem = new SelectItem(); 
-		SelectItem imballaggiSelectItem = new SelectItem(); 
+		SelectItem imballaggiSelectItem = new SelectItem();
+		
 		
 		for(int i=0; i<vF.size(); i++){
 			aF[i] = vF.get(i).getRagioneSociale();
 			aFID[i] = vF.get(i).getID();
+			if( aFID[i].equals( ordine.getIDFornitore()) ){
+				fornitoriSelectItem.setDefaultValue(aF[i]);
+				}
 		}
 		for(int i=0; i<vT.size(); i++){
 			aT[i] = vT.get(i).getRagioneSociale();
 			aTID[i] = vT.get(i).getID();
+			if( aTID[i].equals( ordine.getIDTrasportatore()) ){
+				trasportatoriSelectItem.setDefaultValue(aT[i]);
+				}
 		}
 		for(int i=0; i<vI.size(); i++){
 			aI[i] = vI.get(i).getDescrizione();
@@ -107,6 +121,29 @@ public class WindowDettaglioOrdini extends Finestra{
 			}
 		});
 		
+		imballaggiSelectItem.addChangedHandler(new ChangedHandler() {
+			public void onChanged(ChangedEvent event) {
+
+				String imballaggio = (String) event.getValue();
+				System.out.println(imballaggio);
+				int indice1 = imballaggio.indexOf('x');
+				int indice2 = imballaggio.indexOf('x', indice1+1);
+				int indice3 = imballaggio.indexOf(' ', indice2+1);
+				int larg	=	Integer.parseInt( imballaggio.substring(0, indice1) );
+				int lung	=	Integer.parseInt( imballaggio.substring(indice1+1, indice2) );
+				int alt		=	Integer.parseInt( imballaggio.substring(indice1+1, indice3) );
+				//Pedana		100x120x200
+				
+				
+				
+				//Eurpallet		80x100x200
+				
+				
+				System.out.println("");
+					
+
+			}
+		});
 		
 		
 		fornitore.setEditorType(fornitoriSelectItem);
@@ -170,6 +207,7 @@ public class WindowDettaglioOrdini extends Finestra{
 			}
 		});
 		
+		
 
 		ImgButton addButton = new ImgButton();  
 		addButton.setSrc("[SKIN]actions/add.png");  
@@ -179,7 +217,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		addButton.setShowDown(false);  
 		addButton.addClickHandler(new ClickHandler() {
              public void onClick(ClickEvent event) {  
-            	lg.startEditingNew();  
+            	lg.startEditingNew();
              }  
         });
 		

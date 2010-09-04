@@ -2,7 +2,7 @@ package gestionale.client.UI;
 
 import java.util.Vector;
 
-import com.google.gwt.user.client.Timer;
+
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;

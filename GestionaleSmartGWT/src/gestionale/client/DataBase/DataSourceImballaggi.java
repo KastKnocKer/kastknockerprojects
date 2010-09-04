@@ -8,6 +8,7 @@ import gestionale.client.DBConnectionAsync;
 import gestionale.shared.Imballaggio;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.fields.DataSourceTextField;
@@ -156,20 +157,25 @@ public class DataSourceImballaggi extends DataSource{
 		
 	}
 	
-	public static void rimuoviImballaggio(ListGridRecord record){/*
-		Contatto contatto = null;
-		for(int i=0; i<vettoreContatti.size(); i++){
-			contatto = vettoreContatti.get(i);
-			if(contatto.getRagioneSociale().equals(record.getAttribute("ragionesociale"))){
-				DB db = new DB();
-				String query = "DELETE FROM contatti WHERE ID='" + contatto.getID()+ "'";
-        		db.eseguiUpdateToDB(query);
-        		vettoreContatti.remove(i);
-				istance.removeData(record);
-				break;
+	public static void rimuoviImballaggio(ListGridRecord record){
+		String query = "DELETE FROM imballaggio WHERE ID = '"+record.getAttribute("id")+"'";
+		
+		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
+
+			public void onFailure(Throwable caught) {
+				Window.alert("Chiamata fallita!");
 			}
-		}
-		*/
+
+			public void onSuccess(Boolean result) {
+				if(result){
+					//OK
+				}else{
+					Window.alert("La procedura di rimozione potrebbe non esser andata a buon fine!!");
+				}
+			}
+				
+				
+		});
 	}
 	
 	public static Vector<Imballaggio> getVettoreImballaggi(){

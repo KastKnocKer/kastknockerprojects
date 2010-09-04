@@ -12,6 +12,7 @@ public class Ordine implements IsSerializable{
 	private String DataPartenzaMerce;
 	private String Note;
 	private String IDTrasportatore;
+	private String IDFornitore;
 	private String Convalidato;
 	private String TipoOrdine;
 	
@@ -63,6 +64,12 @@ public class Ordine implements IsSerializable{
 	}
 	public String getTipoOrdine() {
 		return TipoOrdine;
+	}
+	public void setIDFornitore(String iDFornitore) {
+		IDFornitore = iDFornitore;
+	}
+	public String getIDFornitore() {
+		return IDFornitore;
 	}
 	
 
