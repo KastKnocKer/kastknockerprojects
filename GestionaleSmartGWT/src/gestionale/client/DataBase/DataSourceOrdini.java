@@ -2,7 +2,6 @@ package gestionale.client.DataBase;
 
 import java.util.Vector;
 
-import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.shared.Ordine;
@@ -11,7 +10,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
-import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -167,17 +165,28 @@ public class DataSourceOrdini extends DataSource{
 			
 	 }
 
-	 public static void rimuoviOrdine(String idOrdine){
-		 DB db = new DB();
-		 String query = "DELETE FROM ordini WHERE ID='" + idOrdine + "'";
- 		 db.eseguiUpdateToDB(query);
- 		 for(int i=0; i<vettoreOrdini.size();i++){
+	 public static void rimuoviOrdine(final String idOrdine){
+		 
+		String query = "DELETE FROM ordini WHERE ID='" + idOrdine + "'";
+ 		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+ 			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
+ 			public void onSuccess(Boolean result) {
+				if(!result){
+					Window.alert("L'ordine non è stato rimosso correttamente.");
+					return;
+				}
+				for(int i=0; i<vettoreOrdini.size();i++){
+		 			if( DataSourceOrdini.vettoreOrdini.get(i).getID().equals(idOrdine) ){
+		 				DataSourceOrdini.vettoreOrdini.remove(i);
+		 				 break;
+		 			}
+		 		 }
+			}
  			
- 			 if( DataSourceOrdini.vettoreOrdini.get(i).getID().equals(idOrdine) ){
- 				DataSourceOrdini.vettoreOrdini.remove(i);
- 				 break;
- 			 }
- 		 }
+		});
+ 		 
 	 }
 
 	public static Ordine getOrdineByID(String idordine) {

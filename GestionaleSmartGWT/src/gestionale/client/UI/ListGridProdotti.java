@@ -17,10 +17,8 @@ public class ListGridProdotti extends ListGrid{
 		setHeight100();
 		setWidth100();
 		setShowAllRecords(true);
-		//setCellHeight(22);
-		//setGroupStartOpen(GroupStartOpen.NONE);
-		//setGroupByField("tiposoggetto");
-		setDataSource(DataSourceProdottiCatalogati.getIstance());
+		
+		setDataSource( new DataSourceProdottiCatalogati() );
 		
 		
 		ListGridField categoriaField = new ListGridField("categoria", "Categoria");  

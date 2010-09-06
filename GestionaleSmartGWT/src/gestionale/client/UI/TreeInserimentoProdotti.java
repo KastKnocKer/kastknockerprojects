@@ -1,9 +1,12 @@
 package gestionale.client.UI;
 
-import gestionale.client.DB;
+import gestionale.client.DBConnection;
+import gestionale.client.DBConnectionAsync;
 import gestionale.client.DataBase.DataSourceProdotti;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.Window;
@@ -16,26 +19,19 @@ import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.CellContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.CellContextClickHandler;
-import com.smartgwt.client.widgets.grid.events.CellDoubleClickEvent;
-import com.smartgwt.client.widgets.grid.events.CellDoubleClickHandler;
 import com.smartgwt.client.widgets.grid.events.EditorExitEvent;
 import com.smartgwt.client.widgets.grid.events.EditorExitHandler;
-import com.smartgwt.client.widgets.grid.events.RecordClickEvent;
-import com.smartgwt.client.widgets.grid.events.RecordClickHandler;
 import com.smartgwt.client.widgets.grid.events.RecordDoubleClickEvent;
 import com.smartgwt.client.widgets.grid.events.RecordDoubleClickHandler;
-import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
-import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeGridField;
-import com.smartgwt.client.widgets.tree.events.NodeContextClickEvent;
-import com.smartgwt.client.widgets.tree.events.NodeContextClickHandler;
 
 public class TreeInserimentoProdotti extends TreeGrid{
 	
+	private static DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	private static TreeGrid tg;
 	private static Record selezionato = null;
 	
@@ -131,7 +127,6 @@ public class TreeInserimentoProdotti extends TreeGrid{
 				Record record = event.getRecord();
 				String tipo = record.getAttribute("Tipo");
 				String query = null;
-				DB db = new DB();
 				String id = record.getAttribute("ID");
 				System.out.println("RECORD: " + record.getAttribute("Tipo") + " " + record.getAttribute("ID"));
 				
@@ -147,17 +142,29 @@ public class TreeInserimentoProdotti extends TreeGrid{
 					query = "UPDATE prodotto_calibro SET Calibro='"+ event.getNewValue() +"' WHERE ID="+ id.substring(2) +";";
 				}
 
-				
-				db.eseguiUpdateToDB(query);
+				rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+					public void onSuccess(Boolean result) {
+						if(!result){
+							com.google.gwt.user.client.Window.alert("La modifica non è avvenuta correttamente");
+							return;
+						}
+						
+					}
+					public void onFailure(Throwable caught) {
+						com.google.gwt.user.client.Window.alert(caught.getMessage());
+					}
+				});
 			}
 		});
         
         
       //Aspetta che siano completamente caricati i dati dal db
+        
         new Timer(){
         	public void run() {
+        		
+        		setDataSource( new DataSourceProdotti() );
         		if(DataSourceProdotti.ready == 5){
-        			setDataSource( DataSourceProdotti.getIstance() );
         			
         			TreeGridField nameField = new TreeGridField("Name");
         	        nameField.setCanEdit(true);
@@ -242,9 +249,7 @@ public class TreeInserimentoProdotti extends TreeGrid{
 		nr.setAttribute("PID", PID);
 		nr.setAttribute("Name", name);
 		
-		DB db = new DB();
 		String query = null;
-		
 		
 		if(tipo.equals("Categoria")){
 			String id = DataSourceProdotti.getNewIDMaxTipologia();
@@ -280,7 +285,18 @@ public class TreeInserimentoProdotti extends TreeGrid{
 			// NIENTE
 		}
 		
-		db.eseguiUpdateToDB(query);
+		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+			public void onFailure(Throwable caught) {
+				com.google.gwt.user.client.Window.alert(caught.getMessage());
+			}
+			public void onSuccess(Boolean result) {
+				if(!result){
+					com.google.gwt.user.client.Window.alert("L'oggetto non è stato inserito. Riprovare!");
+					return;
+				}
+			}
+			
+		});
 		
 		DataSourceProdotti.getIstance().addData(nr);
 	}

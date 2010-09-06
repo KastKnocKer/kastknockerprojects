@@ -45,6 +45,7 @@ public class PanelGestioneImballaggi extends VLayout{
 		lg = new ListGrid();
 		lg.setAutoFetchData(true);
 		lg.setDataSource(DataSourceImballaggi.getIstance());
+		lg.fetchData();
 		
 		lg.addRowContextClickHandler(new RowContextClickHandler() {
 			
@@ -60,7 +61,6 @@ public class PanelGestioneImballaggi extends VLayout{
 
 				mi_rimuovi.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
 
-					@Override
 					public void onClick(MenuItemClickEvent event) {
 						ListGridRecord lgr = (ListGridRecord) lg.getEditedRecord(rowrecord);
 						if( Window.confirm("Sei sicuro di voler rimuovere:\n\n"+lgr.getAttribute("descrizione")+" ?") ){

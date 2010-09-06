@@ -1,15 +1,9 @@
 package gestionale.client.UI;
 
-import gestionale.client.DB;
-import gestionale.client.Liste;
 import gestionale.client.DataBase.DataSourceOrdini;
-import gestionale.shared.Contatto;
-import gestionale.shared.Ordine;
 
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.types.SortDirection;
-import com.smartgwt.client.widgets.events.DoubleClickEvent;
-import com.smartgwt.client.widgets.events.DoubleClickHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -21,9 +15,6 @@ import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.ClickHandler;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
-import com.smartgwt.client.widgets.tree.TreeGrid;
-import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
-import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 public class ListGridOrdini extends ListGrid{
 	

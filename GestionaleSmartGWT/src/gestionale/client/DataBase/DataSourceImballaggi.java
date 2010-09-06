@@ -2,7 +2,6 @@ package gestionale.client.DataBase;
 
 import java.util.Vector;
 
-import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.shared.Imballaggio;
@@ -56,13 +55,10 @@ public class DataSourceImballaggi extends DataSource{
 		System.out.println("Client - Eseguo query: " + query);
 		rpc.eseguiQueryImballaggio(query, new AsyncCallback<Imballaggio[]>(){
 
-			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
+				Window.alert(caught.getMessage());
 			}
-
-			@Override
+			
 			public void onSuccess(Imballaggio[] result) {
 				vettoreImballaggi.removeAllElements();
 				Imballaggio imballaggio = null;
@@ -105,32 +101,23 @@ public class DataSourceImballaggi extends DataSource{
 		lgr.setAttribute("marchio", imballaggio.getMarchio());
 
 		
-		DB db = new DB();
 		String query = "INSERT INTO imballaggio (`Descrizione`,`Lunghezza`,`Larghezza`,`Altezza`,`Tara`,`Materiale`,`Marchio`,`Selezionato`) " +
 				"VALUES ('"+imballaggio.getDescrizione()+"',"+imballaggio.getLarghezza()+","+imballaggio.getLunghezza()+","+imballaggio.getAltezza()+","+imballaggio.getTara()+",'"+imballaggio.getMateriale()+"','"+imballaggio.getMarchio()+"',"+imballaggio.getIsSelezionato()+");";
 
 		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
 
-			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
-				
+				Window.alert(caught.getMessage());
 			}
-
-			@Override
 			public void onSuccess(Boolean result) {
 				if(result){
 					String query = "SELECT MAX(ID) FROM imballaggio";
 
 					rpc.eseguiQuery(query, new AsyncCallback<String[][]>(){
 
-						@Override
 						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-							
+							Window.alert(caught.getMessage());
 						}
-
-						@Override
 						public void onSuccess(String[][] result) {
 							// TODO Auto-generated method stub
 							System.out.println("GIMME POWWA LIKE AN ID: " + result[0][0]);

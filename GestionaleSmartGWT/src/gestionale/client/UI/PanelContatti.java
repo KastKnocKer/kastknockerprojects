@@ -2,14 +2,17 @@ package gestionale.client.UI;
 
 import java.util.Vector;
 
-import gestionale.client.DB;
+import gestionale.client.DBConnection;
+import gestionale.client.DBConnectionAsync;
 import gestionale.client.Liste;
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceContattiCampiVari;
 import gestionale.client.DataBase.DataSourceContattiIndirizzi;
 import gestionale.shared.Contatto;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.ListGridEditEvent;
 import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.types.TitleOrientation;
@@ -32,7 +35,6 @@ import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
-import com.smartgwt.client.widgets.tab.TabSet;
 
 
 
@@ -58,6 +60,8 @@ public class PanelContatti extends VLayout{
 	private ListGrid listGridEmail;
 	
 	private Tab tab;
+	
+	
 	
 	
 	
@@ -506,11 +510,25 @@ ImgButton removeEmail = new ImgButton();
 	        		  for(int i=0;i<v.size();i++){
 	        			  if( v.get(i).getID().equals(contatto.getID()) ){v.setElementAt(contatto, i); break;}
 	        		  }
-	        		  
-	        		  DB db = new DB();
+
+
 	        		  String query = "UPDATE contatti SET RagioneSociale='"+contatto.getRagioneSociale()+"',Precisazione='"+contatto.getPrecisazione()+"',PIVA='"+contatto.getPIVA()+"',Logo='"+contatto.getLogo()+"',Indirizzo='"+contatto.getIndirizzo()+"',Telefono='"+contatto.getTelefono()+"',Cellulare='"+contatto.getCellulare()+"',Fax='"+contatto.getFax()+"',Email='"+contatto.geteMail()+"',SitoWeb='"+contatto.getSitoWeb()+"',TipoSoggetto='"+contatto.getTipoSoggetto()+"',Provvigione='"+contatto.getProvvigione()+"',Note='"+contatto.getNote()+"' WHERE ID='"+contatto.getID()+"'";
-	        		  db.eseguiUpdateToDB(query);
-	        		  //dialog.removeFromParent();
+	        		  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+	        		  rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+						
+							@Override
+							public void onSuccess(Boolean result) {
+								if(!result){
+									Window.alert("Le modifiche non sono state apportate correttamente!!");
+								}
+								
+							}
+							
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert(caught.getMessage());
+							}
+	        		  	});
 	        		  
 	        	  }else{
 	        		  DataSourceContatti.aggiungiContatto(contatto);
@@ -534,20 +552,34 @@ ImgButton removeEmail = new ImgButton();
 						public void onClick(ClickEvent event) {
 							if ( Window.confirm("Sei sicuro di voler rimuovere questo contatto?")){
 
-								DB db = new DB();
+
 				        		String query = "DELETE FROM contatti WHERE ID='" + contatto.getID()+ "'";
-				        		db.eseguiUpdateToDB(query);
+				        		DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+				        		  rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+									
+										@Override
+										public void onSuccess(Boolean result) {
+											if(!result){
+												Window.alert("La rimozione del contatto non è avvenuta correttamente!!");
+											}
+											Vector<Contatto> v = Liste.getVettoreContatti();
+							        		
+							        		for(int i=0; i<v.size(); i++){
+							        			if( v.get(i).getID().equals(contatto.getID()) ){
+							        				v.remove(i);
+							        				break;
+							        			}
+							        		}
+										}
+										
+										@Override
+										public void onFailure(Throwable caught) {
+											Window.alert(caught.getMessage());
+										}
+				        		  	});
 				        		
-				        		Vector<Contatto> v = Liste.getVettoreContatti();
 				        		
-				        		for(int i=0; i<v.size(); i++){
-				        			if( v.get(i).getID().equals(contatto.getID()) ){
-				        				v.remove(i);
-				        				break;
-				        			}
-				        		}
 				        		
-				        		//TreeContatti.aggiornaTreeContatti();
 					        	thisPanel.closePanel();	
 							}
 						}});

@@ -3,43 +3,13 @@ package gestionale.client.UI;
 import java.util.Vector;
 
 
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
-import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.smartgwt.client.types.Overflow;
-import com.smartgwt.client.types.TitleOrientation;
-import com.smartgwt.client.widgets.Label;
-import com.smartgwt.client.widgets.Scrollbar;
-import com.smartgwt.client.widgets.events.DoubleClickEvent;
-import com.smartgwt.client.widgets.events.DoubleClickHandler;
-import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.FormItem;
-import com.smartgwt.client.widgets.form.fields.SpinnerItem;
-import com.smartgwt.client.widgets.form.fields.TextAreaItem;
-import com.smartgwt.client.widgets.form.fields.TextItem;
-import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
-import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
-import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
-import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
-import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.Layout;
-import com.smartgwt.client.widgets.layout.VLayout;
-import com.smartgwt.client.widgets.menu.IMenuButton;
-import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
 import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
 import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
-
-import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceDettaglioOrdini;
-import gestionale.client.DataBase.DataSourceProdotti;
-import gestionale.client.DataBase.DataSourceProdottiCatalogati;
 import gestionale.shared.Contatto;
-import gestionale.shared.DettaglioOrdine;
-import gestionale.shared.Ordine;
-import gestionale.shared.Prodotto;
 
 public class PanelOrdine extends TabSet{
 	
@@ -57,15 +27,11 @@ public class PanelOrdine extends TabSet{
 	private ListGridDettaglioOrdini lgdettaglioordini;
 	private FlexTableOrdineOrdinario flextableOrdineOrdinario;
 	
-	
 	private Vector<Contatto> vettoreContattiFiltrato = null;
 	private Vector<String[]> vettoreProdottiDaVisualizzare = null;
 
-	
 	private String IDOrdine;
-	
-	private Vector<LabelOrdinazione> vLabel = null;
-	private DataSourceDettaglioOrdini dsdo = null;
+	private DataSourceDettaglioOrdini dsdo; 
 	
 	
 	public PanelOrdine(String idOrdine){

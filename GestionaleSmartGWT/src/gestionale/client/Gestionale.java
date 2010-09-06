@@ -14,9 +14,6 @@ public class Gestionale implements EntryPoint {
 		GUIManager.visualizzaLogin();
 		//GUIManager.enterAfterLogin();
 		
-	
-		Liste l = new Liste();
-		new ProdottoOBJ();
 	}
 	
 	

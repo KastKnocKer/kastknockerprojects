@@ -1,7 +1,6 @@
 package gestionale.client.UI;
 
 
-import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.client.SessioneUtente;
@@ -13,6 +12,7 @@ import gestionale.client.DataBase.DataSourceProdottiCatalogati;
 import gestionale.shared.User;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -40,7 +40,6 @@ import com.smartgwt.client.widgets.tab.TabSet;
 public class GUIManager {
 	
 	private static VLayout vLayoutMain;
-	private static VLayout vLayoutSx;
 	
 	private static TextItem usernameItem;
 	private static PasswordItem passwordItem;
@@ -87,10 +86,27 @@ public class GUIManager {
 								user.setPassword( (String) passwordItem.getValue() );
 								usernameItem.setValue("a");
 								usernameItem.setValue("a");
+								
 								SessioneUtente.setUsername( (String) usernameItem.getValue() );
-								DB db = new DB();
-								db.eseguiAutentificazione(user);
 
+								DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+								
+								rpc.authenticateUser(user, new AsyncCallback<User>() {
+
+									public void onFailure(Throwable ex) {
+										Window.alert(ex.getMessage());
+									}
+									
+									public void onSuccess(User result) {
+										if(result == null){
+											Window.alert("Parametri di autentificazione errati!!/nRiprova!");
+										}else{
+											GUIManager.enterAfterLogin();
+										}
+										
+									}
+									
+								});
 								 
 							}  
         });  

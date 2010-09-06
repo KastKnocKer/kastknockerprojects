@@ -2,11 +2,9 @@ package gestionale.client.DataBase;
 
 import java.util.Vector;
 
-import gestionale.client.DB;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.shared.Contatto;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -116,54 +114,74 @@ public class DataSourceContatti extends DataSource{
 		return vettoreTrasportatori;
 	}
 	
-	public static void aggiungiContatto(Contatto contatto){
+	public static void aggiungiContatto(final Contatto contatto){
 		//Aggiungo al database
-		DB db = new DB();
 		String query = "INSERT INTO contatti (`RagioneSociale`,`Precisazione`,`PIVA`,`Logo`,`Indirizzo`,`Telefono`,`Cellulare`,`Fax`,`Email`,`SitoWeb`,`TipoSoggetto`,`Provvigione`,`Note`) VALUES ('"+contatto.getRagioneSociale()+"','"+contatto.getPrecisazione()+"','"+contatto.getPIVA()+"','"+contatto.getLogo()+"','"+contatto.getIndirizzo()+"','"+contatto.getTelefono()+"','"+contatto.getCellulare()+"','"+contatto.getFax()+"','"+contatto.geteMail()+"','"+contatto.getSitoWeb()+"','"+contatto.getTipoSoggetto()+"','"+contatto.getProvvigione()+"','"+contatto.getNote()+"')";
-		db.eseguiUpdateToDB(query);
-		//Aggiungo al Vettore
-		vettoreContatti.add(contatto);
-		if(contatto.getTipoSoggetto().equals("Trasportatore")) vettoreTrasportatori.add(contatto);
-		if(contatto.getTipoSoggetto().equals("Fornitore")) vettoreFornitori.add(contatto);
 		
-		//Aggiungo ai listgridrecords
-		ListGridRecord record = new ListGridRecord();
-		record.setAttribute("id", contatto.getID());
-		record.setAttribute("ragionesociale", contatto.getRagioneSociale());
-		record.setAttribute("precisazione", contatto.getPrecisazione());
-		record.setAttribute("piva", contatto.getPIVA());
-		record.setAttribute("logo", contatto.getLogo());
-		record.setAttribute("indirizzo", contatto.getIndirizzo());
-		record.setAttribute("telefono", contatto.getTelefono());
-		record.setAttribute("cellulare", contatto.getCellulare());
-		record.setAttribute("fax", contatto.getFax());
-		record.setAttribute("email", contatto.geteMail());
-		record.setAttribute("sitoweb", contatto.getSitoWeb());
-		record.setAttribute("tiposoggetto", contatto.getTipoSoggetto());
-		record.setAttribute("provvigione", contatto.getProvvigione());
-		record.setAttribute("note", contatto.getNote());
-		istance.addData(record);
-	}
-	
-	public static void rimuoviContatto(ListGridRecord record){
-		Contatto contatto = null;
-		for(int i=0; i<vettoreContatti.size(); i++){
-			contatto = vettoreContatti.get(i);
-			if(contatto.getRagioneSociale().equals(record.getAttribute("ragionesociale"))){
-				DB db = new DB();
-				String query = "DELETE FROM contatti WHERE ID='" + contatto.getID()+ "'";
-        		db.eseguiUpdateToDB(query);
-        		vettoreContatti.remove(i);
-				istance.removeData(record);
-				break;
+		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
 			}
-		}
-		
+			
+			public void onSuccess(Boolean result) {
+				if(!result){
+					Window.alert("Non è stato possibile aggiungere il contatto.");
+					return;
+				}
+				
+				//Aggiungo al Vettore
+				vettoreContatti.add(contatto);
+				if(contatto.getTipoSoggetto().equals("Trasportatore")) vettoreTrasportatori.add(contatto);
+				if(contatto.getTipoSoggetto().equals("Fornitore")) vettoreFornitori.add(contatto);
+				
+				//Aggiungo ai listgridrecords
+				ListGridRecord record = new ListGridRecord();
+				record.setAttribute("id", contatto.getID());
+				record.setAttribute("ragionesociale", contatto.getRagioneSociale());
+				record.setAttribute("precisazione", contatto.getPrecisazione());
+				record.setAttribute("piva", contatto.getPIVA());
+				record.setAttribute("logo", contatto.getLogo());
+				record.setAttribute("indirizzo", contatto.getIndirizzo());
+				record.setAttribute("telefono", contatto.getTelefono());
+				record.setAttribute("cellulare", contatto.getCellulare());
+				record.setAttribute("fax", contatto.getFax());
+				record.setAttribute("email", contatto.geteMail());
+				record.setAttribute("sitoweb", contatto.getSitoWeb());
+				record.setAttribute("tiposoggetto", contatto.getTipoSoggetto());
+				record.setAttribute("provvigione", contatto.getProvvigione());
+				record.setAttribute("note", contatto.getNote());
+				istance.addData(record);
+			}
+		});
 	}
 	
-	
-	
+	public static void rimuoviContatto(final ListGridRecord record){
+		String query = "DELETE FROM contatti WHERE ID='" + record.getAttribute("id")+ "'";
+		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+		
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
 
-
+			public void onSuccess(Boolean result) {
+				if(!result){
+					Window.alert("Non è stato possibile rimuovere il contatto");
+					return;
+				}else{
+					Contatto contatto = null;
+					for(int i=0; i<vettoreContatti.size(); i++){
+						contatto = vettoreContatti.get(i);
+						if(contatto.getRagioneSociale().equals(record.getAttribute("ragionesociale"))){
+							vettoreContatti.remove(i);
+							istance.removeData(record);
+							break;
+						}
+					}
+				}
+			}
+		});
+	}
+	
 	
 }

@@ -1,7 +1,5 @@
 package gestionale.client.DataBase;
 
-import java.util.Vector;
-
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 
@@ -22,7 +20,6 @@ public class DataSourceProdotti extends DataSource{
 	private static int IDMaxImballaggio = 0;
 	
 	private static DataSourceProdotti istance = null;
-	
 	private static  DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 
 	
@@ -34,7 +31,6 @@ public class DataSourceProdotti extends DataSource{
 	}
 	
 	public DataSourceProdotti(){
-		this.
 		setID(id);  
         setTitleField("Name");
 		DataSourceTextField nameField = new DataSourceTextField("Name", "Name");  
@@ -52,13 +48,9 @@ public class DataSourceProdotti extends DataSource{
 		PIDField.setHidden(true);
 		PIDField.setRootValue("root");
 		
-		 
-		 
-		 setFields(nameField, IDField, PIDField);
-		 
-		 setClientOnly(true);
-		 
-		 getNewRecords();
+		setFields(nameField, IDField, PIDField);
+		setClientOnly(true);
+		getNewRecords();
 	}
 	
 	public static void addRecord(ListGridRecord lgr){
