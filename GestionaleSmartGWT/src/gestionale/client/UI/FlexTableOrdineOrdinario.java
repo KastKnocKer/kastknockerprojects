@@ -203,17 +203,15 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 
 			@Override
 			public void run() {
-				System.out.println("Run Timer");
 				DettaglioOrdine[] array = dsdo.getArrayDettaglioOrdini();
 				LabelOrdinazione lo = null;
-				if(array == null) {schedule(500);}else{
-				int num;
+				if(array == null) {
+					schedule(500);
+				}else{
 				for(int i=0; i<array.length; i++){
 					
-					num = 0;
 					String idP = array[i].getId_Prodotto();
 					String idC = array[i].getId_Cliente();
-					System.out.println("I	: "+idP +" 		"+idC);
 					
 					for(int k=0; k<vLabel.size(); k++){
 						lo = vLabel.get(k);

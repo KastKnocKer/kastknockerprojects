@@ -15,6 +15,7 @@ import gestionale.shared.Ordine;
 
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.data.Record;
+import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.ImgButton;
@@ -22,6 +23,7 @@ import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.SelectItem;  
+import com.smartgwt.client.widgets.form.fields.SpinnerItem;
 import com.smartgwt.client.widgets.form.fields.SelectOtherItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;  
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
@@ -56,16 +58,19 @@ public class WindowDettaglioOrdini extends Finestra{
 		final ListGrid lg =  new ListGrid();
 		
 		ListGridField quantita		= new ListGridField("quantita","Quantita");
+		ListGridField pedane		= new ListGridField("pedane","N Pedane");
 		ListGridField fornitore		= new ListGridField("fornitore","Fornitore");
 		ListGridField imballaggio	= new ListGridField("descrizioneimballaggio","Imballaggio");
 		ListGridField trasportatore	= new ListGridField("trasportatore","Trasportatore");
 		
-		quantita.setWidth("10%");
-		fornitore.setWidth("25%");
-		imballaggio.setWidth("40%");
-		trasportatore.setWidth("25%");
+		quantita.setWidth("12%");
+		pedane.setWidth("13%");
+		fornitore.setWidth("20%");
+		imballaggio.setWidth("35%");
+		trasportatore.setWidth("20%");
 		
 		quantita.setRequired(true);
+		pedane.setRequired(true);
 		fornitore.setRequired(true);
 		imballaggio.setRequired(true);
 		trasportatore.setRequired(true);
@@ -82,7 +87,12 @@ public class WindowDettaglioOrdini extends Finestra{
 		SelectItem fornitoriSelectItem = new SelectItem(); 
 		SelectItem trasportatoriSelectItem = new SelectItem(); 
 		SelectItem imballaggiSelectItem = new SelectItem();
+		SpinnerItem pedaneSpinnerItem = new SpinnerItem("pedane", "N Pedane");
 		
+		pedaneSpinnerItem.setStep(0.5);
+		pedaneSpinnerItem.setMin(0.5);
+		pedane.setEditorType(pedaneSpinnerItem);
+		pedane.setType(ListGridFieldType.FLOAT);
 		
 		for(int i=0; i<vF.size(); i++){
 			aF[i] = vF.get(i).getRagioneSociale();
@@ -106,7 +116,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		fornitoriSelectItem.setValueMap(aF);
 		trasportatoriSelectItem.setValueMap(aT);
 		imballaggiSelectItem.setValueMap(aI);
-
+/*
 		fornitoriSelectItem.addChangedHandler(new ChangedHandler() {
 			public void onChanged(ChangedEvent event) {
 				System.out.println("RIGA: "+event.getValue());
@@ -119,7 +129,7 @@ public class WindowDettaglioOrdini extends Finestra{
 				System.out.println("RIGA: "+event.getValue()+" RECORD: "+lg.getSelectedRecord()+event.getItem());
 				//lg.getSelectedRecord().setAttribute("idtrasportatore", "GAY");
 			}
-		});
+		});*/
 		
 		imballaggiSelectItem.addChangedHandler(new ChangedHandler() {
 			public void onChanged(ChangedEvent event) {
@@ -161,7 +171,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		lg.setAutoFetchData(true);
 		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdordine(), lo.getIdcliente(), lo.getIdprodotto(),DataSourceDettaglioOrdini.MOD_TabellaDettaglio));
 		
-		lg.setFields(imballaggio,fornitore,trasportatore,quantita);
+		lg.setFields(imballaggio,fornitore,trasportatore,pedane,quantita);
 		lg.setAutoSaveEdits(false);
 		lg.setWidth100();
 		lg.setHeight100();
@@ -308,8 +318,8 @@ public class WindowDettaglioOrdini extends Finestra{
 		this.setShowModalMask(true);
 		this.setCanDragReposition(true);  
 		this.setCanDragResize(true);
-		this.setWidth(600);
-		this.setHeight(300);
+		this.setWidth(700);
+		this.setHeight(400);
 		this.centerInPage();
 		this.addItem(SS);
 		this.addItem(confermaButton);

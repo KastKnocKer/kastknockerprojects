@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
+import com.smartgwt.client.data.fields.DataSourceFloatField;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
 import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
@@ -69,6 +70,8 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		DataSourceTextField clienteField = new DataSourceTextField("cliente","Cliente");
 		DataSourceTextField prodottoField = new DataSourceTextField("descrizioneprodotto","Prodotto");
 		DataSourceTextField imballaggioField = new DataSourceTextField("descrizioneimballaggio","Imballaggio");
+		DataSourceFloatField pedaneField = new DataSourceFloatField("pedane","N Pedane");
+	
 		
 		idordineField.setHidden(true);
 		idprodottoField.setHidden(true);
@@ -81,7 +84,7 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		
 		
 		
-        setFields(clienteField, quantitaField, prodottoField, fornitoreField, trasportatoreField, imballaggioField, idField, idnField, idordineField, idprodottoField, idclienteField, idimballaggioField, userField); 
+        setFields(clienteField, quantitaField, prodottoField, fornitoreField, trasportatoreField, imballaggioField, idField, idnField, idordineField, idprodottoField, idclienteField, idimballaggioField, userField,pedaneField); 
 		
     
         if(modalita == MOD_TabellaDettaglio){
@@ -132,9 +135,9 @@ public class DataSourceDettaglioOrdini extends DataSource{
 		 if(modalita == MOD_TabellaComposizione){
 				return;
 			}else if (modalita == MOD_TabellaDettaglio){
-				query = "SELECT o.ID, o.Quantita, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.*, i.Descrizione, i.ID, c.ID, c1.ID, c2.ID FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p JOIN imballaggio i ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto AND i.ID = o.IDImballaggio WHERE IDOrdine = " + idOrdine + " AND IDProdotto = " +idProdotto+ " AND IDCliente = "+idCliente;
+				query = "SELECT o.ID, o.Quantita, o.NumPedane, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.*, i.Descrizione, i.ID, c.ID, c1.ID, c2.ID FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p JOIN imballaggio i ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto AND i.ID = o.IDImballaggio WHERE IDOrdine = " + idOrdine + " AND IDProdotto = " +idProdotto+ " AND IDCliente = "+idCliente;
 			}else if(modalita == MOD_TabellaCompleta){
-				query = "SELECT o.ID, o.Quantita, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.*, i.Descrizione, i.ID, c.ID, c1.ID, c2.ID FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p JOIN imballaggio i ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto AND i.ID = o.IDImballaggio WHERE o.IDOrdine = '"+idOrdine+"';";
+				query = "SELECT o.ID, o.Quantita, o.NumPedane, o.User, c.RagioneSociale, c1.RagioneSociale, c2.RagioneSociale, p.*, i.Descrizione, i.ID, c.ID, c1.ID, c2.ID FROM ordine_dettaglio o JOIN contatti c JOIN contatti c1 JOIN contatti c2 JOIN prodotti_catalogati p JOIN imballaggio i ON c.ID = o.IDCliente AND c1.ID = o.IDFornitore AND c2.ID = o.IDTrasportatore AND p.ID = o.IDProdotto AND i.ID = o.IDImballaggio WHERE o.IDOrdine = '"+idOrdine+"';";
 			}
 		 
 		 rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
@@ -155,19 +158,20 @@ public class DataSourceDettaglioOrdini extends DataSource{
 					lgr.setAttribute("id", rec[0]);
 					
 					lgr.setAttribute("quantita", rec[1]);
-					lgr.setAttribute("user", rec[2]);
-					lgr.setAttribute("cliente", rec[3]);
-					lgr.setAttribute("fornitore", rec[4]);
-					lgr.setAttribute("trasportatore", rec[5]);
-					lgr.setAttribute("idprodotto", rec[6]);
-					lgr.setAttribute("descrizioneprodotto", rec[7]+" "+rec[8]+" "+rec[9]+" "+rec[10]+" "+rec[11]);
+					lgr.setAttribute("pedane", rec[2]);
+					lgr.setAttribute("user", rec[3]);
+					lgr.setAttribute("cliente", rec[4]);
+					lgr.setAttribute("fornitore", rec[5]);
+					lgr.setAttribute("trasportatore", rec[6]);
+					lgr.setAttribute("idprodotto", rec[7]);
+					lgr.setAttribute("descrizioneprodotto", rec[8]+" "+rec[9]+" "+rec[10]+" "+rec[11]+" "+rec[12]);
 					
-					lgr.setAttribute("descrizioneimballaggio", rec[12]);
+					lgr.setAttribute("descrizioneimballaggio", rec[13]);
 					
-					lgr.setAttribute("idimballaggio", rec[13]);
-					lgr.setAttribute("idcliente", rec[14]);
-					lgr.setAttribute("idfornitore", rec[15]);
-					lgr.setAttribute("idtrasportatore", rec[16]);
+					lgr.setAttribute("idimballaggio", rec[14]);
+					lgr.setAttribute("idcliente", rec[15]);
+					lgr.setAttribute("idfornitore", rec[16]);
+					lgr.setAttribute("idtrasportatore", rec[17]);
 					
 					//DATI INCOMPLETI
 					/*
@@ -223,6 +227,7 @@ public class DataSourceDettaglioOrdini extends DataSource{
 						lgr.setAttribute("idtrasportatore", record.getId_Trasportatore());
 						
 						lgr.setAttribute("quantita", record.getQuantita());
+						lgr.setAttribute("pedane", record.getPedane());
 						lgr.setAttribute("user", record.getUtente());
 						
 						if(modalita == MOD_TabellaDettaglio){
@@ -253,7 +258,7 @@ public class DataSourceDettaglioOrdini extends DataSource{
 	 
 	 public static void aggiungiDettaglioOrdine(Record record){
 		 
-		 String query = "INSERT INTO ordine_dettaglio (`IDOrdine`, `IDProdotto`,`IDCliente`,`Quantita`,`IDImballaggio`,`User`,`IDFornitore`,`IDTrasportatore`) VALUES ('"+record.getAttribute("idordine")+"','"+record.getAttribute("idprodotto")+"','"+record.getAttribute("idcliente")+"','"+record.getAttribute("quantita")+"','"+record.getAttribute("idimballaggio")+"','"+record.getAttribute("user")+"','"+record.getAttribute("idfornitore")+"','"+record.getAttribute("idtrasportatore")+"')";
+		 String query = "INSERT INTO ordine_dettaglio (`IDOrdine`, `IDProdotto`,`IDCliente`,`Quantita`,`IDImballaggio`,`User`,`IDFornitore`,`IDTrasportatore`,`NumPedane`) VALUES ('"+record.getAttribute("idordine")+"','"+record.getAttribute("idprodotto")+"','"+record.getAttribute("idcliente")+"','"+record.getAttribute("quantita")+"','"+record.getAttribute("idimballaggio")+"','"+record.getAttribute("user")+"','"+record.getAttribute("idfornitore")+"','"+record.getAttribute("idtrasportatore")+"','"+record.getAttribute("pedane")+"')";
 
 		 rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
 
@@ -271,7 +276,7 @@ public class DataSourceDettaglioOrdini extends DataSource{
 	 }
 	 
 	 public static void modificaDettaglioOrdine(Record record){
-		String query = "UPDATE ordine_dettaglio SET Quantita = '"+ record.getAttribute("quantita") +"',IDImballaggio = '"+ record.getAttribute("idimballaggio") +"', IDFornitore = '"+ record.getAttribute("idfornitore") +"', IDTrasportatore = '"+ record.getAttribute("idtrasportatore") +"' WHERE ID = '"+ record.getAttribute("id") +"'";
+		String query = "UPDATE ordine_dettaglio SET Quantita = '"+ record.getAttribute("quantita") +"',IDImballaggio = '"+ record.getAttribute("idimballaggio") +"', IDFornitore = '"+ record.getAttribute("idfornitore") +"', IDTrasportatore = '"+ record.getAttribute("idtrasportatore")+"', NumPedane = '"+ record.getAttribute("pedane") +"' WHERE ID = '"+ record.getAttribute("id") +"'";
 
 		 rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
 

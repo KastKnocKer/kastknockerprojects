@@ -37,6 +37,7 @@ public DBConnectionImpl() {
 
 public User authenticateUser(User utente) {
 	db.connetti();
+	
 	String query = "SELECT COUNT(*) FROM utente WHERE Username='"+ utente.getUsername() +"' AND Password='"+ utente.getPassword()+"'";
 	Vector v = db.eseguiQuery(query);
 	
@@ -155,7 +156,8 @@ public DettaglioOrdine[] eseguiQueryDettaglioOrdine(String query) {
 			dettaglioordinearray[i].setId_Trasportatore(record[5]);
 			dettaglioordinearray[i].setId_Imballaggio(record[6]);
 			dettaglioordinearray[i].setUtente(record[7]);
-			dettaglioordinearray[i].setQuantita(record[8]);
+			dettaglioordinearray[i].setPedane(record[8]);
+			dettaglioordinearray[i].setQuantita(record[9]);
 		}
 		
 	}catch(Exception e){
@@ -223,7 +225,8 @@ public boolean eseguiUpdate(String query) {
 //Chiamata per la creazione dei pdf
 public boolean eseguiCreazioneDocumentiOrdine(String IDOrdine) {
 
-
+	new GeneratoreDocumentiOrdinePDF(IDOrdine);
+	
 	return false;
 }
 

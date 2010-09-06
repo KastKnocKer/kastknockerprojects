@@ -4,7 +4,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class DettaglioOrdine implements IsSerializable {
 	
-	private String Id,Id_Ordine,Id_Prodotto,Id_Cliente,Id_Imballaggio,Id_Fornitore,Id_Trasportatore,quantita,utente;
+	private String Id,Id_Ordine,Id_Prodotto,Id_Cliente,Id_Imballaggio,Id_Fornitore,Id_Trasportatore;
+	private String quantita,utente,pedane;
 	
 	public DettaglioOrdine(){
 		super();
@@ -80,6 +81,14 @@ public class DettaglioOrdine implements IsSerializable {
 
 	public String getQuantita() {
 		return quantita;
+	}
+
+	public void setPedane(String pedane) {
+		this.pedane = pedane;
+	}
+
+	public String getPedane() {
+		return pedane;
 	}
 
 }

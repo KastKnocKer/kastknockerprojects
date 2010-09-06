@@ -2,6 +2,8 @@ package gestionale.client.UI;
 
 
 import gestionale.client.DB;
+import gestionale.client.DBConnection;
+import gestionale.client.DBConnectionAsync;
 import gestionale.client.SessioneUtente;
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceImballaggi;
@@ -10,6 +12,8 @@ import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.client.DataBase.DataSourceProdottiCatalogati;
 import gestionale.shared.User;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.smartgwt.client.types.Overflow;
@@ -70,6 +74,7 @@ public class GUIManager {
         passwordItem.setRequired(true);
         passwordItem.setDefaultValue("a");
         
+       
         form.setFields( new FormItem[] {usernameItem, passwordItem} );
         
         Button swapButton = new Button("Login");
