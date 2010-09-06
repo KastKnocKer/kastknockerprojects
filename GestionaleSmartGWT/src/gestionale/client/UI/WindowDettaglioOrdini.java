@@ -126,6 +126,7 @@ public class WindowDettaglioOrdini extends Finestra{
 
 				String imballaggio = (String) event.getValue();
 				System.out.println(imballaggio);
+				/*
 				int indice1 = imballaggio.indexOf('x');
 				int indice2 = imballaggio.indexOf('x', indice1+1);
 				int indice3 = imballaggio.indexOf(' ', indice2+1);
@@ -137,7 +138,7 @@ public class WindowDettaglioOrdini extends Finestra{
 				
 				
 				//Eurpallet		80x100x200
-				
+				*/
 				
 				System.out.println("");
 					

@@ -369,7 +369,7 @@ ImgButton removeEmail = new ImgButton();
 	
 	private void addForm(){
 		
-		DynamicForm form = new DynamicForm();
+		final DynamicForm form = new DynamicForm();
 		form.setWidth(250);
 		form.setTitleOrientation(TitleOrientation.LEFT);
 		
@@ -411,6 +411,12 @@ ImgButton removeEmail = new ImgButton();
 		confermaButton.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
+				
+					form.validate();
+					if(form.hasErrors()){
+						Window.alert("Campi mancanti!!");
+					}
+				
 					contatto.setRagioneSociale( (String) RagioneSocialeItem.getValue() );
 					contatto.setPrecisazione( (String) PrecisazioneItem.getValue() );
 					contatto.setPIVA( (String) PIVAItem.getValue() );
@@ -424,6 +430,7 @@ ImgButton removeEmail = new ImgButton();
 					ListGridRecord[] RCI = listGridIndirizzi.getRecords();
 					String stringaIndirizzi=new String("");
 					for(int i=0;i<RCI.length;i++){
+						if(RCI[i].getAttribute("etichetta")==null || RCI[i].getAttribute("via")==null || RCI[i].getAttribute("ncivico")==null || RCI[i].getAttribute("cap")==null || RCI[i].getAttribute("frazione")==null || RCI[i].getAttribute("citta")==null || RCI[i].getAttribute("provincia")==null || RCI[i].getAttribute("regione")==null || RCI[i].getAttribute("nazione")==null || RCI[i].getAttribute("predefinito")==null) continue;
 						String temp = new String("*");
 						temp = temp + RCI[i].getAttribute("etichetta") + "+";
 						temp = temp + RCI[i].getAttribute("via") + "+";
@@ -445,6 +452,7 @@ ImgButton removeEmail = new ImgButton();
 					RC = listGridTelefono.getRecords();
 					String stringa=new String("");
 					for(int i=0;i<RC.length;i++){
+						if(RC[i].getAttribute("etichetta")==null || RC[i].getAttribute("valore")==null) continue;
 						String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
 						stringa = stringa + temp;
 					}
@@ -454,6 +462,7 @@ ImgButton removeEmail = new ImgButton();
 					RC = listGridCellulare.getRecords();
 					stringa=new String("");
 					for(int i=0;i<RC.length;i++){
+						if(RC[i].getAttribute("etichetta")==null || RC[i].getAttribute("valore")==null) continue;
 						String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
 						
 						stringa = stringa + temp;
@@ -464,6 +473,7 @@ ImgButton removeEmail = new ImgButton();
 					RC = listGridFax.getRecords();
 					stringa=new String("");
 					for(int i=0;i<RC.length;i++){
+						if(RC[i].getAttribute("etichetta")==null || RC[i].getAttribute("valore")==null) continue;
 						String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
 						
 						stringa = stringa + temp;
@@ -474,6 +484,7 @@ ImgButton removeEmail = new ImgButton();
 					RC = listGridEmail.getRecords();
 					stringa=new String("");
 					for(int i=0;i<RC.length;i++){
+						if(RC[i].getAttribute("etichetta")==null || RC[i].getAttribute("valore")==null) continue;
 						String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
 						
 						stringa = stringa + temp;
