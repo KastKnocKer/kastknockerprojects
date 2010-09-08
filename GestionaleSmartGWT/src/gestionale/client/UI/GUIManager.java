@@ -125,12 +125,7 @@ public class GUIManager {
 	public static void visualizzaSchermataPrincipale(){
 		clearGUI();
 		
-		//Carico i dati
-		DataSourceProdotti.getIstance();
-		DataSourceProdottiCatalogati.getIstance();
-		DataSourceContatti.getIstance();
-		DataSourceOrdini.getIstance();
-		DataSourceImballaggi.getIstance();
+		new WindowLoadData();
 		
 		Menubar MB = new Menubar();
 		

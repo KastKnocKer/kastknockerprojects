@@ -219,6 +219,11 @@ public class DataSourceProdotti extends DataSource{
 			IDMaxImballaggio++;
 			return Integer.toString(IDMaxImballaggio);
 		}
+		
+		public boolean isReady(){
+			if(ready == 5) return true;
+			return false;
+		}
 	 
 
 	

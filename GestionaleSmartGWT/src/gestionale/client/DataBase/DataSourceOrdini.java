@@ -20,6 +20,7 @@ public class DataSourceOrdini extends DataSource{
 	private static DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	private static DataSourceOrdini istance;
 	private static boolean caricato = false;
+	private boolean ready = false;
 	
 	public static DataSourceOrdini getIstance(){
 		if (istance == null) {  
@@ -62,8 +63,8 @@ public class DataSourceOrdini extends DataSource{
 
 	
 
-	 public static void getNewRecords() {
-		 
+	 public void getNewRecords() {
+		 ready = false;
 		 String query = "SELECT * FROM ordini";
 		 
 			rpc.eseguiQueryOrdine(query,new AsyncCallback<Ordine[]>(){
@@ -100,6 +101,7 @@ public class DataSourceOrdini extends DataSource{
 						
 					}
 					istance.caricato = true;
+					ready = true;
 				}
 				
 			});
@@ -116,10 +118,13 @@ public class DataSourceOrdini extends DataSource{
 
 			public void onFailure(Throwable caught) {
 				Window.alert(caught.getMessage());
-				
 			}
 
 			public void onSuccess(Boolean result) {
+				if(!result) {
+					Window.alert("Non e' stato possibile creare l'ordine. \nPossibili valori duplicati!");
+					return;
+				}
 				String query = "SELECT * FROM ordini WHERE ID = (SELECT MAX(ID) FROM ordini)";
 				rpc.eseguiQueryOrdine(query,new AsyncCallback<Ordine[]>(){
 					
@@ -196,5 +201,9 @@ public class DataSourceOrdini extends DataSource{
 			}
 		}
 		return null;
+	}
+
+	public boolean isReady() {
+		return ready;
 	}
 }

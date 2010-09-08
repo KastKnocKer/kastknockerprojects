@@ -41,7 +41,7 @@ public class TreeInserimentoProdotti extends TreeGrid{
 		
         setWidth100();
         setHeight100();
-
+        setAutoFetchData(true);
         setCanReparentNodes(true);
         setCanFreezeFields(true);
         setAutoSaveEdits(true);
@@ -51,7 +51,10 @@ public class TreeInserimentoProdotti extends TreeGrid{
         setCanAcceptDroppedRecords(false);  
         setShowDropIcons(false);  
         setShowOpenIcons(false);
+        setDataSource( DataSourceProdotti.getIstance() );
         
+        
+        fetchData();
         
        this.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
 		
@@ -163,7 +166,6 @@ public class TreeInserimentoProdotti extends TreeGrid{
         new Timer(){
         	public void run() {
         		
-        		setDataSource( new DataSourceProdotti() );
         		if(DataSourceProdotti.ready == 5){
         			
         			TreeGridField nameField = new TreeGridField("Name");

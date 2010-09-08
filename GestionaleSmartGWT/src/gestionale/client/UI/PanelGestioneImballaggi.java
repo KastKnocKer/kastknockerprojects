@@ -38,14 +38,14 @@ public class PanelGestioneImballaggi extends VLayout{
 	
 	
 	public PanelGestioneImballaggi(){
-		
 		this.setWidth100();
 		this.setHeight100();
 		
 		lg = new ListGrid();
 		lg.setAutoFetchData(true);
 		lg.setDataSource(DataSourceImballaggi.getIstance());
-		lg.fetchData();
+		
+		
 		
 		lg.addRowContextClickHandler(new RowContextClickHandler() {
 			
@@ -133,6 +133,7 @@ public class PanelGestioneImballaggi extends VLayout{
 				
 		form.setFields(new FormItem[]{larghezza,lunghezza,altezza,tara,materiale,marchio,button});
 		
+		lg.fetchData();
 		this.addMember(form);
 		
 		button.addClickHandler(new ClickHandler() {  
@@ -159,61 +160,6 @@ public class PanelGestioneImballaggi extends VLayout{
 			}  
         }); 
 
-		/*
-		button.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				form.validate();
-				if(form.hasErrors()){
-					Window.alert("Campi non validi o mancanti!");
-					return;
-				}else{
-					Imballaggio imballaggio = new Imballaggio();
-					imballaggio.setLarghezza((String) larghezza.getValue());
-					imballaggio.setLunghezza((String) lunghezza.getValue());
-					imballaggio.setAltezza((String) altezza.getValue());
-					imballaggio.setTara((String) tara.getValue());
-					imballaggio.setMateriale((String) materiale.getValue());
-					imballaggio.setMarchio((String) marchio.getValue());
-					
-					DataSourceImballaggi.aggiungiImballaggio(imballaggio);
-				}
-				
-				
-			}
-		});*/
-		
-		/*
-		 * 
-		
-		
-		ImgButton addButton = new ImgButton();  
-		addButton.setSrc("[SKIN]actions/add.png");  
-		addButton.setSize(16);  
-		addButton.setShowFocused(false);  
-		addButton.setShowRollOver(false);  
-		addButton.setShowDown(false);  
-		addButton.addClickHandler(new ClickHandler() {  
-             public void onClick(ClickEvent event) {  
-            	lg.startEditingNew();  
-             }  
-         });
-		
-		SectionStack SS = new SectionStack();
-		SS.setWidth100();
-        SS.setHeight100(); 
-
-        SectionStackSection section = new SectionStackSection();  
-        section.addItem(lg);
-        section.setCanCollapse(false);  
-        section.setExpanded(true);  
-        section.setControls(addButton);
-        
-		SS.setSections(section);
-		
-		this.addMember(SS);
-		*/
 		
 		
 	}

@@ -17,9 +17,8 @@ public class ListGridProdotti extends ListGrid{
 		setHeight100();
 		setWidth100();
 		setShowAllRecords(true);
-		
-		setDataSource( new DataSourceProdottiCatalogati() );
-		
+		setAutoFetchData(true);
+		setDataSource( DataSourceProdottiCatalogati.getIstance() );
 		
 		ListGridField categoriaField = new ListGridField("categoria", "Categoria");  
         ListGridField tipologiaField = new ListGridField("tipologia", "Tipologia");  
@@ -27,37 +26,9 @@ public class ListGridProdotti extends ListGrid{
         ListGridField sottovarietaField = new ListGridField("sottovarieta", "Sottovarieta");  
         ListGridField calibroField = new ListGridField("calibro", "Calibro");  
         
-		
-		//ListGridField nameField = new ListGridField("ragionesociale", "Ragione Sociale");
-		//ListGridField continentField = new ListGridField("tiposoggetto", "Tipo Soggetto");  
-		//continentField.setHidden(true);
 		setFields(categoriaField, tipologiaField, varietaField, sottovarietaField, calibroField);
-		setAutoFetchData(false);
+		
 		fetchData();
-		/*
-		 
-  
-        IButton unGroupButton = new IButton("Ungroup");  
-        unGroupButton.addClickHandler(new ClickHandler() {  
-            public void onClick(ClickEvent event) {  
-                countryGrid.ungroup();  
-            }  
-        });  
-  
-  
-        IButton groupByButton = new IButton("Group By Continent");  
-        groupByButton.setWidth(140);  
-        groupByButton.addClickHandler(new ClickHandler() {  
-            public void onClick(ClickEvent event) {  
-                countryGrid.groupBy("continent");  
-            }  
-        });  
-  
-        buttonLayout.addMember(unGroupButton);  
-        buttonLayout.addMember(groupByButton);  
-          
-        layout.addMember(countryGrid);  
-        layout.addMember(buttonLayout);  
-		 */
+		
 	}
 }

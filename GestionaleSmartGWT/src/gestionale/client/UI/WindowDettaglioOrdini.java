@@ -69,7 +69,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		Vector<Contatto> vT = DataSourceContatti.getVettoreTrasportatori();
 		Vector<Imballaggio> vI = DataSourceImballaggi.getVettoreImballaggi();
 		
-		final String[] aF = new String[vF.size()];	final String[] aFID = new String[vF.size()];
+		final String[] aF = new String[vF.size()];		final String[] aFID = new String[vF.size()];
 		final String[] aT = new String[vT.size()];		final String[] aTID = new String[vT.size()];
 		final String[] aI = new String[vI.size()];		final String[] aIID = new String[vI.size()];
 
@@ -89,6 +89,7 @@ public class WindowDettaglioOrdini extends Finestra{
 			aFID[i] = vF.get(i).getID();
 			if( aFID[i].equals( ordine.getIDFornitore()) ){
 				fornitoriSelectItem.setDefaultValue(aF[i]);
+				fornitore.setDefaultValue(aF[i]);
 				}
 		}
 		for(int i=0; i<vT.size(); i++){
@@ -96,6 +97,7 @@ public class WindowDettaglioOrdini extends Finestra{
 			aTID[i] = vT.get(i).getID();
 			if( aTID[i].equals( ordine.getIDTrasportatore()) ){
 				trasportatoriSelectItem.setDefaultValue(aT[i]);
+				trasportatore.setDefaultValue(aT[i]);
 				}
 		}
 		for(int i=0; i<vI.size(); i++){
@@ -123,7 +125,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		
 		imballaggiSelectItem.addChangedHandler(new ChangedHandler() {
 			public void onChanged(ChangedEvent event) {
-
+				
 				String imballaggio = (String) event.getValue();
 				System.out.println(imballaggio);
 				/*
@@ -151,6 +153,9 @@ public class WindowDettaglioOrdini extends Finestra{
 		trasportatore.setEditorType(trasportatoriSelectItem);
 		imballaggio.setEditorType(imballaggiSelectItem);
 		
+		
+	
+		
 		lg.setShowRecordComponents(true);          
 		lg.setShowRecordComponentsByCell(true);
   
@@ -162,7 +167,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdordine(), lo.getIdcliente(), lo.getIdprodotto(),DataSourceDettaglioOrdini.MOD_TabellaDettaglio));
 		
 		lg.setFields(imballaggio,fornitore,trasportatore,pedane,quantita);
-		lg.setAutoSaveEdits(false);
+		lg.setAutoSaveEdits(false);	//
 		lg.setWidth100();
 		lg.setHeight100();
 		
@@ -217,7 +222,7 @@ public class WindowDettaglioOrdini extends Finestra{
 		addButton.setShowRollOver(false);  
 		addButton.setShowDown(false);  
 		addButton.addClickHandler(new ClickHandler() {
-             public void onClick(ClickEvent event) {  
+             public void onClick(ClickEvent event) {
             	lg.startEditingNew();
              }  
         });
@@ -299,7 +304,6 @@ public class WindowDettaglioOrdini extends Finestra{
 				thiswind.destroy();
 			}
 		});
-		
 		
 		
 		

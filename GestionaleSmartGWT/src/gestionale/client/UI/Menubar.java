@@ -1,9 +1,5 @@
 package gestionale.client.UI;
 
-import gestionale.client.DataBase.DataSourceContatti;
-import gestionale.shared.Contatto;
-
-import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
 import com.smartgwt.client.widgets.events.CloseClientEvent;
 import com.smartgwt.client.widgets.menu.Menu;
@@ -30,6 +26,7 @@ public class Menubar extends ToolStrip{
 	    ToolStripMenuButton modificaButton = 	new ToolStripMenuButton("Modifica", modificaMenu);
 	    ToolStripMenuButton helpButton = 		new ToolStripMenuButton("?", helpMenu);
 
+	    
 	    this.addMember(fileButton);
 	    this.addMember(inserisciButton);
 	    this.addMember(visualizzaButton);
@@ -59,11 +56,11 @@ public class Menubar extends ToolStrip{
 				finestra.setShowModalMask(true);
 				finestra.setCanDragReposition(true);  
 				finestra.setCanDragResize(false);
-				finestra.centerInPage();
 				PanelCreazioneOrdine pco = new PanelCreazioneOrdine();
 				pco.setFinestra(finestra);
 				finestra.addItem(pco);
 				finestra.draw();
+				finestra.centerInPage();
 				
 				finestra.addCloseClickHandler(new CloseClickHandler() {  
 					public void onCloseClick(CloseClientEvent event) {

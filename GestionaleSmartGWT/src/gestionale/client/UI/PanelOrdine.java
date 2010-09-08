@@ -3,13 +3,13 @@ package gestionale.client.UI;
 import java.util.Vector;
 
 
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
 import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
 import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 import gestionale.client.DataBase.DataSourceDettaglioOrdini;
-import gestionale.shared.Contatto;
 
 public class PanelOrdine extends TabSet{
 	
@@ -26,31 +26,36 @@ public class PanelOrdine extends TabSet{
 	
 	private ListGridDettaglioOrdini lgdettaglioordini;
 	private FlexTableOrdineOrdinario flextableOrdineOrdinario;
-	
-	private Vector<Contatto> vettoreContattiFiltrato = null;
-	private Vector<String[]> vettoreProdottiDaVisualizzare = null;
 
 	private String IDOrdine;
 	private DataSourceDettaglioOrdini dsdo; 
+	private PanelFiltroProdotti panelfiltroprodotti;
+	private PanelFiltroContatti panelfiltrocontatti;
 	
 	
-	public PanelOrdine(String idOrdine){
+	
+	public PanelOrdine(ListGridRecord ordine){
 		super();
+		IDOrdine = ordine.getAttribute("id");
 		thisTabSet = this;
-		if(idOrdine == null){
+		if(IDOrdine == null){
 			this.destroy();
 		}else{
 			
 		}
 		
-		IDOrdine = idOrdine;
-		dsdo = new DataSourceDettaglioOrdini(idOrdine,null,null,DataSourceDettaglioOrdini.MOD_TabellaComposizione);
+		dsdo = new DataSourceDettaglioOrdini(IDOrdine,null,null,DataSourceDettaglioOrdini.MOD_TabellaComposizione);
 		
 
 		this.setHeight100();
 		this.setWidth100();
+		panelfiltrocontatti = new PanelFiltroContatti();
+		panelfiltroprodotti = new PanelFiltroProdotti();
 		
 		flextableOrdineOrdinario = new FlexTableOrdineOrdinario(IDOrdine);
+		
+		flextableOrdineOrdinario.setPanelFiltroContatti(panelfiltrocontatti);
+		flextableOrdineOrdinario.setPanelFiltroProdotti(panelfiltroprodotti);
 		
 		tabTabella				= new Tab("Composizione Ordine");
 		tabTabellaComplessiva	= new Tab("Visualizzazione Ordine");
@@ -68,8 +73,8 @@ public class PanelOrdine extends TabSet{
 		
 		tabTabella.setPane(panelTabella);
 		tabTabellaComplessiva.setPane(panelTabellaComplessiva);
-		tabFiltroClienti.setPane(new PanelFiltroContatti(vettoreContattiFiltrato));
-		tabFiltroProdotti.setPane(new PanelFiltroProdotti(vettoreProdottiDaVisualizzare));
+		tabFiltroClienti.setPane(panelfiltrocontatti);
+		tabFiltroProdotti.setPane(panelfiltroprodotti);
 		
 		
 		
@@ -80,7 +85,7 @@ public class PanelOrdine extends TabSet{
 		
 		
 		
-		this.addToTabPanel("Visualizzazione Ordine: " + idOrdine, true);
+		this.addToTabPanel("Visualizzazione Ordine: " + ordine.getAttribute("datacreazioneordine")+" - ["+ordine.getAttribute("tipoordine")+"]", true);
 		
 		this.addTabSelectedHandler(new TabSelectedHandler() {
 			

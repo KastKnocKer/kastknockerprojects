@@ -44,18 +44,35 @@ public class ListGridOrdini extends ListGrid{
 		
 		//////////////
 		
+		this.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
+			
+			public void onRecordDoubleClick(RecordDoubleClickEvent event) {
+				
+				System.out.println("Sorgente lieta: " + event.getRecord().getAttribute("id") );
+				ListGridRecord record = (ListGridRecord) event.getRecord();
+				PanelOrdine po = new PanelOrdine( record );
+				
+			}
+		});
+		
+		
+		
+		
+		
 		this.addRowContextClickHandler(new RowContextClickHandler() {
 			
 			public void onRowContextClick(RowContextClickEvent event) {
+				
 				selectedRecord = (ListGridRecord) event.getRecord();
 				
 				Menu menu = new Menu();
 				
+				MenuItem mi_modifica = new MenuItem("Modifica Ordine");
 				MenuItem mi_dettagli = new MenuItem("Mostra Ordine");
 				MenuItem mi_rimuovi = new MenuItem("Rimuovi Ordine");
 				
 				
-				mi_dettagli.addClickHandler( new ClickHandler() {
+				mi_modifica.addClickHandler( new ClickHandler() {
 					public void onClick(MenuItemClickEvent event) {
 					}
 				});
@@ -83,17 +100,7 @@ public class ListGridOrdini extends ListGrid{
 			}
 		});
 		
-		this.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
-			
-			public void onRecordDoubleClick(RecordDoubleClickEvent event) {
-				
-				System.out.println("Sorgente lieta: " + event.getRecord().getAttribute("id") );
-				ListGridRecord record = (ListGridRecord) event.getRecord();
-				
-				PanelOrdine po = new PanelOrdine( record.getAttribute("id") );
-				
-			}
-		});
+		
 		
 		
 		

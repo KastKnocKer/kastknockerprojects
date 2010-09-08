@@ -7,7 +7,6 @@ import gestionale.client.DBConnectionAsync;
 import gestionale.shared.Prodotto;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.fields.DataSourceTextField;
@@ -21,12 +20,15 @@ public class DataSourceProdottiCatalogati extends DataSource{
 
 	private static Vector<Prodotto> vProdottiCatalogati = null;
 	
+	private boolean ready = false;
+	
 	public static DataSourceProdottiCatalogati getIstance(){
 		if (istance == null) {  
             istance = new DataSourceProdottiCatalogati();  
         } 
 		return istance;
 	}
+	
 	
 	public DataSourceProdottiCatalogati(){
 		setID(id);  
@@ -55,7 +57,8 @@ public class DataSourceProdottiCatalogati extends DataSource{
 	}
 
 
-	 public static void getNewRecords() {
+	 public void getNewRecords() {
+		 ready = false;
 		 String query = "SELECT cal.ID, cat.Categoria, tip.Tipologia, var.Varieta, svar.Sottovarieta, cal.Calibro " +
 		 		"FROM prodotto_categoria cat JOIN prodotto_tipologia tip JOIN prodotto_varieta var JOIN prodotto_sottovarieta svar JOIN prodotto_calibro cal " +
 		 		"ON cat.ID = tip.IDCategoria AND tip.ID = var.IDTipologia AND var.ID = svar.IDVarieta AND svar.ID = cal.IDSottovarieta " +
@@ -98,6 +101,7 @@ public class DataSourceProdottiCatalogati extends DataSource{
 					
 				}
 				vProdottiCatalogati = v;
+				ready = true;
 			}
 			 
 		 });
@@ -107,6 +111,10 @@ public class DataSourceProdottiCatalogati extends DataSource{
 
 	public static Vector<Prodotto> getvProdottiCatalogati() {
 		return vProdottiCatalogati;
+	}
+
+	public boolean isReady() {
+		return ready;
 	}
 	 
 	 

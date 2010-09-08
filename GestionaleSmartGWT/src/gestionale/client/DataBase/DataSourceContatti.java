@@ -20,6 +20,8 @@ public class DataSourceContatti extends DataSource{
 	private static  Vector<Contatto>	vettoreFornitori = null;
 	private static  Vector<Contatto>	vettoreTrasportatori = null;
 	
+	private boolean ready = false;
+	
 	public static DataSourceContatti getIstance(){
 		if (istance == null) {  
             istance = new DataSourceContatti();  
@@ -55,7 +57,7 @@ public class DataSourceContatti extends DataSource{
 	
 	
 	public void newRecords(){
-		
+			ready = false;
 			rpc.eseguiQueryContatto("SELECT * FROM contatti", new AsyncCallback<Contatto[]>(){
 			
 			public void onFailure(Throwable caught) {
@@ -97,6 +99,7 @@ public class DataSourceContatti extends DataSource{
 				DataSourceContatti.vettoreContatti = vettoreContatti;
 				DataSourceContatti.vettoreFornitori = vettoreFornitori;
 				DataSourceContatti.vettoreTrasportatori = vettoreTrasportatori;
+				ready = true;
 			}	
 		});
 		
@@ -181,6 +184,10 @@ public class DataSourceContatti extends DataSource{
 				}
 			}
 		});
+	}
+
+	public boolean isReady() {
+		return ready;
 	}
 	
 	

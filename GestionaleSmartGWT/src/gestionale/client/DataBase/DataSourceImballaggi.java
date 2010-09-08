@@ -18,6 +18,7 @@ public class DataSourceImballaggi extends DataSource{
 	private static 	DataSourceImballaggi 	istance = null;
 	private static  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	private static  Vector<Imballaggio>	vettoreImballaggi = null;
+	private boolean ready = false;
 	
 	public static DataSourceImballaggi getIstance(){
 		if (istance == null) {  
@@ -51,6 +52,7 @@ public class DataSourceImballaggi extends DataSource{
 	
 	
 	public void newRecords(){
+		ready = false;
 		String query = "SELECT * FROM imballaggio";
 		System.out.println("Client - Eseguo query: " + query);
 		rpc.eseguiQueryImballaggio(query, new AsyncCallback<Imballaggio[]>(){
@@ -81,7 +83,7 @@ public class DataSourceImballaggi extends DataSource{
 					
 					istance.addData(lgr);
 				}
-				
+				ready = true;
 			}
 			
 		});
@@ -167,6 +169,10 @@ public class DataSourceImballaggi extends DataSource{
 	
 	public static Vector<Imballaggio> getVettoreImballaggi(){
 		return vettoreImballaggi;
+	}
+
+	public boolean isReady() {
+		return ready;
 	}
 	
 

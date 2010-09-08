@@ -86,7 +86,7 @@ public class ListGridDettaglioOrdini extends ListGrid{
 				System.out.println("Sorgente lieta: " + event.getRecord().getAttribute("id") );
 				ListGridRecord record = (ListGridRecord) event.getRecord();
 				
-				PanelOrdine po = new PanelOrdine( record.getAttribute("id") );
+				PanelOrdine po = new PanelOrdine( record );
 				
 			}
 		});

@@ -31,23 +31,15 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 	private FlexTableOrdineOrdinario thisTable;
 	private DataSourceDettaglioOrdini dsdo = null;
 	
+	private PanelFiltroContatti panelfiltrocontatti = null;
+	private PanelFiltroProdotti panelfiltroprodotti = null;
+	
 	public FlexTableOrdineOrdinario(String idordine){
 		thisTable = this;
 		IDOrdine = idordine;
 		
 		arrayCodProd = new String[1000];
 		arrayDescProd = new String[1000];
-		
-		vettoreContattiFiltrato	=		new Vector<Contatto>();
-		vettoreProdottiDaVisualizzare =	new Vector<String[]>();
-		
-		vettoreContattiFiltrato = DataSourceContatti.getVettoreContatti();
-		//Contatto contatto = DataSourceContatti.getVettoreContatti().get(0);
-		//vettoreContattiFiltrato.add(contatto);
-		
-		vettoreProdottiDaVisualizzare.add(new String[] {"Frutta","A"});
-		vettoreProdottiDaVisualizzare.add(new String[] {"Frutta","Arance"});
-		
 		
 	}
 
@@ -116,6 +108,9 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 	
 	//Prepara la tabella con la lista dei clienti e dei prodotti
 	public FlexTableOrdineOrdinario creaTabella(){
+		if(panelfiltrocontatti != null)		vettoreContattiFiltrato = panelfiltrocontatti.getVettoreContattiFiltrato();
+		if(panelfiltroprodotti != null)		vettoreProdottiDaVisualizzare = panelfiltroprodotti.getVettoreProdottiFiltrato();
+		
 		dsdo = new DataSourceDettaglioOrdini(IDOrdine,null,null,DataSourceDettaglioOrdini.MOD_TabellaComposizione);
 
 		this.removeAllRows();
@@ -123,7 +118,7 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 		indiceTipologia		= 1;
 		indiceVarieta		= 1;
 		indiceSottovarieta	= 1;
-		indiceCalibro	= 1;
+		indiceCalibro		= 1;
 		
 		//Prepara clienti
 		this.addStyleName("FlexTable");
@@ -228,6 +223,18 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 			
 		}.schedule(500);
 		return thisTable;
+	}
+
+
+
+	public void setPanelFiltroContatti(PanelFiltroContatti panelfiltrocontatti) {
+		this.panelfiltrocontatti = panelfiltrocontatti;
+	}
+
+
+
+	public void setPanelFiltroProdotti(PanelFiltroProdotti panelfiltroprodotti) {
+		this.panelfiltroprodotti = panelfiltroprodotti;
 	}
 
 }

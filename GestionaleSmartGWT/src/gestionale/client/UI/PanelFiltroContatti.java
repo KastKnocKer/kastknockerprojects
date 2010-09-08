@@ -1,52 +1,181 @@
 package gestionale.client.UI;
 
+import gestionale.client.DBConnection;
+import gestionale.client.DBConnectionAsync;
+import gestionale.client.SessioneUtente;
 import gestionale.client.DataBase.DataSourceContatti;
-import gestionale.client.DataBase.DataSourceProdottiCatalogati;
 import gestionale.shared.Contatto;
 
-import java.util.LinkedHashMap;
 import java.util.Vector;
 
-import com.smartgwt.client.types.MultipleAppearance;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.FormItem;
-import com.smartgwt.client.widgets.form.fields.SelectItem;
+import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.CheckboxItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
-import com.smartgwt.client.widgets.form.fields.events.IconClickEvent;
-import com.smartgwt.client.widgets.form.fields.events.IconClickHandler;
-import com.smartgwt.client.widgets.form.fields.events.KeyPressEvent;
-import com.smartgwt.client.widgets.form.fields.events.KeyPressHandler;
+import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
+import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.layout.Layout;
+
+
 
 public class PanelFiltroContatti extends Layout{
 
+	private static Vector<Contatto> V = null;
 	private Vector<Contatto> v = null;
-	
 	private DynamicForm form = null;
 	
-	private TextItem ti_Citta;
+	private TextItem ti_MercatoDiRiferimento;
+	private CheckboxItem setSelezionePreferita;
 	
 	
 	
-	public PanelFiltroContatti(Vector<Contatto> V){
+	public PanelFiltroContatti(){
 		super();
-		v = V;
 		
 		form = new DynamicForm();
 		form.setTitleOrientation(TitleOrientation.LEFT);
 		  
-  
+		ti_MercatoDiRiferimento = new TextItem();
+		ti_MercatoDiRiferimento.setName("mercato");
+		ti_MercatoDiRiferimento.setTitle("Mercato di riferimento");
+		
+		setSelezionePreferita = new CheckboxItem();  
+		setSelezionePreferita.setName("preferito");  
+		setSelezionePreferita.setTitle("Salvare risultato come preferito?"); 
+		
+		ButtonItem confermabutton = new ButtonItem();
+		confermabutton.setTitle("Applica filtro");
+		confermabutton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				filtra();
+			}
+		});
 		
 		
-		//form.setItems(selectCategorie);
-		
+		form.setItems(ti_MercatoDiRiferimento, setSelezionePreferita, confermabutton);
 		this.addMember(form);
 		
 	}
 	
 	private void filtra(){
+		Vector<Contatto> newVector = new Vector<Contatto>();
+		Vector<Contatto> temp = DataSourceContatti.getVettoreContatti();
+		Contatto contatto = null;
+		boolean mercato = false;
+		String valueMercato = null;
+		if( form.getValue("mercato") != null){
+			valueMercato = (String) form.getValue("mercato");
+			valueMercato.toLowerCase();
+			if( valueMercato.length() > 0 ) mercato = true;
+		}
 		
+		
+		for(int i=0; i<temp.size(); i++){
+			contatto = temp.get(i);
+			System.out.println("ANALIZZO	1	: " + contatto.getRagioneSociale());
+			//Filtro clienti e intermediari
+			if(contatto.getTipoSoggetto().equals("Trasportatore") || contatto.getTipoSoggetto().equals("Fornitore")){continue;}
+			System.out.println("ANALIZZO	2	: " + contatto.getRagioneSociale()+"	"+valueMercato+"	"+contatto.getIndirizzo().toLowerCase().contains("valueMercato"));
+			if(mercato){	if(!(contatto.getIndirizzo().toLowerCase().contains(valueMercato))) continue;	}
+			
+			newVector.add(contatto);
+			System.out.println("Aggiungo alla lista: " + contatto.getRagioneSociale());
+		}
+		
+		v = newVector;
+		
+		if( form.getValue("preferito") != null ){
+			System.out.println("SALVO? :" + form.getValue("preferito"));
+			salvaRisultatoNeiPreferiti(v);
+		}
+	}
+	
+	private void salvaRisultatoNeiPreferiti(final Vector<Contatto> v){
+		DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+		String query = "DELETE FROM lista_preferiti_clienti WHERE Username = '"+SessioneUtente.getUsername()+"';";
+		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+			public void onFailure(Throwable caught) {
+				
+			}
+			public void onSuccess(Boolean result) {
+				for(int i=0; i<v.size(); i++){
+					String query = "INSERT INTO lista_preferiti_clienti VALUES ('"+SessioneUtente.getUsername()+"','"+ v.get(i).getID() +"');";
+					DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+					rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+						public void onFailure(Throwable caught) {}
+						public void onSuccess(Boolean result) {}
+						
+					});
+				}
+			}
+			
+		});
+		
+		
+		V = v;
+	}
+
+	public void setV(Vector<Contatto> v) {
+		this.v = v;
+	}
+
+	public Vector<Contatto> getV() {
+		return v;
+	}
+
+	public Vector<Contatto> getVettoreContattiFiltrato() {
+		if(v == null) return V;
+		if(v.size() == 0) return V;
+		return v;
+	}
+	
+	public static void CaricaVettoreContattiPreferito(){
+		DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+		String query = "SELECT * FROM lista_preferiti_clienti WHERE Username = '"+SessioneUtente.getUsername()+"';";
+		rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
+			
+			public void onSuccess(final String[][] result) {
+				V = new Vector<Contatto>();
+				
+				new Timer(){
+					public void run() {
+						Vector<Contatto> vett = DataSourceContatti.getVettoreContatti();
+						if(vett == null){
+							schedule(500);
+						}else{
+							Contatto contatto = null;
+							for(int i=0; i<result.length; i++){
+								String record = result[i][1];
+								for(int j=0; j<vett.size(); j++){
+									contatto = vett.get(j);
+									if(contatto.getID().equals(record)){
+										V.add(contatto);
+										break;
+									}
+								}
+								
+								
+								
+							}
+							
+						}
+						
+					}
+					
+				}.schedule(500);
+				
+				
+				
+			}
+			public void onFailure(Throwable caught) {
+				Window.alert(caught.getMessage());
+			}
+		});
 	}
 	
 }
