@@ -37,7 +37,13 @@ public class Menubar extends ToolStrip{
 	    this.setVisible(true);
 	    this.setKeepInParentRect(false);
 	    
-	    
+	    MenuItem logOutMI =new MenuItem("Logout");
+	    logOutMI.addClickHandler( new ClickHandler() {
+			public void onClick(MenuItemClickEvent event) {
+				GUIManager.clearGUI();
+				GUIManager.visualizzaLogin();
+			}
+		});
 	    
 	    MenuItem nuovoContattoMI =new MenuItem("Nuovo contatto");
 	    nuovoContattoMI.addClickHandler( new ClickHandler() {
@@ -92,7 +98,7 @@ public class Menubar extends ToolStrip{
 		});
 	    
 	    
-	    
+	    fileMenu.addItem(logOutMI);
 	    
 	    inserisciMenu.addItem( nuovoContattoMI );
 	    inserisciMenu.addItem( nuovoOrdineMI );

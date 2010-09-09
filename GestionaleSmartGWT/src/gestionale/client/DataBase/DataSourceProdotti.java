@@ -75,7 +75,6 @@ public class DataSourceProdotti extends DataSource{
 							lgr.setAttribute("PID", "root");
 							lgr.setAttribute("Tipo", "Categoria");
 							istance.addData(lgr);
-							System.out.println("Categoria: "+result[i][1]);
 							
 						}
 					ready++;

@@ -48,9 +48,12 @@ public class ListGridOrdini extends ListGrid{
 			
 			public void onRecordDoubleClick(RecordDoubleClickEvent event) {
 				
-				System.out.println("Sorgente lieta: " + event.getRecord().getAttribute("id") );
 				ListGridRecord record = (ListGridRecord) event.getRecord();
-				PanelOrdine po = new PanelOrdine( record );
+				if( record.getAttribute("tipoordine").equals("Ordinario") ){
+					PanelOrdine po = new PanelOrdine( record );
+				}else{
+					PanelOrdineSpeciale po = new PanelOrdineSpeciale( record );
+				}
 				
 			}
 		});
@@ -68,12 +71,18 @@ public class ListGridOrdini extends ListGrid{
 				Menu menu = new Menu();
 				
 				MenuItem mi_modifica = new MenuItem("Modifica Ordine");
-				MenuItem mi_dettagli = new MenuItem("Mostra Ordine");
+				MenuItem mi_dettagli = new MenuItem("Proprieta' Ordine");
 				MenuItem mi_rimuovi = new MenuItem("Rimuovi Ordine");
 				
 				
 				mi_modifica.addClickHandler( new ClickHandler() {
 					public void onClick(MenuItemClickEvent event) {
+					}
+				});
+				
+				mi_dettagli.addClickHandler( new ClickHandler() {
+					public void onClick(MenuItemClickEvent event) {
+						new WindowProprietaOrdine(selectedRecord);
 					}
 				});
 				
@@ -91,6 +100,7 @@ public class ListGridOrdini extends ListGrid{
 						
 					}
 				});
+				menu.addItem( mi_modifica );
 				menu.addItem( mi_dettagli );
 				menu.addItem( mi_rimuovi );
 				

@@ -41,6 +41,9 @@ import com.smartgwt.client.widgets.tab.Tab;
 public class PanelContatti extends VLayout{
 	
 	private PanelContatti thisPanel;
+	
+	private DynamicForm form;
+	
 	private TextItem RagioneSocialeItem;
 	private TextItem PrecisazioneItem;
 	private TextItem PIVAItem;
@@ -69,16 +72,17 @@ public class PanelContatti extends VLayout{
 		
 		thisPanel=this;
 		
-		
 		if (contattoIn == null){
+			//Nuovo contatto
 			modifica = false;
 			contatto = new Contatto();
 			addToTabPanel("Crea contatto", true);
-		} else{ modifica = true;
+		} else{ 
+			//Contatto esistente
+			modifica = true;
 			contatto = contattoIn;
 			addToTabPanel("Modifica: "+contatto.getRagioneSociale(), true);
 		}
-		
 		
 		this.addForm();			//Aggiungo il form
 		
@@ -239,6 +243,8 @@ ImgButton removeEmail = new ImgButton();
 			
 		///////////FineCreazioneBottoni
 		
+		
+		//Preparo sectionStacksection
 		SectionStackSection sezioneIndirizzo = new SectionStackSection("Indirizzi");
 		sezioneIndirizzo.setControls(addIndirizzo,removeIndirizzo);
 		sectionStack.addSection(sezioneIndirizzo);  
@@ -284,7 +290,6 @@ ImgButton removeEmail = new ImgButton();
 		 );  
 
 		 listGridIndirizzi.setData( DataSourceContattiIndirizzi.getNewRecords(contatto) );
-		 
 		 sezioneIndirizzo.addItem(listGridIndirizzi);
 
 		 
@@ -373,7 +378,7 @@ ImgButton removeEmail = new ImgButton();
 	
 	private void addForm(){
 		
-		final DynamicForm form = new DynamicForm();
+		form = new DynamicForm();
 		form.setWidth(250);
 		form.setTitleOrientation(TitleOrientation.LEFT);
 		
@@ -400,7 +405,7 @@ ImgButton removeEmail = new ImgButton();
 		ProvvigioneItem = new TextItem();
 		ProvvigioneItem.setWidth(220);
 		ProvvigioneItem.setTitle("Provvigione");
-		ProvvigioneItem.setRequired(true);
+		ProvvigioneItem.setRequired(false);
         
 		TipoSoggettoItem = new SelectItem();
 		TipoSoggettoItem.setWidth(220);
@@ -415,127 +420,8 @@ ImgButton removeEmail = new ImgButton();
 		confermaButton.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
-				
-					form.validate();
-					if(form.hasErrors()){
-						Window.alert("Campi mancanti!!");
-					}
-				
-					contatto.setRagioneSociale( (String) RagioneSocialeItem.getValue() );
-					contatto.setPrecisazione( (String) PrecisazioneItem.getValue() );
-					contatto.setPIVA( (String) PIVAItem.getValue() );
-					contatto.setSitoWeb( (String) SitoWebItem.getValue() );
-					contatto.setProvvigione( (String) ProvvigioneItem.getValue() );
-					contatto.setTipoSoggetto( (String) TipoSoggettoItem.getValue());
-	        	  
-					ListGridRecord[] RC;
-					
-					// Records Indirizzi
-					ListGridRecord[] RCI = listGridIndirizzi.getRecords();
-					String stringaIndirizzi=new String("");
-					for(int i=0;i<RCI.length;i++){
-						if(RCI[i].getAttribute("etichetta")==null || RCI[i].getAttribute("via")==null || RCI[i].getAttribute("ncivico")==null || RCI[i].getAttribute("cap")==null || RCI[i].getAttribute("frazione")==null || RCI[i].getAttribute("citta")==null || RCI[i].getAttribute("provincia")==null || RCI[i].getAttribute("regione")==null || RCI[i].getAttribute("nazione")==null || RCI[i].getAttribute("predefinito")==null) continue;
-						String temp = new String("*");
-						temp = temp + RCI[i].getAttribute("etichetta") + "+";
-						temp = temp + RCI[i].getAttribute("via") + "+";
-						temp = temp + RCI[i].getAttribute("ncivico") + "+";
-						temp = temp + RCI[i].getAttribute("cap") + "+";
-						temp = temp + RCI[i].getAttribute("frazione") + "+";
-						temp = temp + RCI[i].getAttribute("citta") + "+";
-						temp = temp + RCI[i].getAttribute("provincia") + "+";
-						temp = temp + RCI[i].getAttribute("regione") + "+";
-						temp = temp + RCI[i].getAttribute("nazione") + "+";
-						temp = temp + RCI[i].getAttribute("predefinito") + "*";
-						
-						stringaIndirizzi = stringaIndirizzi + temp;
-					}
-					
-					contatto.setIndirizzo( stringaIndirizzi );
-					
-					// Records Telefono
-					RC = listGridTelefono.getRecords();
-					String stringa=new String("");
-					for(int i=0;i<RC.length;i++){
-						if(RC[i].getAttribute("etichetta")==null || RC[i].getAttribute("valore")==null) continue;
-						String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
-						stringa = stringa + temp;
-					}
-					contatto.setTelefono( stringa );
-					
-					// Records Cellulare
-					RC = listGridCellulare.getRecords();
-					stringa=new String("");
-					for(int i=0;i<RC.length;i++){
-						if(RC[i].getAttribute("etichetta")==null || RC[i].getAttribute("valore")==null) continue;
-						String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
-						
-						stringa = stringa + temp;
-					}
-					contatto.setCellulare( stringa );
-					
-					// Records Fax
-					RC = listGridFax.getRecords();
-					stringa=new String("");
-					for(int i=0;i<RC.length;i++){
-						if(RC[i].getAttribute("etichetta")==null || RC[i].getAttribute("valore")==null) continue;
-						String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
-						
-						stringa = stringa + temp;
-					}
-					contatto.setFax( stringa );
-					
-					// Records eMail
-					RC = listGridEmail.getRecords();
-					stringa=new String("");
-					for(int i=0;i<RC.length;i++){
-						if(RC[i].getAttribute("etichetta")==null || RC[i].getAttribute("valore")==null) continue;
-						String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
-						
-						stringa = stringa + temp;
-					}
-					contatto.seteMail( stringa );
-					
-					stringa = richTextEditor.getValue();
-					contatto.setNote( stringa );
-					
-					
-					
-					
-					
-					
-	        	  if( modifica ){
-
-	        		  Vector<Contatto> v = Liste.getVettoreContatti();
-	        		  
-	        		  for(int i=0;i<v.size();i++){
-	        			  if( v.get(i).getID().equals(contatto.getID()) ){v.setElementAt(contatto, i); break;}
-	        		  }
-
-
-	        		  String query = "UPDATE contatti SET RagioneSociale='"+contatto.getRagioneSociale()+"',Precisazione='"+contatto.getPrecisazione()+"',PIVA='"+contatto.getPIVA()+"',Logo='"+contatto.getLogo()+"',Indirizzo='"+contatto.getIndirizzo()+"',Telefono='"+contatto.getTelefono()+"',Cellulare='"+contatto.getCellulare()+"',Fax='"+contatto.getFax()+"',Email='"+contatto.geteMail()+"',SitoWeb='"+contatto.getSitoWeb()+"',TipoSoggetto='"+contatto.getTipoSoggetto()+"',Provvigione='"+contatto.getProvvigione()+"',Note='"+contatto.getNote()+"' WHERE ID='"+contatto.getID()+"'";
-	        		  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
-	        		  rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
-						
-							@Override
-							public void onSuccess(Boolean result) {
-								if(!result){
-									Window.alert("Le modifiche non sono state apportate correttamente!!");
-								}
-								
-							}
-							
-							@Override
-							public void onFailure(Throwable caught) {
-								Window.alert(caught.getMessage());
-							}
-	        		  	});
-	        		  
-	        	  }else{
-	        		  DataSourceContatti.aggiungiContatto(contatto);
-	        	  }
-	        	  
-	        	  thisPanel.closePanel();
-	        	  
+					salvaModificheContatto();
+					thisPanel.closePanel();
 	          }
 			});
 		
@@ -562,7 +448,8 @@ ImgButton removeEmail = new ImgButton();
 											if(!result){
 												Window.alert("La rimozione del contatto non è avvenuta correttamente!!");
 											}
-											Vector<Contatto> v = Liste.getVettoreContatti();
+											thisPanel.closePanel();
+											Vector<Contatto> v = DataSourceContatti.getVettoreContatti();
 							        		
 							        		for(int i=0; i<v.size(); i++){
 							        			if( v.get(i).getID().equals(contatto.getID()) ){
@@ -597,6 +484,128 @@ ImgButton removeEmail = new ImgButton();
 		form.setFields( new FormItem[] {RagioneSocialeItem, PrecisazioneItem, PIVAItem, SitoWebItem, ProvvigioneItem, TipoSoggettoItem, toolbarItem} );
 		
 		
+	}
+	
+	private void salvaModificheContatto(){
+		form.validate();
+		if(form.hasErrors()){
+			Window.alert("Campi mancanti!!");
+		}
+	
+		contatto.setRagioneSociale( (String) RagioneSocialeItem.getValue() );
+		contatto.setPrecisazione( (String) PrecisazioneItem.getValue() );
+		contatto.setPIVA( (String) PIVAItem.getValue() );
+		contatto.setSitoWeb( (String) SitoWebItem.getValue() );
+		contatto.setProvvigione( (String) ProvvigioneItem.getValue() );
+		contatto.setTipoSoggetto( (String) TipoSoggettoItem.getValue());
+	  
+		ListGridRecord[] RC;
+		
+		// Records Indirizzi
+		ListGridRecord[] RCI = listGridIndirizzi.getRecords();
+		String stringaIndirizzi=new String("");
+		for(int i=0;i<RCI.length;i++){
+			if(RCI[i].getAttribute("etichetta")==null && RCI[i].getAttribute("via")==null && RCI[i].getAttribute("ncivico")==null && RCI[i].getAttribute("cap")==null && RCI[i].getAttribute("frazione")==null && RCI[i].getAttribute("citta")==null && RCI[i].getAttribute("provincia")==null && RCI[i].getAttribute("regione")==null && RCI[i].getAttribute("nazione")==null && RCI[i].getAttribute("predefinito")==null) continue;
+			String temp = new String("*");
+			temp = temp + RCI[i].getAttribute("etichetta") + "+";
+			temp = temp + RCI[i].getAttribute("via") + "+";
+			temp = temp + RCI[i].getAttribute("ncivico") + "+";
+			temp = temp + RCI[i].getAttribute("cap") + "+";
+			temp = temp + RCI[i].getAttribute("frazione") + "+";
+			temp = temp + RCI[i].getAttribute("citta") + "+";
+			temp = temp + RCI[i].getAttribute("provincia") + "+";
+			temp = temp + RCI[i].getAttribute("regione") + "+";
+			temp = temp + RCI[i].getAttribute("nazione") + "+";
+			temp = temp + RCI[i].getAttribute("predefinito") + "*";
+			
+			stringaIndirizzi = stringaIndirizzi + temp;
+		}
+		
+		contatto.setIndirizzo( stringaIndirizzi );
+		
+		// Records Telefono
+		RC = listGridTelefono.getRecords();
+		String stringa=new String("");
+		for(int i=0;i<RC.length;i++){
+			if(RC[i].getAttribute("etichetta")==null && RC[i].getAttribute("valore")==null) continue;
+			String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
+			stringa = stringa + temp;
+		}
+		contatto.setTelefono( stringa );
+		
+		// Records Cellulare
+		RC = listGridCellulare.getRecords();
+		stringa=new String("");
+		for(int i=0;i<RC.length;i++){
+			if(RC[i].getAttribute("etichetta")==null && RC[i].getAttribute("valore")==null) continue;
+			String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
+			
+			stringa = stringa + temp;
+		}
+		contatto.setCellulare( stringa );
+		
+		// Records Fax
+		RC = listGridFax.getRecords();
+		stringa=new String("");
+		for(int i=0;i<RC.length;i++){
+			if(RC[i].getAttribute("etichetta")==null && RC[i].getAttribute("valore")==null) continue;
+			String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
+			
+			stringa = stringa + temp;
+		}
+		contatto.setFax( stringa );
+		
+		// Records eMail
+		RC = listGridEmail.getRecords();
+		stringa=new String("");
+		for(int i=0;i<RC.length;i++){
+			if(RC[i].getAttribute("etichetta")==null && RC[i].getAttribute("valore")==null) continue;
+			String temp = "*" + RC[i].getAttribute("etichetta") + "?" + RC[i].getAttribute("valore") + "*";
+			
+			stringa = stringa + temp;
+		}
+		contatto.seteMail( stringa );
+		
+		stringa = richTextEditor.getValue();
+		contatto.setNote( stringa );
+		
+		
+		
+		
+		
+		
+	  if( modifica ){
+
+		  Vector<Contatto> v = DataSourceContatti.getVettoreContatti();
+		  
+		  for(int i=0;i<v.size();i++){
+			  if( v.get(i).getID().equals(contatto.getID()) ){v.setElementAt(contatto, i); break;}
+		  }
+
+
+		  String query = "UPDATE contatti SET RagioneSociale='"+contatto.getRagioneSociale()+"',Precisazione='"+contatto.getPrecisazione()+"',PIVA='"+contatto.getPIVA()+"',Logo='"+contatto.getLogo()+"',Indirizzo='"+contatto.getIndirizzo()+"',Telefono='"+contatto.getTelefono()+"',Cellulare='"+contatto.getCellulare()+"',Fax='"+contatto.getFax()+"',Email='"+contatto.geteMail()+"',SitoWeb='"+contatto.getSitoWeb()+"',TipoSoggetto='"+contatto.getTipoSoggetto()+"',Provvigione='"+contatto.getProvvigione()+"',Note='"+contatto.getNote()+"' WHERE ID='"+contatto.getID()+"'";
+		  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+		  rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+			
+				@Override
+				public void onSuccess(Boolean result) {
+					if(!result){
+						Window.alert("Le modifiche non sono state apportate correttamente!!");
+					}
+					
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+					Window.alert(caught.getMessage());
+				}
+		  	});
+		  
+	  }else{
+		  DataSourceContatti.aggiungiContatto(contatto);
+	  }
+	  
+	  thisPanel.closePanel();
 	}
 	
 	private void closePanel(){

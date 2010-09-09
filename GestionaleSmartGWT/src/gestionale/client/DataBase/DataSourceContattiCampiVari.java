@@ -1,10 +1,6 @@
 package gestionale.client.DataBase;
 
-import java.util.Vector;
-
-import gestionale.client.Liste;
 import gestionale.shared.Contatto;
-
 import com.smartgwt.client.data.DataSource;
 
 public class DataSourceContattiCampiVari extends DataSource{

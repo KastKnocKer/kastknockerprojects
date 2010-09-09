@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.*;
 import java.util.Vector;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.itextpdf.text.DocumentException;
 
@@ -32,11 +34,14 @@ public DBConnectionImpl() {
 	System.out.println(db.getErrore());
 	System.out.println("Connesso: " + db.isConnesso());
 	
+	
 }
 
 
 public User authenticateUser(User utente) {
 	db.connetti();
+	GWT.log("Accesso di: "+utente.getUsername()+" IP: "+getThreadLocalRequest().getRemoteAddr());
+	System.out.println("Richiesta da: "+getThreadLocalRequest().getRemoteAddr());
 	
 	String query = "SELECT COUNT(*) FROM utente WHERE Username='"+ utente.getUsername() +"' AND Password='"+ utente.getPassword()+"'";
 	Vector v = db.eseguiQuery(query);
@@ -223,11 +228,11 @@ public boolean eseguiUpdate(String query) {
 
 
 //Chiamata per la creazione dei pdf
-public boolean eseguiCreazioneDocumentiOrdine(String IDOrdine) {
+public String[][] eseguiCreazioneDocumentiOrdine(String IDOrdine) {
 
-	new GeneratoreDocumentiOrdinePDF(IDOrdine);
+	GeneratoreDocumentiOrdinePDF CDO_PDF = new GeneratoreDocumentiOrdinePDF(IDOrdine);
 	
-	return false;
+	return CDO_PDF.generaPDF();
 }
 
 

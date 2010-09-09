@@ -46,7 +46,6 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 
 	
 	private void addProdotto(String categoria, String tipologia){
-		System.out.println("Aggiungo prodotto: "+categoria + tipologia);
 		
 		FlexCellFormatter cellFormatter = this.getFlexCellFormatter();
 		Vector<Prodotto> v = DataSourceProdottiCatalogati.getvProdottiCatalogati();
@@ -169,12 +168,10 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 		*/
 		
 		
-		System.out.println("LABLES: "+vLabel.size());
 		for(int k=0; k<vLabel.size(); k++){
 			LabelOrdinazione lo = vLabel.get(k);
 			String lidP = lo.getIdprodotto();
 			String lidC = lo.getIdcliente();
-			System.out.println("LABEL"+ lidP +"  "+ lidC);
 		}
 		
 		for (int i = 4; i < this.getRowCount(); i++) {

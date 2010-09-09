@@ -4,6 +4,7 @@
   
 	<inherits name='com.google.gwt.user.User'/>
 	<inherits name="com.smartgwt.SmartGwt" />
+	<inherits name='com.google.gwt.maps.GoogleMaps' />
 
 
   <!-- Other module inherits                                      -->

@@ -1,6 +1,7 @@
 package gestionale.client.UI;
 
 import gestionale.client.Liste;
+import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceDettaglioOrdini;
 import gestionale.shared.Contatto;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -62,8 +63,8 @@ public class ListGridDettaglioOrdini extends ListGrid{
 					public void onClick(MenuItemClickEvent event) {
 						System.out.println("Sorgente lieta: " + event.getSource() );
 						Contatto contatto = null;
-						for(int i=0; i<Liste.getVettoreContatti().size(); i++){
-							contatto = Liste.getVettoreContatti().get(i);
+						for(int i=0; i<DataSourceContatti.getVettoreContatti().size(); i++){
+							contatto = DataSourceContatti.getVettoreContatti().get(i);
 							
 						}
 					}

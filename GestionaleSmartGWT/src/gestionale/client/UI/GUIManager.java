@@ -291,7 +291,8 @@ public class GUIManager {
 		RootPanel.get("centro0").clear();
         RootPanel.get("centro1").clear();
         RootPanel.get("centro2").clear();
-		vLayoutMain.clear();
+        vLayoutMain.clear();
+		vLayoutMain = new VLayout();
 	}
 
 	public static TabSet getTopTabset(){

@@ -10,12 +10,11 @@ import java.util.Vector;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Font.*;
 import com.itextpdf.text.pdf.*;
-import com.smartgwt.client.data.Record;
 
 public class GeneratoreDocumentiOrdinePDF {
 	
-	public static final String RESULT = "provaPDF.pdf";
-	public static final String RESOURCE = "MIAMilano.jpg";
+	public static final String ROOT = "webapps/Gestionale/PDF/";
+	public static final String RESOURCE = ROOT + "MIAMilano.jpg";
 	public static final float[][] COLUMNS = { { 280, 40, 600, 800 } };
 	
 	private MySQLAccess db;
@@ -52,13 +51,18 @@ public class GeneratoreDocumentiOrdinePDF {
 		db.setPublicHost("localhost");
 		db.connetti();
 		
-		String query = "SELECT ord.DataInvioOrdine, p.*, o.Quantita, o.NumPedane, i.Descrizione, c.RagioneSociale, t.RagioneSociale, t.ID, f.RagioneSociale, f.ID FROM ordine_dettaglio o JOIN ordini ord JOIN prodotti_catalogati p JOIN imballaggio i JOIN contatti c JOIN contatti t JOIN contatti f ON o.IDProdotto = p.ID AND o.IDCliente = c.ID AND o.IDImballaggio = i.ID AND o.IDOrdine = ord.ID AND o.IDTrasportatore = t.ID AND o.IDFornitore = f.ID WHERE o.IDOrdine = 1 ORDER BY o.IDTrasportatore, o.IDFornitore, o.IDCliente, o.IDProdotto";
+		String query = "SELECT ord.DataInvioOrdine, p.*, o.Quantita, o.NumPedane, i.Descrizione, c.RagioneSociale, t.RagioneSociale, t.ID, f.RagioneSociale, f.ID FROM ordine_dettaglio o JOIN ordini ord JOIN prodotti_catalogati p JOIN imballaggio i JOIN contatti c JOIN contatti t JOIN contatti f ON o.IDProdotto = p.ID AND o.IDCliente = c.ID AND o.IDImballaggio = i.ID AND o.IDOrdine = ord.ID AND o.IDTrasportatore = t.ID AND o.IDFornitore = f.ID WHERE o.IDOrdine = '"+idordine+"' ORDER BY o.IDTrasportatore, o.IDFornitore, o.IDCliente, o.IDProdotto";
 		Vector<String[]> v = db.eseguiQuery( query );	if(v.size() == 0) return;
+		
+		Ordine = idordine;
+		for(int i=Ordine.length(); i<7; i++){
+			Ordine = "0" + Ordine;
+		}
 		
 		data = new Vector<String[]>();
 		String[] record = null;
 		record = v.get(0);
-		Ordine = record[0];
+		
 		for(int i=0; i<v.size(); i++){
 			record = v.get(i);
 			numcolliMezzaPedana = (int) (Integer.parseInt(record[7])/Float.parseFloat(record[8]));
@@ -133,6 +137,7 @@ public class GeneratoreDocumentiOrdinePDF {
 			
 			
 		}
+		
 		String[][] urls =  new String[url.size()][];
 		for(int i=0; i<url.size(); i++){
 			urls[i] = url.get(i);
@@ -147,8 +152,13 @@ public class GeneratoreDocumentiOrdinePDF {
         Document document = new Document(PageSize.A4, 30, 30, 40, 30);
         // step 2
         PdfWriter writer = null;
+        String filename = null;
+        String filenamefull = null;
 		try {
-			writer = PdfWriter.getInstance(document, new FileOutputStream(Ordine+" - T - "+ragSoc+".pdf"));
+			
+			filename = "PDF/"+ Ordine+" - T - "+ragSoc+".pdf";
+			filenamefull = ROOT + Ordine+" - T - "+ragSoc+".pdf";
+			writer = PdfWriter.getInstance(document, new FileOutputStream( filenamefull ));
 			writer.setCompressionLevel(0);
 			
 			// step 3
@@ -180,13 +190,36 @@ public class GeneratoreDocumentiOrdinePDF {
 			contatto.setFax(record[8]);
 			contatto.seteMail(record[9]);
 			contatto.setTipoSoggetto(record[11]);
+			
+			ct.addText(new Chunk( "Trasportatore" 								, new Font(FontFamily.HELVETICA, 22))); ct.addText(Chunk.NEWLINE);
+	        ct.addText(new Chunk( ragSoc										, new Font(FontFamily.HELVETICA, 16))); ct.addText(Chunk.NEWLINE);
 	        
+			
+			
+			Vector<String[]> vIndirizzi = contatto.getVectorIndirizzi();
+	        String[] indirizzo;
+	        if(vIndirizzi.size()>0){
+	        	indirizzo = vIndirizzi.get(0);
+	        	ct.addText(new Chunk( indirizzo[0]+" "+indirizzo[1]+" "+indirizzo[2]+" "+indirizzo[3]+" "+indirizzo[4]+" "+indirizzo[5]			, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
+		        
+	        }
 	        
-	        ct.addText(new Chunk( "Trasportatore" 					, new Font(FontFamily.HELVETICA, 22))); ct.addText(Chunk.NEWLINE);
-	        ct.addText(new Chunk( ragSoc							, new Font(FontFamily.HELVETICA, 16))); ct.addText(Chunk.NEWLINE);
-	        ct.addText(new Chunk( contatto.getIndirizzo()			, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
-	        ct.addText(new Chunk( contatto.getTelefono() 			, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
-	        ct.addText(new Chunk( contatto.getFax()					, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
+	        Vector<String[]> vTelefoni = contatto.getVectorCampo("Telefono");
+	        Vector<String[]> vFax = contatto.getVectorCampo("Fax");
+	        String[] telefono;
+	        String[] fax;
+	        
+	        if(vTelefoni.size()>0){
+	        	telefono = vTelefoni.get(0);
+	        	ct.addText(new Chunk( telefono[0]+" - "+ telefono[1]				, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
+		        
+	        }
+	        if(vFax.size()>0){
+	        	fax = vFax.get(0);
+	        	ct.addText(new Chunk( fax[0]+" - "+ fax[1]							, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
+		        
+	        }
+	        
 	        
 	        
 	        
@@ -209,14 +242,14 @@ public class GeneratoreDocumentiOrdinePDF {
 	                document.newPage();
 	        }
 	 
-	        ct.addText(new Phrase("Lines written: " + linesWritten));
-	        ct.go();
-	        ct.addText(new Phrase("Lines written: " + linesWritten));
-	        ct.go();
+	        //ct.addText(new Phrase("Lines written: " + linesWritten));
+	        //ct.go();
+	        //ct.addText(new Phrase("Lines written: " + linesWritten));
+	        //ct.go();
 	        
 	        //Compilazione tabella
 	        
-	        PdfPTable table = new PdfPTable(new float[]{10,30,10,30,30});
+	        PdfPTable table = new PdfPTable(new float[]{10,21,8,25,18,18});
 	        table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 	        
 	        table.addCell("Pedana");
@@ -224,7 +257,8 @@ public class GeneratoreDocumentiOrdinePDF {
 	        table.addCell("Colli");
 	        table.addCell("Imballaggio");
 	        table.addCell("Cliente");
-	        for(int i=0; i<5; i++) table.addCell("");
+	        table.addCell("Fornitore");
+	        for(int i=0; i<6; i++) table.addCell("");
 	        
 	        for(int i=0; i<data.size(); i++){
 	        	String[] rec = data.get(i);
@@ -234,18 +268,22 @@ public class GeneratoreDocumentiOrdinePDF {
 	        	table.addCell(new Phrase(rec[2], new Font(FontFamily.HELVETICA, 8)));
 	        	table.addCell(new Phrase(rec[3], new Font(FontFamily.HELVETICA, 8)));
 	        	table.addCell(new Phrase(rec[4], new Font(FontFamily.HELVETICA, 8)));
+	        	table.addCell(new Phrase(rec[5], new Font(FontFamily.HELVETICA, 8)));
+	        	
 	        	}
 
 	        }
 	        
 	        table.setTotalWidth(PageSize.A4.getWidth()-60f);
-	        table.writeSelectedRows(0, -1, 30, PageSize.A4.getHeight() - 200, writer.getDirectContent());
+	        table.writeSelectedRows(0, -1, 30, PageSize.A4.getHeight() - 220, writer.getDirectContent());
 	        
 	        
 	        
 	        // step 5
 	        document.close();
 	        System.out.println("CLOSAAAAAAAAAAAAAAAAAAAAA");
+	        
+	        url.add(new String[]{filename, "Ordine trasportatore: " + ragSoc});
 	        
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -261,6 +299,11 @@ public class GeneratoreDocumentiOrdinePDF {
 			e.printStackTrace();
 		}
         
+	}
+
+	public String[][] getUrls() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

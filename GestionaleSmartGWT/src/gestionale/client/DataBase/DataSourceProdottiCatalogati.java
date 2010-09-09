@@ -74,7 +74,6 @@ public class DataSourceProdottiCatalogati extends DataSource{
 			public void onSuccess(String[][] result) {
 				String[] stringa = null;
 				Vector<Prodotto> v = new Vector<Prodotto>();
-				System.out.println("RISULTATO MAGICA QUERY");
 				
 				for(int i=0; i<result.length; i++){
 					stringa = result[i];

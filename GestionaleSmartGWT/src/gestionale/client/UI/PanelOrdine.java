@@ -1,8 +1,5 @@
 package gestionale.client.UI;
 
-import java.util.Vector;
-
-
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.tab.Tab;
@@ -40,8 +37,6 @@ public class PanelOrdine extends TabSet{
 		thisTabSet = this;
 		if(IDOrdine == null){
 			this.destroy();
-		}else{
-			
 		}
 		
 		dsdo = new DataSourceDettaglioOrdini(IDOrdine,null,null,DataSourceDettaglioOrdini.MOD_TabellaComposizione);

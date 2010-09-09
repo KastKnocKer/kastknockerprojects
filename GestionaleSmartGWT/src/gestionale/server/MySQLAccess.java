@@ -160,11 +160,9 @@ public class MySQLAccess {
 	         queryResult = new String[k][colonne];
 	         int riga=0;
 	         while(rs.next()) {   // Creo il vettore risultato scorrendo tutto il ResultSet
-		            System.out.println("");
-		            System.out.print("Server: ");
+		            
 		            for (int i=0; i<colonne; i++) {
 		            	queryResult[riga][i] = rs.getString(i+1);
-				            	System.out.print(queryResult[riga][i]+" - ");
 		            }
 		            riga++;
 		         }

@@ -18,7 +18,6 @@ public class RecordContattiIndirizzi extends  ListGridRecord {
 		String[] vetString = null;
 		int indiceA,indiceB;
 		String temporanea;
-		System.out.println("Stringhetta: " + stringa);
 				
 				temporanea=stringa;
 				

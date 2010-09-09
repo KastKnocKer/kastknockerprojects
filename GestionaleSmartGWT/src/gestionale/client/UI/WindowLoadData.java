@@ -7,12 +7,12 @@ import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.client.DataBase.DataSourceProdottiCatalogati;
 
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.Progressbar;
-import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.layout.VLayout;
 
-public class WindowLoadData extends Window{
+public class WindowLoadData extends Finestra{
 
 	private WindowLoadData thisWin = null;
 	
@@ -64,8 +64,10 @@ public class WindowLoadData extends Window{
 		
 		new Timer() {  
 			int percentuale = 0;
+			int time = 0;
             public void run() {
             	int contatore = 0;
+            	time++;
             	
             	if( DataSourceProdotti.getIstance().isReady() )	contatore++;
             	if( DataSourceProdottiCatalogati.getIstance().isReady() )	contatore++;
@@ -79,6 +81,9 @@ public class WindowLoadData extends Window{
             	if(percentuale<100){
             		etichettaBarra.setContents("Caricamento dati: "+percentuale+"%");
             		barra.setPercentDone(percentuale);
+            		
+            		if(time > 500) Window.Location.reload();
+            		
             		schedule(50);
             	}else{
             		thisWin.destroy();

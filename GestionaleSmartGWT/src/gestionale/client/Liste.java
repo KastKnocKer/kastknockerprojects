@@ -28,49 +28,6 @@ public class Liste {
 		//aggiornaVettoreOrdini();
 	}
 	
-	private void aggiornaVettoreOrdini() {
-		String query = "SELECT * FROM ordini";
-		rpc.eseguiQueryOrdine(query,new AsyncCallback<Ordine[]>(){
-			
-			public void onFailure(Throwable caught) {
-				Window.alert("Errore: Caricamento da DB Ordini");
-			}
-
-			public void onSuccess(Ordine[] result) {
-				Vector<Ordine> v = new Vector<Ordine>();
-				
-				for(int i=0; i<result.length; i++){
-					v.add(result[i]);
-				}
-				
-				Liste.setVettoreOrdini(v);
-			}
-			
-		});
-	}
-
-	public void aggiornaVettoreContatti(){
-		String query = "SELECT * FROM contatti ORDER BY RagioneSociale";
-		rpc.eseguiQueryContatto(query,new AsyncCallback<Contatto[]>(){
-			
-			public void onFailure(Throwable caught) {
-				Window.alert("Errore: Caricamento da DB Contatti");
-			}
-
-			public void onSuccess(Contatto[] result) {
-				Vector<Contatto> v = new Vector<Contatto>();
-				
-				for(int i=0; i<result.length; i++){
-					v.add(result[i]);
-				}
-				
-				Liste.setVettoreContatti(v);
-			}
-			
-		});
-		
-		
-	}
 	
 	public void aggiornaVettoreTipoSoggetto(){/*
 		rpc.eseguiQuery("SELECT * FROM tiposoggetto", new AsyncCallback<String[][]>(){
@@ -95,36 +52,10 @@ public class Liste {
 		
 	}
 
-	public static void setVettoreContatti(Vector<Contatto> vettoreContatti) {
-		Liste.vettoreContatti = vettoreContatti;
-	}
-
-	public static Vector<Contatto> getVettoreContatti() {
-		return vettoreContatti;
-	}
-
-	public static void setVettoreProdotti(Vector<Prodotto> vettoreProdotti) {
-		Liste.vettoreProdotti = vettoreProdotti;
-	}
-
-	public static Vector<Prodotto> getVettoreProdotti() {
-		return vettoreProdotti;
-	}
-
-	public static void setVettoreTipoSoggetto(Vector<String> vettoreTipoSoggetto) {
-		Liste.vettoreTipoSoggetto = vettoreTipoSoggetto;
-	}
+	
 
 	public static Vector<String> getVettoreTipoSoggetto() {
 		return vettoreTipoSoggetto;
-	}
-
-	public static void setVettoreOrdini(Vector<Ordine> vettoreOrdini) {
-		Liste.vettoreOrdini = vettoreOrdini;
-	}
-
-	public static Vector<Ordine> getVettoreOrdini() {
-		return vettoreOrdini;
 	}
 
 }

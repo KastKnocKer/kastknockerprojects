@@ -54,7 +54,6 @@ public class DataSourceImballaggi extends DataSource{
 	public void newRecords(){
 		ready = false;
 		String query = "SELECT * FROM imballaggio";
-		System.out.println("Client - Eseguo query: " + query);
 		rpc.eseguiQueryImballaggio(query, new AsyncCallback<Imballaggio[]>(){
 
 			public void onFailure(Throwable caught) {
