@@ -7,6 +7,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/smartgwt.jar"/>
 	<classpathentry exported="true" kind="lib" path="mysql-connector-java-5.1.12-bin.jar"/>
 	<classpathentry kind="lib" path="iText-5.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="gwt-maps.jar"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER/GWT (1)"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

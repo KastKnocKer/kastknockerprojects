@@ -1,15 +1,25 @@
 package gestionale.server;
 
 import gestionale.shared.Contatto;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.util.Vector;
-import com.itextpdf.text.*;
-import com.itextpdf.text.Font.*;
-import com.itextpdf.text.pdf.*;
+
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.Font.FontFamily;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 public class GeneratoreDocumentiOrdinePDF {
 	
@@ -17,20 +27,13 @@ public class GeneratoreDocumentiOrdinePDF {
 	public static final String RESOURCE = ROOT + "MIAMilano.jpg";
 	public static final float[][] COLUMNS = { { 280, 40, 600, 800 } };
 	
+	private String[] CampiOrdine = null;
 	private MySQLAccess db;
 	private Vector<String[]> url;
 	
-	public static String[][] dati = new String[][]{ new String[]{"A","B","C","D","E"}, 
-													new String[]{"A","B","C","D","E"}, 
-													new String[]{"A","B","C","D","E"}, 
-													new String[]{"A","B","C","D","E"} 
-													};
+	public static String[][] dati = null;
 	
 	private String Ordine = null;
-	private String Titolo = "Trasportatore";
-	private String RagioneSociale = "Trasportatore";
-	private String Telefono = "Trasportatore";
-	private String Fax = "Trasportatore";
 	
 	private Vector<String[]> vettoreRecords = null;
 	
@@ -51,7 +54,11 @@ public class GeneratoreDocumentiOrdinePDF {
 		db.setPublicHost("localhost");
 		db.connetti();
 		
-		String query = "SELECT ord.DataInvioOrdine, p.*, o.Quantita, o.NumPedane, i.Descrizione, c.RagioneSociale, t.RagioneSociale, t.ID, f.RagioneSociale, f.ID FROM ordine_dettaglio o JOIN ordini ord JOIN prodotti_catalogati p JOIN imballaggio i JOIN contatti c JOIN contatti t JOIN contatti f ON o.IDProdotto = p.ID AND o.IDCliente = c.ID AND o.IDImballaggio = i.ID AND o.IDOrdine = ord.ID AND o.IDTrasportatore = t.ID AND o.IDFornitore = f.ID WHERE o.IDOrdine = '"+idordine+"' ORDER BY o.IDTrasportatore, o.IDFornitore, o.IDCliente, o.IDProdotto";
+		String query = "SELECT * FROM ordini WHERE ID = '"+idordine+"';";
+		Vector<String[]> vOrdine = db.eseguiQuery( query );
+		CampiOrdine = vOrdine.get(0);
+		
+		query = "SELECT ord.DataInvioOrdine, p.*, o.Quantita, o.NumPedane, i.Descrizione, c.RagioneSociale, t.RagioneSociale, t.ID, f.RagioneSociale, f.ID FROM ordine_dettaglio o JOIN ordini ord JOIN prodotti_catalogati p JOIN imballaggio i JOIN contatti c JOIN contatti t JOIN contatti f ON o.IDProdotto = p.ID AND o.IDCliente = c.ID AND o.IDImballaggio = i.ID AND o.IDOrdine = ord.ID AND o.IDTrasportatore = t.ID AND o.IDFornitore = f.ID WHERE o.IDOrdine = '"+idordine+"' ORDER BY o.IDTrasportatore, o.IDFornitore, o.IDCliente, o.IDProdotto";
 		Vector<String[]> v = db.eseguiQuery( query );	if(v.size() == 0) return;
 		
 		Ordine = idordine;
@@ -60,8 +67,35 @@ public class GeneratoreDocumentiOrdinePDF {
 		}
 		
 		data = new Vector<String[]>();
+		Vector<String[]> temp = null;
 		String[] record = null;
-		record = v.get(0);
+		String C = "";
+		String F = "";
+		String T = "";
+		
+		for(int i=0; i<v.size(); i++){
+			record = v.get(i);
+			if( C.equals(record[10]) && F.equals(record[13]) && T.equals(record[11]) ){
+				temp.add(record);
+			}else{
+				C = record[10];
+				F = record[13];
+				T = record[11];
+				if(i>0) generaPedane(temp);
+				temp = new Vector<String[]>();
+				temp.add(record);
+			}
+			
+			if(i == v.size()-1) generaPedane(temp);
+		}
+		
+		
+		
+	}
+	
+	private void generaPedane(Vector<String[]> v){
+		String[] record = null;
+		IndexPedanaMezza = 0;
 		
 		for(int i=0; i<v.size(); i++){
 			record = v.get(i);
@@ -114,7 +148,6 @@ public class GeneratoreDocumentiOrdinePDF {
 			}
 			
 		}
-		
 	}
 	
 	public String[][] generaPDF(){
@@ -200,7 +233,8 @@ public class GeneratoreDocumentiOrdinePDF {
 	        String[] indirizzo;
 	        if(vIndirizzi.size()>0){
 	        	indirizzo = vIndirizzi.get(0);
-	        	ct.addText(new Chunk( indirizzo[0]+" "+indirizzo[1]+" "+indirizzo[2]+" "+indirizzo[3]+" "+indirizzo[4]+" "+indirizzo[5]			, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
+	        	ct.addText(new Chunk( "Indirizzo: "+indirizzo[1]+" "+indirizzo[2]			, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
+	        	ct.addText(new Chunk( "CAP: "+indirizzo[3]+", "+indirizzo[5]+" ("+indirizzo[6]+")"			, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
 		        
 	        }
 	        
@@ -211,12 +245,12 @@ public class GeneratoreDocumentiOrdinePDF {
 	        
 	        if(vTelefoni.size()>0){
 	        	telefono = vTelefoni.get(0);
-	        	ct.addText(new Chunk( telefono[0]+" - "+ telefono[1]				, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
+	        	ct.addText(new Chunk( "Tel: "+ telefono[1]				, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
 		        
 	        }
 	        if(vFax.size()>0){
 	        	fax = vFax.get(0);
-	        	ct.addText(new Chunk( fax[0]+" - "+ fax[1]							, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
+	        	ct.addText(new Chunk( "Fax: "+ fax[1]							, new Font(FontFamily.HELVETICA, 12))); ct.addText(Chunk.NEWLINE);
 		        
 	        }
 	        
@@ -247,10 +281,15 @@ public class GeneratoreDocumentiOrdinePDF {
 	        //ct.addText(new Phrase("Lines written: " + linesWritten));
 	        //ct.go();
 	        
+	        Paragraph ord = new Paragraph("Ordine del "+CampiOrdine[1]+":", new Font(FontFamily.HELVETICA, 12));
+		   
+	        document.add(new Paragraph(" ", new Font(FontFamily.HELVETICA, 90)));
+	        document.add(ord);
+	        
 	        //Compilazione tabella
 	        
 	        PdfPTable table = new PdfPTable(new float[]{10,21,8,25,18,18});
-	        table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+	        table.getDefaultCell().setBorder(Rectangle.BOTTOM);
 	        
 	        table.addCell("Pedana");
 	        table.addCell("Merce");
@@ -268,7 +307,7 @@ public class GeneratoreDocumentiOrdinePDF {
 	        	table.addCell(new Phrase(rec[2], new Font(FontFamily.HELVETICA, 8)));
 	        	table.addCell(new Phrase(rec[3], new Font(FontFamily.HELVETICA, 8)));
 	        	table.addCell(new Phrase(rec[4], new Font(FontFamily.HELVETICA, 8)));
-	        	table.addCell(new Phrase(rec[5], new Font(FontFamily.HELVETICA, 8)));
+	        	table.addCell(new Phrase(rec[7], new Font(FontFamily.HELVETICA, 8)));
 	        	
 	        	}
 

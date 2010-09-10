@@ -24,6 +24,9 @@ public class Contatto implements IsSerializable {
 	
 	private String Note="";
 	
+	private String Latitudine="";
+	private String Longitudine="";
+	
 
 	
 	
@@ -352,5 +355,23 @@ public class Contatto implements IsSerializable {
 	public String getNote() {
 		return Note;
 	}
+
+	public void setLatitudine(String latitudine) {
+		Latitudine = latitudine;
+	}
+
+	public String getLatitudine() {
+		return Latitudine;
+	}
+
+	public void setLongitudine(String longitudine) {
+		Longitudine = longitudine;
+	}
+
+	public String getLongitudine() {
+		return Longitudine;
+	}
+
+	
 	
 }

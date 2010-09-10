@@ -52,18 +52,19 @@ public class TreeInserimentoProdotti extends TreeGrid{
         setShowDropIcons(false);  
         setShowOpenIcons(false);
         setDataSource( DataSourceProdotti.getIstance() );
-        
-        
         fetchData();
         
-       this.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
-		
-		public void onRecordDoubleClick(RecordDoubleClickEvent event) {
+        TreeGridField nameField = new TreeGridField("Name");
+        nameField.setCanEdit(true);
+        setFields(nameField);
+        
+        
+        this.addRecordDoubleClickHandler(new RecordDoubleClickHandler() {
 			
-		}
-	});
-       
-
+			public void onRecordDoubleClick(RecordDoubleClickEvent event) {
+				
+			}
+		});
        
         this.addCellContextClickHandler(new CellContextClickHandler() {
 			
@@ -84,7 +85,13 @@ public class TreeInserimentoProdotti extends TreeGrid{
 				});
 				
 				MenuItem mi_rimuovi_tn = new MenuItem("Rimuovi voce");
-				
+				mi_rimuovi_tn.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler() {
+					
+					public void onClick(MenuItemClickEvent event) {
+						removeItem(selezionato);
+					}
+
+				});
 				
 				
 				
@@ -162,7 +169,7 @@ public class TreeInserimentoProdotti extends TreeGrid{
         
         
       //Aspetta che siano completamente caricati i dati dal db
-        
+        /*
         new Timer(){
         	public void run() {
         		
@@ -179,7 +186,7 @@ public class TreeInserimentoProdotti extends TreeGrid{
 			}
         	
         }.schedule(500);
-        
+        */
 	}
 	
 	
@@ -303,5 +310,33 @@ public class TreeInserimentoProdotti extends TreeGrid{
 		DataSourceProdotti.getIstance().addData(nr);
 	}
 	
-	
+	private void removeItem(final Record selezionato) {
+		String tipo = selezionato.getAttribute("Tipo");
+		String id = selezionato.getAttribute("ID");
+		String query = null;
+		if (tipo.equals("Tipologia")){
+			query = "DELETE FROM prodotto_tipologia WHERE ID="+ id.substring(1) +";";
+		}else if (tipo.equals("Varieta")){
+			query = "DELETE FROM prodotto_varieta WHERE ID="+ id.substring(1) +";";
+		}else if (tipo.equals("SottoVarieta")){
+			query = "DELETE FROM prodotto_sottovarieta WHERE ID="+ id.substring(2) +";";
+		}else if (tipo.equals("Calibro")){
+			query = "DELETE FROM prodotto_calibro WHERE ID="+ id.substring(2) +";";
+		}
+		
+		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+			public void onSuccess(Boolean result) {
+				if(!result){
+					com.google.gwt.user.client.Window.alert("La rimozione non è avvenuta correttamente");
+					return;
+				}
+				tg.removeData(selezionato);
+				
+			}
+			public void onFailure(Throwable caught) {
+				com.google.gwt.user.client.Window.alert(caught.getMessage());
+			}
+		});
+		
+	}
 }

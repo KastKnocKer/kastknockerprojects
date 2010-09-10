@@ -62,7 +62,7 @@ public class Menubar extends ToolStrip{
 				finestra.setShowModalMask(true);
 				finestra.setCanDragReposition(true);  
 				finestra.setCanDragResize(false);
-				PanelCreazioneOrdine pco = new PanelCreazioneOrdine();
+				PanelInserimentoOrdine pco = new PanelInserimentoOrdine();
 				pco.setFinestra(finestra);
 				finestra.addItem(pco);
 				finestra.draw();
@@ -97,6 +97,13 @@ public class Menubar extends ToolStrip{
 			}
 		});
 	    
+	    MenuItem visualMappaGoogleMapsMI =new MenuItem("Mappa (Google Maps)");
+	    visualMappaGoogleMapsMI.addClickHandler( new ClickHandler() {
+			public void onClick(MenuItemClickEvent event) {
+				GUIManager.addToTabPanel("Mappa (Google Maps)", new PanelMappaGoogleMaps(), true);
+			}
+		});
+	    
 	    
 	    fileMenu.addItem(logOutMI);
 	    
@@ -106,6 +113,7 @@ public class Menubar extends ToolStrip{
 	    visualizzaMenu.addItem( visualGestProdottiMI );
 	    visualizzaMenu.addItem( visualCatalogoProdottiMI );
 	    visualizzaMenu.addItem( visualGestImballaggiMI );
+	    visualizzaMenu.addItem( visualMappaGoogleMapsMI );
 	    
 
 	    

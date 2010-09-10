@@ -42,7 +42,7 @@ public class ListGridDettaglioOrdini extends ListGrid{
 		this.setCanDrag(false);
 		
 		//////////////
-		
+		/*
 		this.addRowContextClickHandler(new RowContextClickHandler() {
 			
 			public void onRowContextClick(RowContextClickEvent event) {
@@ -93,7 +93,7 @@ public class ListGridDettaglioOrdini extends ListGrid{
 		});
 		
 		
-		
+		*/
 
 		
 		

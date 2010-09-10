@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
-import gestionale.client.Liste;
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceContattiCampiVari;
 import gestionale.client.DataBase.DataSourceContattiIndirizzi;
@@ -491,7 +490,12 @@ ImgButton removeEmail = new ImgButton();
 		if(form.hasErrors()){
 			Window.alert("Campi mancanti!!");
 		}
-	
+		
+		if(PrecisazioneItem.getValue() == null || PrecisazioneItem.getValue().equals("null")) 	PrecisazioneItem.setValue("");
+		if(SitoWebItem.getValue() == null || SitoWebItem.getValue().equals("null")) 			SitoWebItem.setValue("");
+		if(ProvvigioneItem.getValue() == null || ProvvigioneItem.getValue().equals("null")) 	ProvvigioneItem.setValue("");
+		if(richTextEditor.getValue() == null || richTextEditor.getValue().equals("null")) 		richTextEditor.setValue("");
+		
 		contatto.setRagioneSociale( (String) RagioneSocialeItem.getValue() );
 		contatto.setPrecisazione( (String) PrecisazioneItem.getValue() );
 		contatto.setPIVA( (String) PIVAItem.getValue() );
@@ -506,6 +510,8 @@ ImgButton removeEmail = new ImgButton();
 		String stringaIndirizzi=new String("");
 		for(int i=0;i<RCI.length;i++){
 			if(RCI[i].getAttribute("etichetta")==null && RCI[i].getAttribute("via")==null && RCI[i].getAttribute("ncivico")==null && RCI[i].getAttribute("cap")==null && RCI[i].getAttribute("frazione")==null && RCI[i].getAttribute("citta")==null && RCI[i].getAttribute("provincia")==null && RCI[i].getAttribute("regione")==null && RCI[i].getAttribute("nazione")==null && RCI[i].getAttribute("predefinito")==null) continue;
+			//if(RCI[i].getAttribute("etichetta").equals("null") && RCI[i].getAttribute("via").equals("null") && RCI[i].getAttribute("ncivico").equals("null") && RCI[i].getAttribute("cap").equals("null") && RCI[i].getAttribute("frazione").equals("null") && RCI[i].getAttribute("citta").equals("null") && RCI[i].getAttribute("provincia").equals("null") && RCI[i].getAttribute("regione").equals("null") && RCI[i].getAttribute("nazione").equals("null") && RCI[i].getAttribute("predefinito").equals("null")) continue;
+			
 			String temp = new String("*");
 			temp = temp + RCI[i].getAttribute("etichetta") + "+";
 			temp = temp + RCI[i].getAttribute("via") + "+";

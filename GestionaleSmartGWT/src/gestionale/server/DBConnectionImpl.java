@@ -86,6 +86,8 @@ public Contatto[] eseguiQueryContatto(String query) {
 			contattoarray[i].setTipoSoggetto(record[11]);
 			contattoarray[i].setProvvigione(record[12]);
 			contattoarray[i].setNote(record[13]);
+			contattoarray[i].setLatitudine(record[14]);
+			contattoarray[i].setLongitudine(record[15]);
 			
 		}
 		

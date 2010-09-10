@@ -15,6 +15,7 @@ import com.smartgwt.client.data.Record;
 import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.ImgButton;
+import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.SelectItem;  
@@ -317,6 +318,14 @@ public class WindowDettaglioOrdini extends Finestra{
 		this.centerInPage();
 		this.addItem(SS);
 		this.addItem(confermaButton);
+		//
+		Label label = new Label();
+		label.setWidth100();
+		label.setHeight(20);
+		label.setBackgroundColor("yellow");
+		label.setContents("Giacenza in magazzino: ");
+		this.addItem(label);
+		//
 		this.draw();
 	}
 	

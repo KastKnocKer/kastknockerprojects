@@ -77,6 +77,11 @@ public class ListGridOrdini extends ListGrid{
 				
 				mi_modifica.addClickHandler( new ClickHandler() {
 					public void onClick(MenuItemClickEvent event) {
+						if( selectedRecord.getAttribute("tipoordine").equals("Ordinario") ){
+							PanelOrdine po = new PanelOrdine( selectedRecord );
+						}else{
+							PanelOrdineSpeciale po = new PanelOrdineSpeciale( selectedRecord );
+						}
 					}
 				});
 				

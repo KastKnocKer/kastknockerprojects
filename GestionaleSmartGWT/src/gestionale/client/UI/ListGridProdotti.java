@@ -13,7 +13,7 @@ public class ListGridProdotti extends ListGrid{
 
 	public ListGridProdotti(){
 		super();
-		setCanEdit(true);
+		setCanEdit(false);
 		setHeight100();
 		setWidth100();
 		setShowAllRecords(true);

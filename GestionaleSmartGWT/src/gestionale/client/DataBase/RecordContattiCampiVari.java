@@ -14,8 +14,8 @@ public class RecordContattiCampiVari extends ListGridRecord {
 		 int indice = stringa.indexOf('?');
 		 String etichetta = stringa.substring(0, indice);
 		 String valore = stringa.substring(indice+1);
-		 setAttribute("etichetta", etichetta);
-		 setAttribute("valore", valore);
+		 if( etichetta.length() > 0 ) setAttribute("etichetta", etichetta);
+		 if( valore.length() > 0 ) setAttribute("valore", valore);
 		 
 	 }
  

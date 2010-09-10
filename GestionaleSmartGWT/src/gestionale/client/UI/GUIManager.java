@@ -45,6 +45,13 @@ public class GUIManager {
 	private static PasswordItem passwordItem;
 	private static TabSet topTabSet;
 	
+	private static SectionStack sectionStack;
+	private static SectionStackSection sezioneContatti;
+	private static SectionStackSection sezioneOrdini;
+	private static SectionStackSection sezioneRisultatoRicerca;
+	
+	
+	
 	private static ListGridContatti listgridcontattiricercati;
 	
 	public GUIManager(){
@@ -148,7 +155,7 @@ public class GUIManager {
         //vLayout.setWidth100();  
 		//vLayoutSx.setHeight100();
 		
-		final SectionStack sectionStack = new SectionStack();
+		sectionStack = new SectionStack();
 		
 		sectionStack.setCanReorderSections(true); 	//
 		sectionStack.setCanResizeSections(true);	//
@@ -160,15 +167,15 @@ public class GUIManager {
 		sectionStack.setWidth(250); 
 		sectionStack.setHeight100();
 		
-		SectionStackSection sezioneContatti = new SectionStackSection("Contatti");  
+		sezioneContatti = new SectionStackSection("Contatti");  
 		sezioneContatti.setExpanded(false);
 		sectionStack.addSection(sezioneContatti);
 		
-		SectionStackSection sezioneOrdini = new SectionStackSection("Ordini");  
+		sezioneOrdini = new SectionStackSection("Ordini");  
 		sezioneOrdini.setExpanded(false);
 		sectionStack.addSection(sezioneOrdini);
 		
-		final SectionStackSection sezioneRisultatoRicerca = new SectionStackSection("Risultato Ricerca");  
+		sezioneRisultatoRicerca = new SectionStackSection("Risultato Ricerca");  
 		sezioneRisultatoRicerca.setExpanded(false);
 		sectionStack.addSection(sezioneRisultatoRicerca);
 		/////////////
@@ -213,6 +220,8 @@ public class GUIManager {
 						}
 					}
 					listgridcontattiricercati.setData(recordsSelected);
+				
+
 				}
 				
 			}
