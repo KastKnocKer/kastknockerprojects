@@ -97,6 +97,13 @@ public class Menubar extends ToolStrip{
 			}
 		});
 	    
+	    MenuItem visualGiacenzaMagazzinoMI =new MenuItem("Giacenza magazzino");
+	    visualGiacenzaMagazzinoMI.addClickHandler( new ClickHandler() {
+			public void onClick(MenuItemClickEvent event) {
+				GUIManager.addToTabPanel("Giacenza Magazzino", new PanelGiacenzaMagazzino(), true);
+			}
+		});
+	    
 	    MenuItem visualMappaGoogleMapsMI =new MenuItem("Mappa (Google Maps)");
 	    visualMappaGoogleMapsMI.addClickHandler( new ClickHandler() {
 			public void onClick(MenuItemClickEvent event) {
@@ -113,6 +120,7 @@ public class Menubar extends ToolStrip{
 	    visualizzaMenu.addItem( visualGestProdottiMI );
 	    visualizzaMenu.addItem( visualCatalogoProdottiMI );
 	    visualizzaMenu.addItem( visualGestImballaggiMI );
+	    visualizzaMenu.addItem( visualGiacenzaMagazzinoMI );
 	    visualizzaMenu.addItem( visualMappaGoogleMapsMI );
 	    
 

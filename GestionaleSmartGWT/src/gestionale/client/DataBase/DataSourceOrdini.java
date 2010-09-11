@@ -112,7 +112,7 @@ public class DataSourceOrdini extends DataSource{
 	 
 	 public static void aggiungiOrdine(final Ordine ordine){
 		 
-		 String query = "INSERT INTO ordini (`DataCreazioneOrdine`,`DataInvioOrdine`,`DataPartenzaMerce`,`Note`,`IDTrasportatore`,`Convalidato`,`TipoOrdine`,`IDFornitore`) VALUES ('"+ordine.getDataCreazioneOrdine()+"','"+ordine.getDataInvioOrdine()+"','"+ordine.getDataPartenzaMerce()+"','"+ordine.getNote()+"','"+ordine.getIDTrasportatore()+"','"+ordine.getConvalidato()+"','"+ordine.getTipoOrdine()+"','"+ordine.getIDFornitore()+"')";
+		 String query = "INSERT INTO ordini (`DataCreazioneOrdine`,`Note`,`IDTrasportatore`,`Convalidato`,`TipoOrdine`,`IDFornitore`) VALUES (CURDATE(),'"+ordine.getNote()+"','"+ordine.getIDTrasportatore()+"','"+ordine.getConvalidato()+"','"+ordine.getTipoOrdine()+"','"+ordine.getIDFornitore()+"')";
 			
 		 rpc.eseguiUpdate(query, new AsyncCallback<Boolean>(){
 

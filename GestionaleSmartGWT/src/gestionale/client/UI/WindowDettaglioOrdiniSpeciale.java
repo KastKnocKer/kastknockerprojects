@@ -36,9 +36,9 @@ import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
 import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 
-public class WindowDettaglioOrdini extends Finestra{
+public class WindowDettaglioOrdiniSpeciale extends Finestra{
 
-	private WindowDettaglioOrdini thiswind;
+	private WindowDettaglioOrdiniSpeciale thiswind;
 	private Record lastDettaglioOrdineClicked;
 	private Ordine ordine;
 	private VLayout vLayout;
@@ -46,7 +46,7 @@ public class WindowDettaglioOrdini extends Finestra{
 	private String messImballaggio = "";
 	private String messDispMagaz = "";
 	
-	public WindowDettaglioOrdini(final LabelOrdinazione lo){
+	public WindowDettaglioOrdiniSpeciale(final LabelOrdinazioneSpeciale lo){
 		super();
 		thiswind = this;
 		

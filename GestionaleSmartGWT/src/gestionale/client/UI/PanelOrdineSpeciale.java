@@ -31,12 +31,22 @@ import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
+import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 
 public class PanelOrdineSpeciale extends TabSet{
 	
 	private String IDOrdine;
 	private PanelOrdineSpeciale thisTabSet;
 	private Tab tab;
+	private Tab tabTabella;
+	private Tab tabFiltroProdotti;
+	
+	private Layout panelTabella;
+	
+	private FlexTableOrdineSpeciale flextable;
+	
+	private PanelFiltroProdotti panelFiltroProdotti;
 	
 	
 	public PanelOrdineSpeciale(ListGridRecord ordine){
@@ -48,7 +58,39 @@ public class PanelOrdineSpeciale extends TabSet{
 		}
 		this.addToTabPanel("Visualizzazione Ordine: " + ordine.getAttribute("datacreazioneordine")+" - ["+ordine.getAttribute("tipoordine")+"]", true);
 		
+		tabFiltroProdotti = new Tab("Filtro Prodotti");
+		panelFiltroProdotti = new PanelFiltroProdotti();
+		tabFiltroProdotti.setPane(panelFiltroProdotti);
 		
+		flextable = new FlexTableOrdineSpeciale(IDOrdine);
+		flextable.setPanelFiltroProdotti(panelFiltroProdotti);
+		
+		tabTabella  = new Tab("Composizione Ordine");
+		panelTabella = new Layout();
+		panelTabella.addMember(flextable);
+		tabTabella.setPane(panelTabella);
+		
+		this.addTab(tabTabella);
+		this.addTab(tabFiltroProdotti);
+		
+		
+		this.addTabSelectedHandler(new TabSelectedHandler() {
+			
+			public void onTabSelected(TabSelectedEvent event) {
+				if(event.getTab() == tabTabella){
+					panelTabella.destroy();
+					panelTabella = new Layout();
+					panelTabella.addMember(flextable.creaTabella());
+					tabTabella.setPane(panelTabella);
+					
+				}/*else if(event.getTab() == tabTabellaComplessiva){
+					if(lgdettaglioordini != null)lgdettaglioordini.destroy();
+					lgdettaglioordini = new ListGridDettaglioOrdini(IDOrdine);
+					panelTabellaComplessiva.addMember(lgdettaglioordini);
+				}*/
+				
+			}
+		});
 		
 	}
 
