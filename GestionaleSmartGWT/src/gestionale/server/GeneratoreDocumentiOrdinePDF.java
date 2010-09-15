@@ -1,6 +1,7 @@
 package gestionale.server;
 
 import gestionale.shared.Contatto;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.Vector;
@@ -56,10 +57,12 @@ public class GeneratoreDocumentiOrdinePDF {
 		
 		String query = "SELECT * FROM ordini WHERE ID = '"+idordine+"';";
 		Vector<String[]> vOrdine = db.eseguiQuery( query );
+		
 		CampiOrdine = vOrdine.get(0);
 		
-		query = "SELECT ord.DataInvioOrdine, p.*, o.Quantita, o.NumPedane, i.Descrizione, c.RagioneSociale, t.RagioneSociale, t.ID, f.RagioneSociale, f.ID FROM ordine_dettaglio o JOIN ordini ord JOIN prodotti_catalogati p JOIN imballaggio i JOIN contatti c JOIN contatti t JOIN contatti f ON o.IDProdotto = p.ID AND o.IDCliente = c.ID AND o.IDImballaggio = i.ID AND o.IDOrdine = ord.ID AND o.IDTrasportatore = t.ID AND o.IDFornitore = f.ID WHERE o.IDOrdine = '"+idordine+"' ORDER BY o.IDTrasportatore, o.IDFornitore, o.IDCliente, o.IDProdotto";
+		query = "SELECT ord.DataInvioOrdine, p.*, o.Quantita, o.NumPedane, i.Descrizione, c.RagioneSociale, t.RagioneSociale, t.ID, f.RagioneSociale, f.ID FROM ordine_dettaglio o JOIN ordini ord JOIN prodotti_catalogati p JOIN imballaggio i JOIN contatti c JOIN contatti t JOIN contatti f ON o.IDProdotto = p.ID AND o.IDCliente = c.ID AND o.IDImballaggio = i.ID AND o.IDOrdine = ord.ID AND o.IDTrasportatore = t.ID AND o.IDFornitore = f.ID WHERE o.IDOrdine = '"+idordine+"' ORDER BY o.IDFornitore, o.IDTrasportatore, o.IDCliente, o.IDProdotto";
 		Vector<String[]> v = db.eseguiQuery( query );	if(v.size() == 0) return;
+		
 		
 		Ordine = idordine;
 		for(int i=Ordine.length(); i<7; i++){
@@ -94,6 +97,15 @@ public class GeneratoreDocumentiOrdinePDF {
 	}
 	
 	private void generaPedane(Vector<String[]> v){
+		String IDFornitore = null;
+		if(v.size() > 0){
+			IDFornitore = v.get(0)[14];
+			IndexPedana = getNumPedanaFornitore(IDFornitore);////////
+		}else{
+			return;
+		}
+		
+		
 		String[] record = null;
 		IndexPedanaMezza = 0;
 		
@@ -148,9 +160,12 @@ public class GeneratoreDocumentiOrdinePDF {
 			}
 			
 		}
+		setNumPedanaFornitore(IDFornitore, IndexPedana);
 	}
 	
 	public String[][] generaPDF(){
+		if(data.size() == 0) return null;	//Niente ordinazioni
+		
 		url = new Vector<String[]>();
 		String idtrasp = ""; String idforn = "";
 		
@@ -470,4 +485,22 @@ public class GeneratoreDocumentiOrdinePDF {
 		}
 	}
 */
+	
+	private int getNumPedanaFornitore(String IDFornitore){
+		String query = "SELECT NumPedana FROM num_pedane_fornitore WHERE IDFornitore = '"+IDFornitore+"'";
+		Vector<String[]> r = db.eseguiQuery(query);
+		
+		if(r.size() == 0 || r == null){//Non esiste il record
+			query = "INSERT INTO num_pedane_fornitore (IDFornitore, NumPedana) VALUES ('"+IDFornitore+"','1')";
+			db.eseguiAggiornamento(query);
+			return 1;
+		}
+		String[] result = r.get(0);
+		return Integer.parseInt( result[0] );
+	}
+	
+	private boolean setNumPedanaFornitore(String IDFornitore, int value){
+		String query = "UPDATE num_pedane_fornitore SET NumPedana = '"+value+"' WHERE IDFornitore = '"+IDFornitore+"'";
+		return db.eseguiAggiornamento(query);
+	}
 }

@@ -2,6 +2,7 @@ package gestionale.client.UI;
 
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceImballaggi;
+import gestionale.client.DataBase.DataSourceMercati;
 import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.client.DataBase.DataSourceProdotti;
 import gestionale.client.DataBase.DataSourceProdottiCatalogati;
@@ -27,6 +28,7 @@ public class WindowLoadData extends Finestra{
 		DataSourceContatti.getIstance();
 		DataSourceOrdini.getIstance();
 		DataSourceImballaggi.getIstance();
+		DataSourceMercati.getIstance();
 		
 		PanelFiltroProdotti.CaricaVettoreProdottiPreferito();
 		PanelFiltroContatti.CaricaVettoreContattiPreferito();

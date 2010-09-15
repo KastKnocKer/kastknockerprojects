@@ -7,6 +7,7 @@ import gestionale.client.DBConnectionAsync;
 import gestionale.client.DataBase.DataSourceContatti;
 import gestionale.client.DataBase.DataSourceContattiCampiVari;
 import gestionale.client.DataBase.DataSourceContattiIndirizzi;
+import gestionale.client.DataBase.DataSourceMercati;
 import gestionale.shared.Contatto;
 
 import com.google.gwt.core.client.GWT;
@@ -27,9 +28,12 @@ import com.smartgwt.client.widgets.form.fields.FormItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.TextItem;
 import com.smartgwt.client.widgets.form.fields.ToolbarItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.SectionStack;
 import com.smartgwt.client.widgets.layout.SectionStackSection;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -38,6 +42,7 @@ import com.smartgwt.client.widgets.tab.Tab;
 
 
 public class PanelContatti extends VLayout{
+	
 	
 	private PanelContatti thisPanel;
 	
@@ -48,7 +53,11 @@ public class PanelContatti extends VLayout{
 	private TextItem PIVAItem;
 	private TextItem SitoWebItem;
 	private SelectItem TipoSoggettoItem;
+	private SelectItem TipoMercato;
+	private SelectItem Mercato;
 	private TextItem ProvvigioneItem;
+	
+	private String idMercato = "";
 	
 	private RichTextEditor richTextEditor;
 	
@@ -83,7 +92,9 @@ public class PanelContatti extends VLayout{
 			addToTabPanel("Modifica: "+contatto.getRagioneSociale(), true);
 		}
 		
+		
 		this.addForm();			//Aggiungo il form
+		
 		
 		///////////Creazione SectionStack
 		SectionStack sectionStack = new SectionStack();
@@ -370,6 +381,13 @@ ImgButton removeEmail = new ImgButton();
 			
 			richTextEditor.setValue(contatto.getNote()); 
 			
+			if(contatto.getTipoSoggetto().equals("Cliente")){
+				String[] m = DataSourceMercati.getMercatoFromID(contatto.getIDMercato());
+				Mercato.setValue(m[0]);
+				TipoMercato.setValue(m[1]);
+					
+			}
+			
 			
 		}
 	}
@@ -413,14 +431,64 @@ ImgButton removeEmail = new ImgButton();
 		TipoSoggettoItem.setValueMap("Cliente", "Fornitore", "Intermediario","Trasportatore");
 		TipoSoggettoItem.setRequired(true);
 		
-		form.setFields( new FormItem[] {RagioneSocialeItem, PrecisazioneItem, PIVAItem, SitoWebItem, ProvvigioneItem, TipoSoggettoItem} );
+		TipoSoggettoItem.addChangedHandler(new ChangedHandler() {
+			
+			@Override
+			public void onChanged(ChangedEvent event) {
+				if( ((String)event.getValue()).equals("Cliente")){
+					TipoMercato.setDisabled(false);
+					Mercato.setDisabled(false);
+					TipoMercato.setRequired(true);
+					Mercato.setRequired(true);
+				}else{
+					idMercato = "";
+					TipoMercato.setDisabled(true);
+					Mercato.setDisabled(true);
+					TipoMercato.setValue("");
+					Mercato.setValue("");
+					TipoMercato.setRequired(false);
+					Mercato.setRequired(false);
+				}
+			}
+		});
+		
+		TipoMercato = new SelectItem();
+		TipoMercato.setWidth(220);
+		TipoMercato.setType("comboBox");
+		TipoMercato.setTitle("Tipo mercato"); 
+		TipoMercato.setDisabled(true);
+		TipoMercato.setValueMap( DataSourceMercati.getTipoMercato() );
+		
+		TipoMercato.addChangedHandler(new ChangedHandler() {
+			
+			@Override
+			public void onChanged(ChangedEvent event) {
+				// TODO Auto-generated method stub
+				Mercato.setValueMap( DataSourceMercati.getMercatiMap((String) event.getValue()));
+				Mercato.setValue("");
+			}
+		});
+		
+		Mercato = new SelectItem();
+		Mercato.setWidth(220);
+		Mercato.setType("comboBox");
+		Mercato.setTitle("Mercato di riferimento"); 
+		Mercato.setDisabled(true);
+		
+		Mercato.addChangedHandler(new ChangedHandler() {
+			
+			@Override
+			public void onChanged(ChangedEvent event) {
+				idMercato = DataSourceMercati.getIDMercato((String)Mercato.getValue(), (String)TipoMercato.getValue());
+			}
+		});		
+		
 		
 		Button confermaButton = new Button("Conferma");
 		confermaButton.addClickHandler(new ClickHandler() {
 			
 			public void onClick(ClickEvent event) {
 					salvaModificheContatto();
-					thisPanel.closePanel();
 	          }
 			});
 		
@@ -480,7 +548,7 @@ ImgButton removeEmail = new ImgButton();
 		
 		this.addMember(new HTMLFlow("<br><br>"));
 		
-		form.setFields( new FormItem[] {RagioneSocialeItem, PrecisazioneItem, PIVAItem, SitoWebItem, ProvvigioneItem, TipoSoggettoItem, toolbarItem} );
+		form.setFields( new FormItem[] {RagioneSocialeItem, PrecisazioneItem, PIVAItem, SitoWebItem, ProvvigioneItem, TipoSoggettoItem,TipoMercato, Mercato, toolbarItem} );
 		
 		
 	}
@@ -502,6 +570,7 @@ ImgButton removeEmail = new ImgButton();
 		contatto.setSitoWeb( (String) SitoWebItem.getValue() );
 		contatto.setProvvigione( (String) ProvvigioneItem.getValue() );
 		contatto.setTipoSoggetto( (String) TipoSoggettoItem.getValue());
+		contatto.setIDMercato( idMercato );
 	  
 		ListGridRecord[] RC;
 		
@@ -589,7 +658,7 @@ ImgButton removeEmail = new ImgButton();
 		  }
 
 
-		  String query = "UPDATE contatti SET RagioneSociale='"+contatto.getRagioneSociale()+"',Precisazione='"+contatto.getPrecisazione()+"',PIVA='"+contatto.getPIVA()+"',Logo='"+contatto.getLogo()+"',Indirizzo='"+contatto.getIndirizzo()+"',Telefono='"+contatto.getTelefono()+"',Cellulare='"+contatto.getCellulare()+"',Fax='"+contatto.getFax()+"',Email='"+contatto.geteMail()+"',SitoWeb='"+contatto.getSitoWeb()+"',TipoSoggetto='"+contatto.getTipoSoggetto()+"',Provvigione='"+contatto.getProvvigione()+"',Note='"+contatto.getNote()+"' WHERE ID='"+contatto.getID()+"'";
+		  String query = "UPDATE contatti SET RagioneSociale='"+contatto.getRagioneSociale()+"',Precisazione='"+contatto.getPrecisazione()+"',PIVA='"+contatto.getPIVA()+"',Logo='"+contatto.getLogo()+"',Indirizzo='"+contatto.getIndirizzo()+"',Telefono='"+contatto.getTelefono()+"',Cellulare='"+contatto.getCellulare()+"',Fax='"+contatto.getFax()+"',Email='"+contatto.geteMail()+"',SitoWeb='"+contatto.getSitoWeb()+"',TipoSoggetto='"+contatto.getTipoSoggetto()+"',Provvigione='"+contatto.getProvvigione()+"',Note='"+contatto.getNote()+"',IDMercato='"+contatto.getIDMercato()+"' WHERE ID='"+contatto.getID()+"'";
 		  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 		  rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
 			

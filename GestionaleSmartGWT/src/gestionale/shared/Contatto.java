@@ -27,6 +27,8 @@ public class Contatto implements IsSerializable {
 	private String Latitudine="";
 	private String Longitudine="";
 	
+	private String IDMercato="";
+	
 
 	
 	
@@ -370,6 +372,14 @@ public class Contatto implements IsSerializable {
 
 	public String getLongitudine() {
 		return Longitudine;
+	}
+
+	public void setIDMercato(String iDMercato) {
+		IDMercato = iDMercato;
+	}
+
+	public String getIDMercato() {
+		return IDMercato;
 	}
 
 	

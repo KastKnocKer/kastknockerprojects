@@ -60,6 +60,11 @@ public class WindowDettaglioOrdiniSpeciale extends Finestra{
 		ListGridField fornitore		= new ListGridField("fornitore","Fornitore");
 		ListGridField imballaggio	= new ListGridField("descrizioneimballaggio","Imballaggio");
 		ListGridField trasportatore	= new ListGridField("trasportatore","Trasportatore");
+		ListGridField dataarrivo	= new ListGridField("dataarrivo","Data di arrivo");
+		ListGridField datascadenza	= new ListGridField("datascadenza","Data di scadenza");
+		
+		dataarrivo.setType(ListGridFieldType.DATE);
+		datascadenza.setType(ListGridFieldType.DATE);
 		
 		quantita.setWidth("12%");
 		pedane.setWidth("13%");
@@ -189,7 +194,7 @@ public class WindowDettaglioOrdiniSpeciale extends Finestra{
 		lg.setAutoFetchData(true);
 		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdordine(), lo.getIdcliente(), lo.getIdprodotto(),DataSourceDettaglioOrdini.MOD_TabellaDettaglio));
 		
-		lg.setFields(imballaggio,fornitore,trasportatore,pedane,quantita);
+		lg.setFields(imballaggio,fornitore,trasportatore,pedane,quantita,dataarrivo,datascadenza);
 		lg.setAutoSaveEdits(false);	//
 		lg.setWidth100();
 		lg.setHeight100();

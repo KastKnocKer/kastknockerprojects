@@ -23,7 +23,7 @@ public class FlexTableOrdineSpeciale extends FlexTable{
 	
 	private Vector<Contatto> vettoreContatti = null;
 	private Vector<String[]> vettoreProdottiDaVisualizzare = null;
-	private Vector<LabelOrdinazione> vLabel = null;
+	private Vector<LabelOrdinazioneSpeciale> vLabel = null;
 
 	private String[] arrayCodProd = null;
 	private String[] arrayDescProd = null;
@@ -124,9 +124,17 @@ public class FlexTableOrdineSpeciale extends FlexTable{
 		this.setCellSpacing(5);
 		this.setCellPadding(3);
 		vettoreContatti = new Vector<Contatto>();
-		Contatto contatto = new Contatto();
-		contatto.setRagioneSociale("Magazzino");
-		vettoreContatti.add(contatto);
+		Contatto contatto = null;
+		
+		for(int i=0; i<DataSourceContatti.getVettoreFornitori().size(); i++){
+			contatto = DataSourceContatti.getVettoreFornitori().get(i);
+			if( contatto.getRagioneSociale().equals("Magazzino")){
+				vettoreContatti.add(contatto);
+				break;
+			}
+		}
+		
+		
 	    for(int i=0; i<vettoreContatti.size(); i++){
 	    	contatto = vettoreContatti.get(i);
 	    	this.setHTML(i+4, 0, "<b>"+contatto.getRagioneSociale()+"</b>");
@@ -143,7 +151,7 @@ public class FlexTableOrdineSpeciale extends FlexTable{
 	
 	//Carica i dati degli ordini nella tabella già pronta
 	private FlexTableOrdineSpeciale aggiornaTabella(){
-		vLabel = new Vector<LabelOrdinazione>();
+		vLabel = new Vector<LabelOrdinazioneSpeciale>();
 
 		FlexCellFormatter cellFormatter = this.getFlexCellFormatter();
 		int row = this.getRowCount();
@@ -154,7 +162,7 @@ public class FlexTableOrdineSpeciale extends FlexTable{
 				
 				String idProdotto = arrayCodProd[j];
 				String idCliente = vettoreContatti.get(i-4).getID();
-				LabelOrdinazione label = new LabelOrdinazione(IDOrdine, idCliente, idProdotto);
+				LabelOrdinazioneSpeciale label = new LabelOrdinazioneSpeciale(IDOrdine, idCliente, idProdotto);
 				label.setWidth(27);
 				label.setHeight(25);
 				label.setTooltip("Cliente: " + vettoreContatti.get(i-4).getRagioneSociale() +"\nProdotto: " + arrayDescProd[j]);
@@ -172,7 +180,7 @@ public class FlexTableOrdineSpeciale extends FlexTable{
 		
 		
 		for(int k=0; k<vLabel.size(); k++){
-			LabelOrdinazione lo = vLabel.get(k);
+			LabelOrdinazioneSpeciale lo = vLabel.get(k);
 			String lidP = lo.getIdprodotto();
 			String lidC = lo.getIdcliente();
 		}
@@ -199,7 +207,7 @@ public class FlexTableOrdineSpeciale extends FlexTable{
 			@Override
 			public void run() {
 				DettaglioOrdine[] array = dsdo.getArrayDettaglioOrdini();
-				LabelOrdinazione lo = null;
+				LabelOrdinazioneSpeciale lo = null;
 				if(array == null) {
 					schedule(500);
 				}else{

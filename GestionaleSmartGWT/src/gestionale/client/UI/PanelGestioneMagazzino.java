@@ -5,11 +5,11 @@ import gestionale.client.DataBase.DataSourceGiacenzaMagazzino;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.layout.VLayout;
 
-public class PanelGiacenzaMagazzino extends VLayout{
+public class PanelGestioneMagazzino extends VLayout{
 	
 	private ListGrid lg;
 	
-	public PanelGiacenzaMagazzino(){
+	public PanelGestioneMagazzino(){
 		super();
 		
 		lg = new ListGrid();

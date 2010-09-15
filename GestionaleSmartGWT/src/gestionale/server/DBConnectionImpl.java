@@ -7,6 +7,7 @@ import gestionale.shared.Imballaggio;
 import gestionale.shared.Ordine;
 import gestionale.shared.User;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.*;
@@ -88,6 +89,7 @@ public Contatto[] eseguiQueryContatto(String query) {
 			contattoarray[i].setNote(record[13]);
 			contattoarray[i].setLatitudine(record[14]);
 			contattoarray[i].setLongitudine(record[15]);
+			contattoarray[i].setIDMercato(record[16]);
 			
 		}
 		
@@ -211,6 +213,29 @@ public Imballaggio[] eseguiQueryImballaggio(String query) {
 	return imballaggioarray;
 }
 
+@Override
+public String getListaDocumenti() {
+	File file = new File("webapps/Gestionale/PDF/");
+	File[] files = file.listFiles();
+	Vector<String> v = new Vector<String>();
+
+	for(int i=0; i<files.length; i++){
+		if(!files[i].getPath().contains(".pdf")) continue;
+		System.out.println(files[i].getPath().substring(19));
+		String str = files[i].getPath().substring(19);
+		
+		v.add(str);
+	}
+	String text = "";
+	for(int i=0; i<v.size(); i++){
+		String tmp = v.get(i);
+		text = text +"<a href=\""+tmp.replaceAll(" ", "%20")+"\" target=\"_blank\">"+tmp.substring(4)+"</a> <br>";
+		System.out.println("<a href="+v.get(i)+">"+v.get(i)+"</a> <br>");
+	}
+	
+	return text;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Funzioni generiche per eseguire le query direttamente dall'applicazione client  //
@@ -236,6 +261,9 @@ public String[][] eseguiCreazioneDocumentiOrdine(String IDOrdine) {
 	
 	return CDO_PDF.generaPDF();
 }
+
+
+
 
 
 

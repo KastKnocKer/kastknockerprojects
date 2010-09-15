@@ -11,6 +11,9 @@ import java.util.Vector;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.smartgwt.client.widgets.Label;
+import com.smartgwt.client.widgets.events.DoubleClickEvent;
+import com.smartgwt.client.widgets.events.DoubleClickHandler;
 
 public class FlexTableOrdineOrdinario extends FlexTable{
 
@@ -126,7 +129,10 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 		Contatto contatto = null;
 	    for(int i=0; i<vettoreContattiFiltrato.size(); i++){
 	    	contatto = vettoreContattiFiltrato.get(i);
-	    	this.setHTML(i+4, 0, "<b>"+contatto.getRagioneSociale()+"</b>");
+	    	LabelOrdinazioneCliente label = new LabelOrdinazioneCliente(contatto);
+	    	label.setHeight(25);
+	    	label.setContents("<b>"+contatto.getRagioneSociale()+"</b>");
+	    	this.setWidget(i+4,0, label);
 	    }
 	    
 	    //Prepara i prodotti

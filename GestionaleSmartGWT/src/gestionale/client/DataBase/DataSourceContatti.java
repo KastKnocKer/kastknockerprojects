@@ -119,7 +119,7 @@ public class DataSourceContatti extends DataSource{
 	
 	public static void aggiungiContatto(final Contatto contatto){
 		//Aggiungo al database
-		String query = "INSERT INTO contatti (`RagioneSociale`,`Precisazione`,`PIVA`,`Logo`,`Indirizzo`,`Telefono`,`Cellulare`,`Fax`,`Email`,`SitoWeb`,`TipoSoggetto`,`Provvigione`,`Note`) VALUES ('"+contatto.getRagioneSociale()+"','"+contatto.getPrecisazione()+"','"+contatto.getPIVA()+"','"+contatto.getLogo()+"','"+contatto.getIndirizzo()+"','"+contatto.getTelefono()+"','"+contatto.getCellulare()+"','"+contatto.getFax()+"','"+contatto.geteMail()+"','"+contatto.getSitoWeb()+"','"+contatto.getTipoSoggetto()+"','"+contatto.getProvvigione()+"','"+contatto.getNote()+"')";
+		String query = "INSERT INTO contatti (`RagioneSociale`,`Precisazione`,`PIVA`,`Logo`,`Indirizzo`,`Telefono`,`Cellulare`,`Fax`,`Email`,`SitoWeb`,`TipoSoggetto`,`Provvigione`,`Note`,`IDMercato`) VALUES ('"+contatto.getRagioneSociale()+"','"+contatto.getPrecisazione()+"','"+contatto.getPIVA()+"','"+contatto.getLogo()+"','"+contatto.getIndirizzo()+"','"+contatto.getTelefono()+"','"+contatto.getCellulare()+"','"+contatto.getFax()+"','"+contatto.geteMail()+"','"+contatto.getSitoWeb()+"','"+contatto.getTipoSoggetto()+"','"+contatto.getProvvigione()+"','"+contatto.getNote()+"','"+contatto.getIDMercato()+"')";
 		
 		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
 
@@ -184,6 +184,14 @@ public class DataSourceContatti extends DataSource{
 				}
 			}
 		});
+	}
+	
+	public String[] getCitta(){
+		String[] strings = new String[vettoreContatti.size()];
+		for(int i=0; i<vettoreContatti.size();i++){
+			
+		}
+		return null;
 	}
 
 	public boolean isReady() {

@@ -4,6 +4,8 @@ import java.util.Vector;
 
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
+import gestionale.client.UI.PanelOrdine;
+import gestionale.client.UI.PanelOrdineSpeciale;
 import gestionale.shared.Ordine;
 
 import com.google.gwt.core.client.GWT;
@@ -155,6 +157,13 @@ public class DataSourceOrdini extends DataSource{
 							istance.addData(record);
 							
 							DataSourceOrdini.getIstance().getNewRecords();
+							
+							///APRO ORDINE APPENA CREATO
+							if( ordine.getTipoOrdine().equals("Ordinario") ){
+								PanelOrdine po = new PanelOrdine( record );
+							}else{
+								PanelOrdineSpeciale po = new PanelOrdineSpeciale( record );
+							}
 						}
 						
 					}

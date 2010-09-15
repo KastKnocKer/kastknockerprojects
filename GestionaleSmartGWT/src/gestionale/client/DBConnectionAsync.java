@@ -24,9 +24,9 @@ public interface DBConnectionAsync {
 
 	public void eseguiQuery(String query, AsyncCallback<String[][]> asyncCallback);
 
-	void eseguiCreazioneDocumentiOrdine(String IDOrdine,AsyncCallback<String[][]> callback);
+	void eseguiCreazioneDocumentiOrdine(String IDOrdine,AsyncCallback<String[][]> asyncCallback);
 
-
+	public void getListaDocumenti(AsyncCallback<String> asyncCallback);
 	
 
 	

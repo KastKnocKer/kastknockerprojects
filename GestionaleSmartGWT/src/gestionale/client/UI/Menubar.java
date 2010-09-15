@@ -1,5 +1,12 @@
 package gestionale.client.UI;
 
+import gestionale.client.DBConnection;
+import gestionale.client.DBConnectionAsync;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
 import com.smartgwt.client.widgets.events.CloseClientEvent;
 import com.smartgwt.client.widgets.menu.Menu;
@@ -10,6 +17,8 @@ import com.smartgwt.client.widgets.toolbar.ToolStrip;
 import com.smartgwt.client.widgets.toolbar.ToolStripMenuButton;
 
 public class Menubar extends ToolStrip{
+	
+	private static  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
 	
 	public Menubar(){
 
@@ -23,14 +32,14 @@ public class Menubar extends ToolStrip{
 		ToolStripMenuButton fileButton = 		new ToolStripMenuButton("File", fileMenu);
 		ToolStripMenuButton inserisciButton = 	new ToolStripMenuButton("Inserisci", inserisciMenu);
 		ToolStripMenuButton visualizzaButton =	new ToolStripMenuButton("Visualizza", visualizzaMenu);
-	    ToolStripMenuButton modificaButton = 	new ToolStripMenuButton("Modifica", modificaMenu);
+	    //ToolStripMenuButton modificaButton = 	new ToolStripMenuButton("Modifica", modificaMenu);
 	    ToolStripMenuButton helpButton = 		new ToolStripMenuButton("?", helpMenu);
 
 	    
 	    this.addMember(fileButton);
 	    this.addMember(inserisciButton);
 	    this.addMember(visualizzaButton);
-	    this.addMember(modificaButton);
+	    //this.addMember(modificaButton);
 	    this.addMember(helpButton);
 
 	    this.setWidth100();
@@ -100,7 +109,7 @@ public class Menubar extends ToolStrip{
 	    MenuItem visualGiacenzaMagazzinoMI =new MenuItem("Giacenza magazzino");
 	    visualGiacenzaMagazzinoMI.addClickHandler( new ClickHandler() {
 			public void onClick(MenuItemClickEvent event) {
-				GUIManager.addToTabPanel("Giacenza Magazzino", new PanelGiacenzaMagazzino(), true);
+				GUIManager.addToTabPanel("Giacenza Magazzino", new PanelGestioneMagazzino(), true);
 			}
 		});
 	    
@@ -108,6 +117,52 @@ public class Menubar extends ToolStrip{
 	    visualMappaGoogleMapsMI.addClickHandler( new ClickHandler() {
 			public void onClick(MenuItemClickEvent event) {
 				GUIManager.addToTabPanel("Mappa (Google Maps)", new PanelMappaGoogleMaps(), true);
+			}
+		});
+	    
+	    MenuItem visualListaFileMI =new MenuItem("Lista documenti");
+	    visualListaFileMI.addClickHandler( new ClickHandler() {
+			public void onClick(MenuItemClickEvent event) {
+
+				rpc.getListaDocumenti(new AsyncCallback<String>() {
+					
+					@Override
+					public void onSuccess(String result) {
+						if(result == null) return;
+						Label label = new Label();
+						label.setContents(result);
+						Finestra finestra = new Finestra();
+						finestra.setTitle("Lista documenti");
+						finestra.setWidth(300);
+						finestra.setHeight(300);
+						finestra.addItem(label);
+						finestra.centerInPage();
+						finestra.draw();
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert(caught.getMessage());
+					}
+				});
+			}
+		});
+	    
+	    MenuItem visualAssociazioneCPMI =new MenuItem("Associazione FornitoreProdotti");
+	    visualAssociazioneCPMI.addClickHandler( new ClickHandler() {
+			
+			@Override
+			public void onClick(MenuItemClickEvent event) {
+				GUIManager.addToTabPanel("Associazione FornitoreProdotti", new PanelAssociazioneFornitoriProdotti(), true);
+			}
+		});
+	    
+	    MenuItem visualAssociazioneCPalletMI =new MenuItem("Associazione FornitorePallet");
+	    visualAssociazioneCPalletMI.addClickHandler( new ClickHandler() {
+			
+			@Override
+			public void onClick(MenuItemClickEvent event) {
+				GUIManager.addToTabPanel("Associazione FornitorePallet", new PanelAssociazioneFornitoriPallet(), true);
 			}
 		});
 	    
@@ -122,6 +177,10 @@ public class Menubar extends ToolStrip{
 	    visualizzaMenu.addItem( visualGestImballaggiMI );
 	    visualizzaMenu.addItem( visualGiacenzaMagazzinoMI );
 	    visualizzaMenu.addItem( visualMappaGoogleMapsMI );
+	    visualizzaMenu.addItem( visualListaFileMI );
+	    visualizzaMenu.addItem( visualAssociazioneCPMI );
+	    visualizzaMenu.addItem( visualAssociazioneCPalletMI );
+	    
 	    
 
 	    

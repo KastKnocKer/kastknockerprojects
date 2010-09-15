@@ -81,6 +81,7 @@ public class PanelMappaGoogleMaps extends VLayout{
 			
 			@Override
 			public void onClick(ClickEvent event) {
+				map.clearOverlays();
 				for(int i=0; i<DataSourceContatti.getVettoreContatti().size(); i++){
 					addMarkerContatto(DataSourceContatti.getVettoreContatti().get(i));
 				}
@@ -118,7 +119,7 @@ public class PanelMappaGoogleMaps extends VLayout{
 			Vector<String[]> vInd = contatto.getVectorIndirizzi();
 			if(vInd.size() == 0) continue;
 			String[] indirizzo = vInd.get(0);
-			geo.getLatLng(indirizzo[1]+" "+indirizzo[3]+" "+indirizzo[4]+" "+indirizzo[5]+" "+indirizzo[6], new LatLngCallback() {
+			geo.getLatLng(indirizzo[1]+" "+indirizzo[3]+" "+indirizzo[5], new LatLngCallback() {
 				
 				public void onSuccess(LatLng point) {
 					if(point == null) return;
