@@ -1,6 +1,9 @@
 package gestionale.client.UI;
 
+import gestionale.client.DBConnection;
+import gestionale.client.DBConnectionAsync;
 import gestionale.client.DataBase.DataSourceGoogleMaps;
+import gestionale.shared.Contatto;
 
 import java.util.List;
 
@@ -24,9 +27,24 @@ import com.google.gwt.maps.client.geocode.Waypoint;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.smartgwt.client.data.DataSource;
+import com.smartgwt.client.data.Record;
+import com.smartgwt.client.data.fields.DataSourceTextField;
+import com.smartgwt.client.widgets.Canvas;
+import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.ButtonItem;
+import com.smartgwt.client.widgets.form.fields.SelectItem;
+import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
+import com.smartgwt.client.widgets.form.fields.events.ClickEvent;
+import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.tab.Tab;
@@ -36,17 +54,23 @@ import com.smartgwt.client.widgets.tab.events.TabSelectedHandler;
 
 public class PanelOrdineSpeciale extends TabSet{
 	
+	private static  DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+
+	
 	private String IDOrdine;
 	private PanelOrdineSpeciale thisTabSet;
 	private Tab tab;
 	private Tab tabTabella;
 	private Tab tabFiltroProdotti;
+	private Tab tabPedane;
+	private ListGrid lg_pedane;
 	
-	private Layout panelTabella;
+	private DynamicForm form;
 	
-	private FlexTableOrdineSpeciale flextable;
-	
-	private PanelFiltroProdotti panelFiltroProdotti;
+	private SelectItem cliente;
+	private SelectItem fornitore;
+	private SelectItem pallet;
+	private TextItem nomepedana;
 	
 	
 	public PanelOrdineSpeciale(ListGridRecord ordine){
@@ -56,34 +80,59 @@ public class PanelOrdineSpeciale extends TabSet{
 		if(IDOrdine == null){
 			this.destroy();
 		}
+		
 		this.addToTabPanel("Visualizzazione Ordine: " + ordine.getAttribute("datacreazioneordine")+" - ["+ordine.getAttribute("tipoordine")+"]", true);
 		
-		tabFiltroProdotti = new Tab("Filtro Prodotti");
-		panelFiltroProdotti = new PanelFiltroProdotti();
-		tabFiltroProdotti.setPane(panelFiltroProdotti);
+		tabPedane = new Tab("Pedane");
+		lg_pedane = new ListGrid();
+		lg_pedane.setWidth100();
+		lg_pedane.setHeight100();
 		
-		flextable = new FlexTableOrdineSpeciale(IDOrdine);
-		flextable.setPanelFiltroProdotti(panelFiltroProdotti);
+		//CreoDatasource
+		/*
+		DataSource ds = new DataSource();
+		DataSourceTextField idField = new DataSourceTextField("id");  
+		idField.setHidden(true);  
+		idField.setPrimaryKey(true);
+		ds.setFields(idField);
+		ds.setClientOnly(true);
+		lg_pedane.setDataSource(ds);
+		*/
 		
-		tabTabella  = new Tab("Composizione Ordine");
-		panelTabella = new Layout();
-		panelTabella.addMember(flextable);
-		tabTabella.setPane(panelTabella);
+		ListGridField pedana = new ListGridField("pedana","Pedana");
+		ListGridField fornitore = new ListGridField("fornitore","Fornitore");
+		ListGridField cliente = new ListGridField("cliente","Cliente");
+		ListGridField pallet = new ListGridField("pallet","Pallet");
+		ListGridField percentualecompletamento = new ListGridField("percentuale","Perc.Completamento");
 		
-		this.addTab(tabTabella);
-		this.addTab(tabFiltroProdotti);
+		lg_pedane.setFields(pedana,cliente,fornitore,pallet,percentualecompletamento);
+		
+		
+		VLayout layout = new VLayout();
+		layout.addMember(lg_pedane);
+		form = this.getForm();
+		layout.addMember(form);
+		
+		tabPedane.setPane(layout);
+		
+		this.addTab(tabPedane);
+		
+		
+		
+		caricaDatiListGridPedane();
 		
 		
 		this.addTabSelectedHandler(new TabSelectedHandler() {
 			
 			public void onTabSelected(TabSelectedEvent event) {
+				/*
 				if(event.getTab() == tabTabella){
 					panelTabella.destroy();
 					panelTabella = new Layout();
 					panelTabella.addMember(flextable.creaTabella());
 					tabTabella.setPane(panelTabella);
 					
-				}/*else if(event.getTab() == tabTabellaComplessiva){
+				}else if(event.getTab() == tabTabellaComplessiva){
 					if(lgdettaglioordini != null)lgdettaglioordini.destroy();
 					lgdettaglioordini = new ListGridDettaglioOrdini(IDOrdine);
 					panelTabellaComplessiva.addMember(lgdettaglioordini);
@@ -96,10 +145,217 @@ public class PanelOrdineSpeciale extends TabSet{
 
 
 
+	private void caricaDatiListGridPedane(){
+		String query = "SELECT o.*,cf.ID,cf.RagioneSociale,cc.ID,cc.RagioneSociale,p.Nome FROM ordine_dettaglio_speciale o JOIN contatti cc JOIN contatti cf JOIN pallet p ON o.IDFornitore = cf.ID AND o.IDCliente = cc.ID AND o.IDPallet = p.ID WHERE IDOrdine = '"+IDOrdine+"'";
+		rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
+			
+			@Override
+			public void onSuccess(String[][] result) {
+				if(result == null) return;
+				ListGridRecord[] records = new ListGridRecord[result.length];
+				for(int i=0; i<result.length;i++){
+					records[i] = new ListGridRecord();
+					records[i].setAttribute("id", result[i][0]);
+					records[i].setAttribute("idordine", result[i][1]);
+					records[i].setAttribute("idfornitore", result[i][2]);
+					records[i].setAttribute("idcliente", result[i][3]);
+					records[i].setAttribute("idpallet", result[i][4]);
+					records[i].setAttribute("pedana", result[i][5]);
+					records[i].setAttribute("idfornitore", result[i][6]);
+					records[i].setAttribute("fornitore", result[i][7]);
+					records[i].setAttribute("idcliente", result[i][8]);
+					records[i].setAttribute("cliente", result[i][9]);
+					records[i].setAttribute("pallet", result[i][10]);
+					
+				}
+				lg_pedane.setData(records);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {Window.alert(caught.getMessage());}
+		});
+	}
 
 	
 	
 	
+	private DynamicForm getForm() {
+		DynamicForm form = new DynamicForm();
+		
+		DataSourceTextField idField = new DataSourceTextField("id");
+		idField.setHidden(true);  
+		idField.setPrimaryKey(true);
+		DataSourceTextField ragsocField = new DataSourceTextField("ragionesociale");
+		
+		
+		final DataSource ds_cliente = new DataSource();
+		ds_cliente.setFields(idField, ragsocField);
+		ds_cliente.setClientOnly(true);
+		
+		final DataSource ds_fornitore = new DataSource();
+		ds_fornitore.setFields(idField, ragsocField);
+		ds_fornitore.setClientOnly(true);
+		
+		String query = "SELECT * FROM contatti WHERE TipoSoggetto = 'Cliente'";
+		
+		rpc.eseguiQueryContatto(query, new AsyncCallback<Contatto[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(Contatto[] result) {
+				for(int i=0; i<result.length;i++){
+					Record record = new Record();
+					record.setAttribute("id", result[i].getID());
+					record.setAttribute("ragionesociale", result[i].getRagioneSociale());
+				    ds_cliente.addData(record);
+				}
+			}
+		});
+		
+		query = "SELECT * FROM contatti WHERE TipoSoggetto = 'Fornitore'";
+		
+		rpc.eseguiQueryContatto(query, new AsyncCallback<Contatto[]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(Contatto[] result) {
+				for(int i=0; i<result.length;i++){
+					Record record = new Record();
+					record.setAttribute("id", result[i].getID());
+					record.setAttribute("ragionesociale", result[i].getRagioneSociale());
+				    ds_fornitore.addData(record);
+				}
+			}
+		});
+		
+		
+		
+		cliente = new SelectItem("id","Cliente");
+		cliente.setRequired(true);
+		cliente.setDisplayField("ragionesociale");
+		cliente.setOptionDataSource(ds_cliente);
+		cliente.setAutoFetchData(true);
+		
+		fornitore = new SelectItem("id","Fornitore");
+		fornitore.setRequired(true);
+		fornitore.setDisplayField("ragionesociale");
+		fornitore.setOptionDataSource(ds_fornitore);
+		fornitore.setAutoFetchData(true);
+		
+		pallet = new SelectItem("id","Pallet");
+		pallet.setRequired(true);
+		pallet.setDisplayField("nomepallet");
+		pallet.setAutoFetchData(true);
+		
+		nomepedana = new TextItem("nomepedana","Pedana");
+		
+		fornitore.addChangedHandler(new ChangedHandler() {
+			
+			@Override
+			public void onChanged(ChangedEvent event) {
+				
+				
+				String query = "SELECT p.ID, p.Nome FROM pallet p JOIN fornitore_pallet_utilizzato fpu ON p.ID = fpu.IDPallet WHERE fpu.IDFornitore = '"+event.getValue()+"';";
+				
+				rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(String[][] result) {
+						
+						DataSourceTextField idField = new DataSourceTextField("id");
+						idField.setHidden(true);  
+						idField.setPrimaryKey(true);
+						DataSourceTextField descField = new DataSourceTextField("nomepallet");
+						
+						DataSource ds_pallet = new DataSource();
+						ds_pallet.setFields(idField, descField);
+						ds_pallet.setClientOnly(true);
+						
+						for(int i=0;i<result.length;i++){
+							Record record = new Record();
+							record.setAttribute("id", result[i][0]);
+							record.setAttribute("nomepallet", result[i][1]);
+							ds_pallet.addData(record);
+						}
+						pallet.setOptionDataSource(ds_pallet);
+						pallet.fetchData();
+					}
+					
+				});
+				
+			}
+		});
+		
+		/*
+		ListGridField pedana = new ListGridField("pedana","Pedana");
+		ListGridField fornitore = new ListGridField("fornitore","Fornitore");
+		ListGridField cliente = new ListGridField("cliente","Cliente");
+		ListGridField pallet = new ListGridField("pallet","Pallet");
+		*/
+		
+		ButtonItem okbutton = new ButtonItem();
+		okbutton.setTitle("Aggiungi pedana");
+		
+		okbutton.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				DynamicForm form = PanelOrdineSpeciale.this.form;
+				form.validate();
+				if(form.hasErrors()){
+					Window.alert("Campi mancanti!");
+					return;
+				}
+				
+				String query = "INSERT INTO ordine_dettaglio_speciale (IDOrdine,IDCliente,IDFornitore,IDPallet,Pedana) VALUES ('"+IDOrdine+"','"+cliente.getValue()+"','"+fornitore.getValue()+"','"+pallet.getValue()+"','"+nomepedana.getValue()+"');";
+				rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						if(!result){
+							Window.alert("Errore durante l'inserimento della pedana!");
+							return;
+						}
+						caricaDatiListGridPedane();
+					}
+					
+				});
+
+			}
+		});
+		
+		form.setFields(nomepedana,cliente,fornitore,pallet,okbutton);
+		return form;
+	}
+
+
+
+
+
+
+
 	private void closePanel(){
 		GUIManager.getTopTabset().removeTab(tab);
 	}

@@ -34,18 +34,19 @@ public class DataSourceProdottiCatalogati extends DataSource{
 		setID(id);  
         setTitleField("Name");
         
-        DataSourceTextField IDField = new DataSourceTextField("CodiceProdotto", "codiceprodotto");
+        DataSourceTextField IDField = new DataSourceTextField("codiceprodotto", "CodiceProdotto");
         IDField.setRequired(true);
 		IDField.setPrimaryKey(true);
 		IDField.setHidden(true);
 		
-        DataSourceTextField categoriaField = new DataSourceTextField("Categoria", "categoria");  
-        DataSourceTextField tipologiaField = new DataSourceTextField("Tipologia", "tipologia");  
-        DataSourceTextField varietaField = new DataSourceTextField("Varietà", "varieta");  
-        DataSourceTextField sottovarietaField = new DataSourceTextField("Sottovarieta", "sottovarieta");  
-        DataSourceTextField calibroField = new DataSourceTextField("Calibro", "calibro");  
-             
-		setFields(IDField, categoriaField, tipologiaField, varietaField, sottovarietaField, calibroField);
+        DataSourceTextField categoriaField = new DataSourceTextField("categoria", "Categoria");  
+        DataSourceTextField tipologiaField = new DataSourceTextField("tipologia", "Tipologia");  
+        DataSourceTextField varietaField = new DataSourceTextField("varietà", "Varieta");  
+        DataSourceTextField sottovarietaField = new DataSourceTextField("sottovarieta", "Sottovarieta");  
+        DataSourceTextField calibroField = new DataSourceTextField("calibro", "Calibro");  
+        DataSourceTextField descrizioneField = new DataSourceTextField("descrizione", "Descrizione");  
+        
+		setFields(IDField, categoriaField, tipologiaField, varietaField, sottovarietaField, calibroField, descrizioneField);
 		 
 		setClientOnly(true);
 		 
@@ -80,11 +81,13 @@ public class DataSourceProdottiCatalogati extends DataSource{
 					ListGridRecord record = new ListGridRecord();
 					
 					record.setAttribute("codiceprodotto", stringa[0]);
+					record.setAttribute("id", stringa[0]);
 					record.setAttribute("categoria", stringa[1]);
 					record.setAttribute("tipologia", stringa[2]);
 					record.setAttribute("varieta", stringa[3]);
 					record.setAttribute("sottovarieta", stringa[4]);
 					record.setAttribute("calibro", stringa[5]);
+					record.setAttribute("descrizione", stringa[1]+" "+stringa[2]+" "+stringa[3]+" "+stringa[4]+" "+stringa[5]);
 					
 					Prodotto prodotto = new Prodotto();
 					prodotto.setID(stringa[0]);

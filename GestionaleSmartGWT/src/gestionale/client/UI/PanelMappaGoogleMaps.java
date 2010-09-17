@@ -23,6 +23,7 @@ import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.maps.client.overlay.MarkerOptions;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.smartgwt.client.types.Overflow;
 import com.smartgwt.client.widgets.Button;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -34,6 +35,8 @@ public class PanelMappaGoogleMaps extends VLayout{
 	private MapWidget map;
 	private DockLayoutPanel dock;
 	private Geocoder geo;
+	
+	private PanelFiltroContatti panelFiltroContatti;
 	
 	public PanelMappaGoogleMaps(){
 		
@@ -48,7 +51,7 @@ public class PanelMappaGoogleMaps extends VLayout{
 	private void buildUi(){
 		Geocoder geo = new Geocoder();
 		LatLng vignola = LatLng.newInstance(44.478068,11.007976);
-		
+		panelFiltroContatti = new PanelFiltroContatti();
 		map = new MapWidget(vignola, 2);
 		
 		map.setSize("100%", "100%");
@@ -82,12 +85,16 @@ public class PanelMappaGoogleMaps extends VLayout{
 			@Override
 			public void onClick(ClickEvent event) {
 				map.clearOverlays();
-				for(int i=0; i<DataSourceContatti.getVettoreContatti().size(); i++){
-					addMarkerContatto(DataSourceContatti.getVettoreContatti().get(i));
+				Vector<Contatto> v = panelFiltroContatti.getVettoreContattiFiltrato();
+				for(int i=0; i<v.size(); i++){
+					addMarkerContatto(v.get(i));
 				}
 			}
 		});
 		this.addMember(but2);
+		panelFiltroContatti = new PanelFiltroContatti();
+		panelFiltroContatti.setHeight(150);
+		this.addMember(panelFiltroContatti);
 	}
 	
 	private void addMarkerContatto(final Contatto contatto){

@@ -40,7 +40,6 @@ public class Contatto implements IsSerializable {
 	public String getHtmlText(){
 		
 		// Struttura * ETICHETTA ? VALORE * (il separatore è "?")
-		
 		String corpoHtml = new String("<b>"+this.getRagioneSociale()+ "</b><br>");
 		if(this.getPrecisazione().length()!=0) corpoHtml=new String(corpoHtml + this.getPrecisazione()+"<br>");
 		if(this.getPIVA().length()!=0) corpoHtml=new String(corpoHtml + "P.IVA:" + this.getPIVA()+"<br>");
@@ -51,33 +50,40 @@ public class Contatto implements IsSerializable {
 
 
 		stringResult=parseTextIndirizzo( this.getIndirizzo() );
-        if(stringResult!=null){ 
+        if(stringResult!=null){
+        	corpoHtml=new String(corpoHtml + "<b>Indirizzi</b><br>");
         	corpoHtml=new String(corpoHtml + stringResult);
         }
 		
 		stringResult=parseText( this.getTelefono() );
 	        if(stringResult!=null){ 
+	        	corpoHtml=new String(corpoHtml + "<b>Numeri di telefono fisso</b><br>");
 	        	corpoHtml=new String(corpoHtml + stringResult);
 	        }
     
         stringResult=parseText( this.getCellulare() );
 	        if(stringResult!=null){ 
+	        	corpoHtml=new String(corpoHtml + "<b>Cellulari</b><br>");
 	        	corpoHtml=new String(corpoHtml + stringResult);
 	        }
     
         stringResult=parseText( this.getFax() );
 	        if(stringResult!=null){ 
+	        	corpoHtml=new String(corpoHtml + "<b>Fax</b><br>");
 	        	corpoHtml=new String(corpoHtml + stringResult);
 	        }
 	        
 	    stringResult=parseText( this.geteMail() );
 	        if(stringResult!=null){ 
+	        	corpoHtml=new String(corpoHtml + "<b>e-Mail</b><br>");
 	        	corpoHtml=new String(corpoHtml + stringResult);
 	        }
 	        
-	    corpoHtml = corpoHtml + "<br>" + this.getNote();
-        
-        return corpoHtml;
+	        if(this.getNote()!=null && this.getNote().length()>0 && !this.getNote().equals("null")){
+			    corpoHtml=new String(corpoHtml + "<b>Note</b><br>");
+			    corpoHtml = corpoHtml + "<br>" + this.getNote();
+	        }
+	    return corpoHtml;
 	}
 	
 	private String parseTextIndirizzo(String stringa){

@@ -78,7 +78,7 @@ public class PanelAssociazioneFornitoriPallet extends HLayout{
 								String[] tmp = result[i];
 								records_pallet[i] = new ListGridRecord();
 								records_pallet[i].setAttribute("id", tmp[0]);
-								records_pallet[i].setAttribute("descrizione", tmp[1]+"x"+tmp[2]+"x"+tmp[3]+" - Tara: "+tmp[4]+" - Capienza: "+tmp[5]);
+								records_pallet[i].setAttribute("descrizione", tmp[1]+"x"+tmp[2]+"x"+tmp[3]+" - Tara: "+tmp[4]+" - Capienza: "+tmp[5]+" "+tmp[6]);
 								
 							}
 							lg_associazione_pallet_contatto.setData(records_pallet);
@@ -100,7 +100,7 @@ public class PanelAssociazioneFornitoriPallet extends HLayout{
 								String[] tmp = result[i];
 								ListGridRecord rec = new ListGridRecord();
 								rec.setAttribute("id", tmp[0]);
-								rec.setAttribute("descrizione", tmp[1]+"x"+tmp[2]+"x"+tmp[3]+" - Tara: "+tmp[4]+" - Capienza: "+tmp[5]);
+								rec.setAttribute("descrizione", tmp[1]+"x"+tmp[2]+"x"+tmp[3]+" - Tara: "+tmp[4]+" - Capienza: "+tmp[5]+" "+tmp[6]);
 								records_pallet[i] = rec;
 								PanelAssociazioneFornitoriPallet.records_pallet[i] = rec;
 							}

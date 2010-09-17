@@ -148,21 +148,30 @@ public class Menubar extends ToolStrip{
 			}
 		});
 	    
-	    MenuItem visualAssociazioneCPMI =new MenuItem("Associazione FornitoreProdotti");
+	    MenuItem visualAssociazioneCPMI =new MenuItem("Associazione Fornitore-Prodotti");
 	    visualAssociazioneCPMI.addClickHandler( new ClickHandler() {
 			
 			@Override
 			public void onClick(MenuItemClickEvent event) {
-				GUIManager.addToTabPanel("Associazione FornitoreProdotti", new PanelAssociazioneFornitoriProdotti(), true);
+				GUIManager.addToTabPanel("Associazione Fornitore-Prodotti", new PanelAssociazioneFornitoriProdotti(), true);
 			}
 		});
 	    
-	    MenuItem visualAssociazioneCPalletMI =new MenuItem("Associazione FornitorePallet");
+	    MenuItem visualAssociazioneCPalletMI =new MenuItem("Associazione Fornitore-Pallet");
 	    visualAssociazioneCPalletMI.addClickHandler( new ClickHandler() {
 			
 			@Override
 			public void onClick(MenuItemClickEvent event) {
-				GUIManager.addToTabPanel("Associazione FornitorePallet", new PanelAssociazioneFornitoriPallet(), true);
+				GUIManager.addToTabPanel("Associazione Fornitore-Pallet", new PanelAssociazioneFornitoriPallet(), true);
+			}
+		});
+	    
+	    MenuItem visualAssociazionePIMI =new MenuItem("Associazione Prodotto-Imballaggio");
+	    visualAssociazionePIMI.addClickHandler( new ClickHandler() {
+			
+			@Override
+			public void onClick(MenuItemClickEvent event) {
+				GUIManager.addToTabPanel("Associazione Prodotto-Imballaggio", new PanelAssociazioneProdottoImballaggio(), true);
 			}
 		});
 	    
@@ -178,8 +187,10 @@ public class Menubar extends ToolStrip{
 	    visualizzaMenu.addItem( visualGiacenzaMagazzinoMI );
 	    visualizzaMenu.addItem( visualMappaGoogleMapsMI );
 	    visualizzaMenu.addItem( visualListaFileMI );
+	    
 	    visualizzaMenu.addItem( visualAssociazioneCPMI );
 	    visualizzaMenu.addItem( visualAssociazioneCPalletMI );
+	    visualizzaMenu.addItem( visualAssociazionePIMI );
 	    
 	    
 

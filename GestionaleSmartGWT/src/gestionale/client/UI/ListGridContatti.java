@@ -68,7 +68,7 @@ public class ListGridContatti extends ListGrid{
 				MenuItem mi_dettagli = new MenuItem("Mostra dettagli");
 				MenuItem mi_modifica = new MenuItem("Modifica Contatto");
 				MenuItem mi_rimuovi = new MenuItem("Rimuovi Contatto");
-				
+				MenuItem mi_aggiornaprezzi = new MenuItem("Aggiorna prezzi");
 				
 				mi_dettagli.addClickHandler( new ClickHandler() {
 					public void onClick(MenuItemClickEvent event) {
@@ -116,7 +116,18 @@ public class ListGridContatti extends ListGrid{
 					}
 				});
 				
-				
+				if(lastContactClicked.getAttribute("tiposoggetto").equals("Fornitore")){
+					mi_aggiornaprezzi.addClickHandler(new ClickHandler(){
+
+						@Override
+						public void onClick(MenuItemClickEvent event) {
+							// TODO Auto-generated method stub
+							new WindowGestionePrezzi(lastContactClicked.getAttribute("id"));
+						}
+						
+					});
+					menu.addItem(mi_aggiornaprezzi);
+				}
 				
 				menu.addItem( mi_dettagli );
 				menu.addItem( mi_modifica );
@@ -139,12 +150,15 @@ public class ListGridContatti extends ListGrid{
 				for(int i=0; i<DataSourceContatti.getVettoreContatti().size(); i++){
 					contatto = DataSourceContatti.getVettoreContatti().get(i);
 					if( contatto.getRagioneSociale().equals(lastContactClicked.getAttribute("ragionesociale"))){
-						window.addItem(new Label(contatto.getHtmlText()));
+						Label label = new Label();
+						label.setContents( contatto.getHtmlText() );
+						label.setStyleName("Label_Dettaglio_Contatti");
+						window.addItem( label );
 						break;
 					}
 				}
-				window.setWidth(300);  
-				window.setHeight(230);
+				window.setWidth(350);  
+				window.setHeight(400);
 				window.setCanDragReposition(true);  
 				window.setCanDragResize(true);  
 				window.centerInPage();

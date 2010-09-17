@@ -71,13 +71,12 @@ public class PanelOrdine extends TabSet{
 		tabFiltroClienti.setPane(panelfiltrocontatti);
 		tabFiltroProdotti.setPane(panelfiltroprodotti);
 		
-		
-		
-		this.addTab(tabTabella);
-		this.addTab(tabTabellaComplessiva);
+		if( ordine.getAttribute("convalidato").equals("0") ){
 		this.addTab(tabFiltroClienti);
+		this.addTab(tabTabella);
 		this.addTab(tabFiltroProdotti);
-		
+		}
+		this.addTab(tabTabellaComplessiva);
 		
 		
 		this.addToTabPanel("Visualizzazione Ordine: " + ordine.getAttribute("datacreazioneordine")+" - ["+ordine.getAttribute("tipoordine")+"]", true);

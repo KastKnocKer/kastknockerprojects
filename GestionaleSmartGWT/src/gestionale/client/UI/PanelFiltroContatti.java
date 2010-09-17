@@ -89,7 +89,8 @@ public class PanelFiltroContatti extends Layout{
 			}
 		});
 		
-		
+		ti_TipoMercatoDiRiferimento.setValue("");
+		ti_MercatoDiRiferimento.setValue("");
 		form.setItems(ti_TipoMercatoDiRiferimento, ti_MercatoDiRiferimento, setSelezionePreferita, confermabutton);
 		this.addMember(form);
 		
@@ -138,6 +139,10 @@ public class PanelFiltroContatti extends Layout{
 		}
 		
 		setSelezionePreferita.setValue(false);
+		
+		
+		ti_TipoMercatoDiRiferimento.setValue("");
+		ti_MercatoDiRiferimento.setValue("");
 	}
 	
 	private void filtraPerMercato(){

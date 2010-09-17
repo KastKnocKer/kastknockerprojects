@@ -57,7 +57,7 @@ public class PanelContatti extends VLayout{
 	private SelectItem Mercato;
 	private TextItem ProvvigioneItem;
 	
-	private String idMercato = "";
+	private String idMercato = "0";
 	
 	private RichTextEditor richTextEditor;
 	
@@ -441,7 +441,7 @@ ImgButton removeEmail = new ImgButton();
 					TipoMercato.setRequired(true);
 					Mercato.setRequired(true);
 				}else{
-					idMercato = "";
+					idMercato = "0";
 					TipoMercato.setDisabled(true);
 					Mercato.setDisabled(true);
 					TipoMercato.setValue("");
@@ -463,7 +463,6 @@ ImgButton removeEmail = new ImgButton();
 			
 			@Override
 			public void onChanged(ChangedEvent event) {
-				// TODO Auto-generated method stub
 				Mercato.setValueMap( DataSourceMercati.getMercatiMap((String) event.getValue()));
 				Mercato.setValue("");
 			}
@@ -557,6 +556,7 @@ ImgButton removeEmail = new ImgButton();
 		form.validate();
 		if(form.hasErrors()){
 			Window.alert("Campi mancanti!!");
+			return;
 		}
 		
 		if(PrecisazioneItem.getValue() == null || PrecisazioneItem.getValue().equals("null")) 	PrecisazioneItem.setValue("");

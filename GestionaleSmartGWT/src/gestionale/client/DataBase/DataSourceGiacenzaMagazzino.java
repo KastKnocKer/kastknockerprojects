@@ -30,15 +30,14 @@ public class DataSourceGiacenzaMagazzino extends DataSource{
 		idField.setHidden(true);  
 		idField.setPrimaryKey(true);
 		
-		DataSourceTextField idprodottoField = new DataSourceTextField("idprodotto","ragionesociale");
-		DataSourceTextField idordineField = new DataSourceTextField("idordine","precisazione");
-		DataSourceTextField dataarrivomerceField = new DataSourceTextField("dataarrivomerce","piva");
-		DataSourceTextField datascadenzamerceField = new DataSourceTextField("datascadenzamerce","logo");
-		DataSourceTextField numpedaneField = new DataSourceTextField("numpedane","indirizzo");
-		DataSourceTextField quantitaField = new DataSourceTextField("quantita","telefono");
-		DataSourceTextField validitamerceField = new DataSourceTextField("validitamerce","cellulare");
+		DataSourceTextField idprodottoField = new DataSourceTextField("idprodotto","IDProdotto");
+		DataSourceTextField dataarrivomerceField = new DataSourceTextField("dataarrivomerce","Data arrivo merce");
+		DataSourceTextField datascadenzamerceField = new DataSourceTextField("datascadenzamerce","Data scadenza merce");
+		DataSourceTextField numpedaneField = new DataSourceTextField("numpedane","N Pedane");
+		DataSourceTextField quantitaField = new DataSourceTextField("quantita","Quantita'");
+		DataSourceTextField validitamerceField = new DataSourceTextField("validitamerce","Validita'");
 		
-        setFields(idField, idprodottoField, idordineField, dataarrivomerceField, datascadenzamerceField, numpedaneField, quantitaField, validitamerceField); 
+        setFields(idField, idprodottoField, dataarrivomerceField, datascadenzamerceField, numpedaneField, quantitaField, validitamerceField); 
 		
 		setClientOnly(true);
 		newRecords();
@@ -46,11 +45,11 @@ public class DataSourceGiacenzaMagazzino extends DataSource{
 	
 	
 	public void newRecords(){
-		String query = "SELECT * FROM magazzino WHERE CURDATE() >= DataArrivoMerce AND CURDATE() <= DataScadenzaMerce";
+		String query = "SELECT * FROM magazzino WHERE CURDATE() >= DataArrivoMerce";// AND CURDATE() <= DataScadenzaMerce";
 		rpc.eseguiQuery(query, new AsyncCallback<String[][]>(){
 			
 			public void onFailure(Throwable caught) {
-				Window.alert("Errore: Caricamento da DB contatti");
+				Window.alert("Errore: Caricamento da DB magazzino");
 			}
 
 			@Override
@@ -61,15 +60,14 @@ public class DataSourceGiacenzaMagazzino extends DataSource{
 					
 					record.setAttribute("id", s_record[0]);
 					record.setAttribute("idprodotto", s_record[1]);
-					record.setAttribute("idordine", s_record[2]);
-					record.setAttribute("idimballaggio", s_record[3]);
-					record.setAttribute("dataarrivomerce", s_record[4]);
-					record.setAttribute("datascadenzamerce", s_record[5]);
-					record.setAttribute("numpedane", s_record[6]);
-					record.setAttribute("quantita", s_record[7]);
-					record.setAttribute("validitamerce", s_record[8]);
+					record.setAttribute("idimballaggio", s_record[2]);
+					record.setAttribute("dataarrivomerce", s_record[3]);
+					record.setAttribute("datascadenzamerce", s_record[4]);
+					record.setAttribute("numpedane", s_record[5]);
+					record.setAttribute("quantita", s_record[6]);
+					record.setAttribute("validitamerce", s_record[7]);
 					
-					istance.addData(record);
+					addData(record);
 				}
 			}	
 		});

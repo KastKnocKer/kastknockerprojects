@@ -63,9 +63,7 @@ public class DataSourceImballaggi extends DataSource{
 			public void onSuccess(Imballaggio[] result) {
 				vettoreImballaggi.removeAllElements();
 				Imballaggio imballaggio = null;
-				System.out.println("A");
 				for(int i=0; i<result.length; i++){
-					System.out.println("B");
 					imballaggio = result[i];
 					vettoreImballaggi.add( imballaggio );
 					
