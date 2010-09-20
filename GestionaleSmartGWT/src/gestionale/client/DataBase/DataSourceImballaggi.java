@@ -172,6 +172,19 @@ public class DataSourceImballaggi extends DataSource{
 		return ready;
 	}
 	
+	public int[] getDimensioniImballaggioFromID(String IDImballaggio){
+		for(int i=0;i<vettoreImballaggi.size(); i++){
+			Imballaggio imb = vettoreImballaggi.get(i);
+			if(imb.getID().equals(IDImballaggio)){
+				int[] dim = new int[3];
+				dim[0] = Integer.parseInt(imb.getLarghezza());
+				dim[1] = Integer.parseInt(imb.getLunghezza());
+				dim[2] = Integer.parseInt(imb.getAltezza());
+				return dim;
+			}
+		}
+		return null;
+	}
 
 
 	

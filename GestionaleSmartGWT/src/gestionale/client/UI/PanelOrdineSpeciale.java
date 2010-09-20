@@ -29,9 +29,11 @@ import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.smartgwt.client.core.DataClass;
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceTextField;
+import com.smartgwt.client.types.ListGridFieldType;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
@@ -44,9 +46,14 @@ import com.smartgwt.client.widgets.form.fields.events.ClickHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
+import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
+import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.Layout;
 import com.smartgwt.client.widgets.layout.VLayout;
+import com.smartgwt.client.widgets.menu.Menu;
+import com.smartgwt.client.widgets.menu.MenuItem;
+import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
 import com.smartgwt.client.widgets.tab.events.TabSelectedEvent;
@@ -72,6 +79,8 @@ public class PanelOrdineSpeciale extends TabSet{
 	private SelectItem pallet;
 	private TextItem nomepedana;
 	
+	private ListGridRecord lastContactClicked = null;
+	
 	
 	public PanelOrdineSpeciale(ListGridRecord ordine){
 		super();
@@ -84,7 +93,28 @@ public class PanelOrdineSpeciale extends TabSet{
 		this.addToTabPanel("Visualizzazione Ordine: " + ordine.getAttribute("datacreazioneordine")+" - ["+ordine.getAttribute("tipoordine")+"]", true);
 		
 		tabPedane = new Tab("Pedane");
-		lg_pedane = new ListGrid();
+		lg_pedane = new ListGrid(){  
+            @Override  
+            protected String getCellCSSText(ListGridRecord record, int rowNum, int colNum) {  
+                if (getFieldName(colNum).equals("percentualecompletamento")) {  
+                   float perc = Float.parseFloat(record.getAttribute("percentualecompletamento"));
+                   if (perc > 130) {  
+                       return "font-weight:bold; color:#FF0000;";  
+                   	} else if(perc > 80){  
+                        return "font-weight:bold; color:#008800;";  
+                    } else if (perc > 50) {  
+                        return "font-weight:bold; color:#DAA520;";  
+                    } else if (perc >= 0) {  
+                        return "font-weight:bold; color:#FF0000;";  
+                    } else {  
+                        return super.getCellCSSText(record, rowNum, colNum);  
+                    }
+                    
+                } else {  
+                    return super.getCellCSSText(record, rowNum, colNum);  
+                }  
+            }  
+        }; 
 		lg_pedane.setWidth100();
 		lg_pedane.setHeight100();
 		
@@ -103,9 +133,35 @@ public class PanelOrdineSpeciale extends TabSet{
 		ListGridField fornitore = new ListGridField("fornitore","Fornitore");
 		ListGridField cliente = new ListGridField("cliente","Cliente");
 		ListGridField pallet = new ListGridField("pallet","Pallet");
-		ListGridField percentualecompletamento = new ListGridField("percentuale","Perc.Completamento");
+		ListGridField percentualecompletamento = new ListGridField("percentualecompletamento","Perc.Completamento");
+		percentualecompletamento.setType(ListGridFieldType.FLOAT);
 		
 		lg_pedane.setFields(pedana,cliente,fornitore,pallet,percentualecompletamento);
+		lg_pedane.addRowContextClickHandler(new RowContextClickHandler() {
+			
+			@Override
+			public void onRowContextClick(RowContextClickEvent event) {
+				lastContactClicked = event.getRecord();
+				Menu menu = new Menu();
+				
+				MenuItem mi_modifica = new MenuItem("Modifica pedana");
+				MenuItem mi_rimuovi = new MenuItem("Rimuovi pedana");
+				
+				menu.addItem(mi_modifica);
+				menu.addItem(mi_rimuovi);
+				
+				
+				mi_modifica.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler() {
+					public void onClick(MenuItemClickEvent event) {
+						new WindowDettaglioOrdiniSpeciale(lastContactClicked, thisTabSet);
+					}
+				});
+				
+				
+				menu.setAutoDraw(true);
+				menu.showContextMenu();
+			}
+		});
 		
 		
 		VLayout layout = new VLayout();
@@ -145,7 +201,7 @@ public class PanelOrdineSpeciale extends TabSet{
 
 
 
-	private void caricaDatiListGridPedane(){
+	public void caricaDatiListGridPedane(){
 		String query = "SELECT o.*,cf.ID,cf.RagioneSociale,cc.ID,cc.RagioneSociale,p.Nome FROM ordine_dettaglio_speciale o JOIN contatti cc JOIN contatti cf JOIN pallet p ON o.IDFornitore = cf.ID AND o.IDCliente = cc.ID AND o.IDPallet = p.ID WHERE IDOrdine = '"+IDOrdine+"'";
 		rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
 			
@@ -161,11 +217,12 @@ public class PanelOrdineSpeciale extends TabSet{
 					records[i].setAttribute("idcliente", result[i][3]);
 					records[i].setAttribute("idpallet", result[i][4]);
 					records[i].setAttribute("pedana", result[i][5]);
-					records[i].setAttribute("idfornitore", result[i][6]);
-					records[i].setAttribute("fornitore", result[i][7]);
-					records[i].setAttribute("idcliente", result[i][8]);
-					records[i].setAttribute("cliente", result[i][9]);
-					records[i].setAttribute("pallet", result[i][10]);
+					records[i].setAttribute("percentualecompletamento", result[i][6]);
+					records[i].setAttribute("idfornitore", result[i][7]);
+					records[i].setAttribute("fornitore", result[i][8]);
+					records[i].setAttribute("idcliente", result[i][9]);
+					records[i].setAttribute("cliente", result[i][10]);
+					records[i].setAttribute("pallet", result[i][11]);
 					
 				}
 				lg_pedane.setData(records);
@@ -182,19 +239,41 @@ public class PanelOrdineSpeciale extends TabSet{
 	private DynamicForm getForm() {
 		DynamicForm form = new DynamicForm();
 		
-		DataSourceTextField idField = new DataSourceTextField("id");
+		DataSourceTextField idField = new DataSourceTextField("idcliente");
 		idField.setHidden(true);  
 		idField.setPrimaryKey(true);
-		DataSourceTextField ragsocField = new DataSourceTextField("ragionesociale");
+		DataSourceTextField ragsocField = new DataSourceTextField("ragionesocialecliente");
 		
 		
 		final DataSource ds_cliente = new DataSource();
 		ds_cliente.setFields(idField, ragsocField);
 		ds_cliente.setClientOnly(true);
 		
+		///
+		
+		DataSourceTextField idField2 = new DataSourceTextField("idfornitore");
+		idField2.setHidden(true);  
+		idField2.setPrimaryKey(true);
+		DataSourceTextField ragsocField2 = new DataSourceTextField("ragionesocialefornitore");
+		
+		
 		final DataSource ds_fornitore = new DataSource();
-		ds_fornitore.setFields(idField, ragsocField);
+		ds_fornitore.setFields(idField2, ragsocField2);
 		ds_fornitore.setClientOnly(true);
+		
+		///
+		
+		DataSourceTextField idField3 = new DataSourceTextField("idpallet");
+		idField3.setHidden(true);  
+		idField3.setPrimaryKey(true);
+		DataSourceTextField descField3 = new DataSourceTextField("nomepallet");
+		
+		final DataSource ds_pallet = new DataSource();
+		ds_pallet.setFields(idField3, descField3);
+		ds_pallet.setClientOnly(true);
+		
+		
+		
 		
 		String query = "SELECT * FROM contatti WHERE TipoSoggetto = 'Cliente'";
 		
@@ -210,8 +289,8 @@ public class PanelOrdineSpeciale extends TabSet{
 			public void onSuccess(Contatto[] result) {
 				for(int i=0; i<result.length;i++){
 					Record record = new Record();
-					record.setAttribute("id", result[i].getID());
-					record.setAttribute("ragionesociale", result[i].getRagioneSociale());
+					record.setAttribute("idcliente", result[i].getID());
+					record.setAttribute("ragionesocialecliente", result[i].getRagioneSociale());
 				    ds_cliente.addData(record);
 				}
 			}
@@ -231,8 +310,8 @@ public class PanelOrdineSpeciale extends TabSet{
 			public void onSuccess(Contatto[] result) {
 				for(int i=0; i<result.length;i++){
 					Record record = new Record();
-					record.setAttribute("id", result[i].getID());
-					record.setAttribute("ragionesociale", result[i].getRagioneSociale());
+					record.setAttribute("idfornitore", result[i].getID());
+					record.setAttribute("ragionesocialefornitore", result[i].getRagioneSociale());
 				    ds_fornitore.addData(record);
 				}
 			}
@@ -240,21 +319,22 @@ public class PanelOrdineSpeciale extends TabSet{
 		
 		
 		
-		cliente = new SelectItem("id","Cliente");
+		cliente = new SelectItem("idcliente","Cliente");
 		cliente.setRequired(true);
-		cliente.setDisplayField("ragionesociale");
+		cliente.setDisplayField("ragionesocialecliente");
 		cliente.setOptionDataSource(ds_cliente);
 		cliente.setAutoFetchData(true);
 		
-		fornitore = new SelectItem("id","Fornitore");
+		fornitore = new SelectItem("idfornitore","Fornitore");
 		fornitore.setRequired(true);
-		fornitore.setDisplayField("ragionesociale");
+		fornitore.setDisplayField("ragionesocialefornitore");
 		fornitore.setOptionDataSource(ds_fornitore);
 		fornitore.setAutoFetchData(true);
 		
-		pallet = new SelectItem("id","Pallet");
+		pallet = new SelectItem("idpallet","Pallet");
 		pallet.setRequired(true);
 		pallet.setDisplayField("nomepallet");
+		pallet.setOptionDataSource(ds_pallet);
 		pallet.setAutoFetchData(true);
 		
 		nomepedana = new TextItem("nomepedana","Pedana");
@@ -277,7 +357,7 @@ public class PanelOrdineSpeciale extends TabSet{
 
 					@Override
 					public void onSuccess(String[][] result) {
-						
+						/*
 						DataSourceTextField idField = new DataSourceTextField("id");
 						idField.setHidden(true);  
 						idField.setPrimaryKey(true);
@@ -286,15 +366,20 @@ public class PanelOrdineSpeciale extends TabSet{
 						DataSource ds_pallet = new DataSource();
 						ds_pallet.setFields(idField, descField);
 						ds_pallet.setClientOnly(true);
+						*/
+						Record[] records = ds_pallet.getCacheData();
+						for(int i=0;i<records.length;i++){
+							ds_pallet.removeData(records[i]);
+						}
 						
 						for(int i=0;i<result.length;i++){
 							Record record = new Record();
-							record.setAttribute("id", result[i][0]);
+							record.setAttribute("idpallet", result[i][0]);
 							record.setAttribute("nomepallet", result[i][1]);
 							ds_pallet.addData(record);
 						}
-						pallet.setOptionDataSource(ds_pallet);
-						pallet.fetchData();
+						//pallet.setOptionDataSource(ds_pallet);
+						//pallet.fetchData();
 					}
 					
 				});
@@ -324,6 +409,7 @@ public class PanelOrdineSpeciale extends TabSet{
 				}
 				
 				String query = "INSERT INTO ordine_dettaglio_speciale (IDOrdine,IDCliente,IDFornitore,IDPallet,Pedana) VALUES ('"+IDOrdine+"','"+cliente.getValue()+"','"+fornitore.getValue()+"','"+pallet.getValue()+"','"+nomepedana.getValue()+"');";
+				form.reset();
 				rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
 
 					@Override

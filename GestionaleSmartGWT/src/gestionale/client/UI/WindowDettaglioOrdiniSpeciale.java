@@ -1,27 +1,20 @@
 package gestionale.client.UI;
 
-
-import java.util.Vector;
-import gestionale.client.SessioneUtente;
-import gestionale.client.DataBase.DataSourceContatti;
-import gestionale.client.DataBase.DataSourceDettaglioOrdini;
+import gestionale.client.DBConnection;
+import gestionale.client.DBConnectionAsync;
 import gestionale.client.DataBase.DataSourceImballaggi;
-import gestionale.client.DataBase.DataSourceOrdini;
-import gestionale.shared.Contatto;
-import gestionale.shared.Imballaggio;
-import gestionale.shared.Ordine;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
-import com.smartgwt.client.types.ListGridFieldType;
-import com.smartgwt.client.widgets.Button;
-import com.smartgwt.client.widgets.ImgButton;
+import com.smartgwt.client.data.fields.DataSourceTextField;
 import com.smartgwt.client.widgets.Label;
-import com.smartgwt.client.widgets.events.ClickEvent;
-import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.Progressbar;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;  
 import com.smartgwt.client.widgets.form.fields.SpinnerItem;
-import com.smartgwt.client.widgets.form.fields.TextAreaItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;  
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -29,8 +22,7 @@ import com.smartgwt.client.widgets.grid.ListGridField;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.grid.events.RowContextClickEvent;
 import com.smartgwt.client.widgets.grid.events.RowContextClickHandler;
-import com.smartgwt.client.widgets.layout.SectionStack;
-import com.smartgwt.client.widgets.layout.SectionStackSection;
+import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.menu.Menu;
 import com.smartgwt.client.widgets.menu.MenuItem;
@@ -38,203 +30,114 @@ import com.smartgwt.client.widgets.menu.events.MenuItemClickEvent;
 
 public class WindowDettaglioOrdiniSpeciale extends Finestra{
 
+	private static  DBConnectionAsync	rpc = (DBConnectionAsync) GWT.create(DBConnection.class);
+		
 	private WindowDettaglioOrdiniSpeciale thiswind;
-	private Record lastDettaglioOrdineClicked;
-	private Ordine ordine;
-	private VLayout vLayout;
-	private TextAreaItem label;
-	private String messImballaggio = "";
-	private String messDispMagaz = "";
 	
-	public WindowDettaglioOrdiniSpeciale(final LabelOrdinazioneSpeciale lo){
+	private String IDPedana;
+	
+	private ListGrid lg_mod_pedana;
+	
+	private String IDFornitore;
+	
+	private SelectItem prodotto;
+	private SelectItem imballaggio;
+	private SpinnerItem numlivelli;
+	private SpinnerItem numcolli;
+	
+	private Progressbar progressbar;
+	private Label progressbarlabel;
+	
+	private int colliperlivello = 0;
+	private int areapallet = 0;
+	private int areaimballaggio = 0;
+	
+	private int altezzaOccupabile = 205;
+	private int altezzaOccupata = 0;
+	private int altezzaTmp = 0;
+	private int altezzaImballaggioTmp = 0;
+	
+	private DynamicForm form;
+	
+	private ListGridRecord lastSelectedRecord;
+	private PanelOrdineSpeciale panelordinespeciale;
+	
+	
+	public WindowDettaglioOrdiniSpeciale(final ListGridRecord record_pedana, PanelOrdineSpeciale panelordinespeciale){
 		super();
 		thiswind = this;
+		this.panelordinespeciale = panelordinespeciale;
+		this.setTitle("Pedana: ");
+		IDPedana = record_pedana.getAttribute("id");
+		IDFornitore = record_pedana.getAttribute("idfornitore");
 		
-		ordine = DataSourceOrdini.getOrdineByID(lo.getIdordine());
-		System.out.println("TROVATO: "+ ordine.getIDFornitore()+"  "+ordine.getIDTrasportatore());
+		HLayout hlayout = new HLayout();
+		VLayout vlayout = new VLayout();
+		VLayout vlayout2 = new VLayout();
 		
-		final ListGrid lg =  new ListGrid();
-		
-		ListGridField quantita		= new ListGridField("quantita","Quantita");
-		ListGridField pedane		= new ListGridField("pedane","N Pedane");
-		ListGridField fornitore		= new ListGridField("fornitore","Fornitore");
-		ListGridField imballaggio	= new ListGridField("descrizioneimballaggio","Imballaggio");
-		ListGridField trasportatore	= new ListGridField("trasportatore","Trasportatore");
-		ListGridField dataarrivo	= new ListGridField("dataarrivo","Data di arrivo");
-		ListGridField datascadenza	= new ListGridField("datascadenza","Data di scadenza");
-		
-		dataarrivo.setType(ListGridFieldType.DATE);
-		datascadenza.setType(ListGridFieldType.DATE);
-		
-		quantita.setWidth("12%");
-		pedane.setWidth("13%");
-		fornitore.setWidth("20%");
-		imballaggio.setWidth("35%");
-		trasportatore.setWidth("20%");
-		
-		quantita.setRequired(true);
-		pedane.setRequired(true);
-		fornitore.setRequired(true);
-		imballaggio.setRequired(true);
-		trasportatore.setRequired(true);
-		
-		Vector<Contatto> vF = DataSourceContatti.getVettoreFornitori();
-		Vector<Contatto> vT = DataSourceContatti.getVettoreTrasportatori();
-		Vector<Imballaggio> vI = DataSourceImballaggi.getVettoreImballaggi();
-		
-		final String[] aF = new String[vF.size()];		final String[] aFID = new String[vF.size()];
-		final String[] aT = new String[vT.size()];		final String[] aTID = new String[vT.size()];
-		final String[] aI = new String[vI.size()];		final String[] aIID = new String[vI.size()];
-
-		
-		SelectItem fornitoriSelectItem = new SelectItem(); 
-		SelectItem trasportatoriSelectItem = new SelectItem(); 
-		SelectItem imballaggiSelectItem = new SelectItem();
-		SpinnerItem pedaneSpinnerItem = new SpinnerItem("pedane", "N Pedane");
-		
-		pedaneSpinnerItem.setStep(0.5);
-		pedaneSpinnerItem.setMin(0.5);
-		pedane.setEditorType(pedaneSpinnerItem);
-		pedane.setType(ListGridFieldType.FLOAT);
-		
-		for(int i=0; i<vF.size(); i++){
-			aF[i] = vF.get(i).getRagioneSociale();
-			aFID[i] = vF.get(i).getID();
-			if( aFID[i].equals( ordine.getIDFornitore()) ){
-				fornitoriSelectItem.setDefaultValue(aF[i]);
-				fornitore.setDefaultValue(aF[i]);
-				}
-		}
-		for(int i=0; i<vT.size(); i++){
-			aT[i] = vT.get(i).getRagioneSociale();
-			aTID[i] = vT.get(i).getID();
-			if( aTID[i].equals( ordine.getIDTrasportatore()) ){
-				trasportatoriSelectItem.setDefaultValue(aT[i]);
-				trasportatore.setDefaultValue(aT[i]);
-				}
-		}
-		for(int i=0; i<vI.size(); i++){
-			aI[i] = vI.get(i).getDescrizione();
-			aIID[i] = vI.get(i).getID();
-		}
-		
-		fornitoriSelectItem.setValueMap(aF);
-		trasportatoriSelectItem.setValueMap(aT);
-		imballaggiSelectItem.setValueMap(aI);
-/*
+		vlayout.setHeight100();
+		vlayout.setWidth100();
+		vlayout2.setHeight100();
+		vlayout2.setWidth(80);
+		hlayout.setHeight100();
+		hlayout.setWidth100();
 		
 		
-		trasportatoriSelectItem.addChangedHandler(new ChangedHandler() {
-			public void onChanged(ChangedEvent event) {
-				System.out.println("RIGA: "+event.getValue()+" RECORD: "+lg.getSelectedRecord()+event.getItem());
-				//lg.getSelectedRecord().setAttribute("idtrasportatore", "GAY");
-			}
-		});*/
+		progressbar = new Progressbar();  
+		progressbar.setHeight100();
+		progressbar.setWidth100();
+        progressbar.setVertical(true);
+        progressbar.setPercentDone(10);
+        progressbarlabel = new Label("10%");
+        progressbarlabel.setHeight(25);
+        
+        hlayout.addMember(vlayout);
+        hlayout.addMember(vlayout2);
+        vlayout2.addMember(progressbar);
+        vlayout2.addMember(progressbarlabel);
 		
-		fornitoriSelectItem.addChangedHandler(new ChangedHandler() {
-			public void onChanged(ChangedEvent event) {
-				String fornitore = (String) event.getValue();
-				if(fornitore.equals("Magazzino")){
-					//label.setBackgroundColor("yellow");
-					
-					messDispMagaz = "Giacenza in magazzino: ";
-					label.setValue(messDispMagaz +"\n"+messImballaggio);
-					
-					
-				}
-			}
-		});
+		lg_mod_pedana = new ListGrid();
+		ListGridField prodotto = new ListGridField("prodotto","Prodotto");
+		ListGridField imballaggio = new ListGridField("imballaggio","Imballaggio");
+		ListGridField numerolivelli = new ListGridField("numlivelli","N Livelli");
+		ListGridField numerocolli = new ListGridField("numcolli","N Colli");
+		ListGridField prezzocollo = new ListGridField("prezzocollo","Prezzo/Collo");
+		ListGridField prezzolivello = new ListGridField("prezzoriga","Prezzo");
 		
-		imballaggiSelectItem.addChangedHandler(new ChangedHandler() {
-			public void onChanged(ChangedEvent event) {
-				
-				String imballaggio = (String) event.getValue();
-				System.out.println(imballaggio);
-				messImballaggio = "";
-				int indice1 = imballaggio.indexOf('x');
-				int indice2 = imballaggio.indexOf('x', indice1+1);
-				int indice3 = imballaggio.indexOf(' ', indice2+1);
-				int larg	=	Integer.parseInt( imballaggio.substring(0, indice1) );
-				int lung	=	Integer.parseInt( imballaggio.substring(indice1+1, indice2) );
-				int alt		=	Integer.parseInt( imballaggio.substring(indice2+1, indice3) );
-				//Pedana		100x120x200
-				int nColliLivello = (100*120)/(larg*lung);
-				int nLivelliColli = 200/alt;
-				messImballaggio = "Mezza pedana Standard: "+nColliLivello*nLivelliColli/2+"\n";
-				messImballaggio = messImballaggio + "Intera pedana Standard: "+nColliLivello*nLivelliColli+"\n";
-				
-				//Eurpallet		80x100x200
-				nColliLivello = (80*100)/(larg*lung);
-				nLivelliColli = 200/alt;
-				messImballaggio = messImballaggio + "Mezza pedana Eurpallet: "+nColliLivello*nLivelliColli/2+"\n";
-				messImballaggio = messImballaggio + "Intera pedana Eurpallet: "+nColliLivello*nLivelliColli+"\n";
-				
-					
-				if(messDispMagaz.length()>0)label.setValue(messDispMagaz +"\n"+messImballaggio);
-				else label.setValue(messImballaggio);
-
-			}
-		});
-		
-		
-		fornitore.setEditorType(fornitoriSelectItem);
-		trasportatore.setEditorType(trasportatoriSelectItem);
-		imballaggio.setEditorType(imballaggiSelectItem);
-		
-		
-	
-		
-		lg.setShowRecordComponents(true);          
-		lg.setShowRecordComponentsByCell(true);
-  
-        lg.setShowAllRecords(true);
-		
-		lg.setCanEdit(true);
-		lg.setCanRemoveRecords(true);
-		lg.setAutoFetchData(true);
-		lg.setDataSource(new DataSourceDettaglioOrdini(lo.getIdordine(), lo.getIdcliente(), lo.getIdprodotto(),DataSourceDettaglioOrdini.MOD_TabellaDettaglio));
-		
-		lg.setFields(imballaggio,fornitore,trasportatore,pedane,quantita,dataarrivo,datascadenza);
-		lg.setAutoSaveEdits(false);	//
-		lg.setWidth100();
-		lg.setHeight100();
-		//lg.setWidth(700);
-		//lg.setHeight(400);
-		
-		//CLICK DESTRO
-		lg.addRowContextClickHandler(new RowContextClickHandler() {
+		lg_mod_pedana.setFields(prodotto,imballaggio,numerolivelli,numerocolli,prezzocollo,prezzolivello);
+		lg_mod_pedana.addRowContextClickHandler(new RowContextClickHandler() {
 			
+			@Override
 			public void onRowContextClick(RowContextClickEvent event) {
-				lastDettaglioOrdineClicked = event.getRecord();
-				final int rowrecord = lg.getRecordIndex(lastDettaglioOrdineClicked);
-				System.out.println("Contatto cliccato: " + lastDettaglioOrdineClicked + " @ riga: "+rowrecord );
+				lastSelectedRecord = event.getRecord();
+				if(lastSelectedRecord == null) return;
 				Menu menu = new Menu();
-				MenuItem mi_rimuovi = new MenuItem("Rimuovi Dettaglio Ordine");
+				MenuItem mi_rimuovi = new MenuItem("Rimuovi Contatto");
 				
-				
-
-				mi_rimuovi.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler(){
-
+				mi_rimuovi.addClickHandler(new com.smartgwt.client.widgets.menu.events.ClickHandler() {
+					
 					@Override
 					public void onClick(MenuItemClickEvent event) {
-						ListGridRecord lgr = (ListGridRecord) lg.getEditedRecord(rowrecord);
-						if( Window.confirm("Sei sicuro di voler rimuovere:\n\n"+lgr.getAttribute("quantita")+" "+lgr.getAttribute("fornitore")+" "+lgr.getAttribute("trasportatore")+" "+lgr.getAttribute("imballaggio")+" ?") ){
+						if( Window.confirm("Sei sicuro di voler rimuovere questa merce?") ){
+							String query = "DELETE FROM ordine_dettaglio_speciale_livello WHERE ID = '"+lastSelectedRecord.getAttribute("id")+"'";
 							
-							System.out.println("SelectedRecord: " + lgr+ "  " +  lgr.getAttribute("id"));
-							
-							if(lgr.getAttribute("id") == null){
-								lg.removeSelectedData();
-							}else{
-								DataSourceDettaglioOrdini.rimuoviDettaglioOrdine(lgr);
-								lg.removeData(lgr);
-							}
-							
+							rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									// TODO Auto-generated method stub
+									
+								}
+
+								@Override
+								public void onSuccess(Boolean result) {
+									caricaDatiListGrid();
+									WindowDettaglioOrdiniSpeciale.this.panelordinespeciale.caricaDatiListGridPedane();
+								}
+							});
 						}
 					}
-					
 				});
-				
-				
 				
 				menu.addItem( mi_rimuovi );
 				
@@ -243,134 +146,276 @@ public class WindowDettaglioOrdiniSpeciale extends Finestra{
 			}
 		});
 		
+		caricaDatiListGrid();
 		
+		vlayout.addMember(lg_mod_pedana);
+		form = getForm();
+		vlayout.addMember(form);
+		
+		
+		//this.setAutoSize(true);
+		this.setIsModal(true);
+		this.addItem(hlayout);
+		this.setWidth(800);
+		this.setHeight(400);
+		this.centerInPage();
+		this.draw();
+		
+		
+		String query = "SELECT p.LatoLungo,p.LatoCorto,p.Altezza FROM pallet p WHERE ID = '"+record_pedana.getAttribute("idpallet")+"';";
+		rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
 
-		ImgButton addButton = new ImgButton();  
-		addButton.setSrc("[SKIN]actions/add.png");  
-		addButton.setSize(16);  
-		addButton.setShowFocused(false);  
-		addButton.setShowRollOver(false);  
-		addButton.setShowDown(false);  
-		addButton.addClickHandler(new ClickHandler() {
-             public void onClick(ClickEvent event) {
-            	lg.startEditingNew();
-             }  
-        });
-		
-		SectionStack SS = new SectionStack();
-		SS.setWidth100();
-        SS.setHeight100(); 
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
 
-        SectionStackSection section = new SectionStackSection();  
-        section.addItem(lg);
-        section.setCanCollapse(false);  
-        section.setExpanded(true);  
-        section.setControls(addButton);
-        
-		SS.setSections(section);
-		
-		Button confermaButton = new Button("Conferma");
-		confermaButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onSuccess(String[][] result) {
+				// TODO Auto-generated method stub
+				areapallet = Integer.parseInt(result[0][0])*Integer.parseInt(result[0][1]);
+			}
 			
-			public void onClick(ClickEvent event) {
+		});
+	}
+	
+	private DynamicForm getForm(){
+		DynamicForm localForm = new DynamicForm();
+		
+		prodotto = new SelectItem("idprodotto","Prodotto");
+		prodotto.setDisplayField("prodotto");
+		prodotto.setRequired(true);
+		
+		imballaggio = new SelectItem("idimballaggio","Imballaggio");
+		imballaggio.setDisplayField("imballaggio");
+		imballaggio.setRequired(true);
+		
+		numlivelli = new SpinnerItem("numlivelli","Numero livelli");
+		numlivelli.setMin(0);
+		numlivelli.setRequired(true);
+		
+		numcolli = new SpinnerItem("numcolli","Numero colli");
+		numcolli.setMin(0);
+		numcolli.setRequired(true);
+		
+		ButtonItem okbutton = new ButtonItem("Aggiungi");
+		okbutton.addClickHandler(new com.smartgwt.client.widgets.form.fields.events.ClickHandler() {
+			
+			@Override
+			public void onClick(
+					com.smartgwt.client.widgets.form.fields.events.ClickEvent event) {
+				aggiungi();
+			}
+		});
+		
+		localForm.setFields(prodotto,imballaggio,numlivelli,numcolli,okbutton);
+		
+		String query = "SELECT pc.* FROM fornitore_tipologie_trattate f JOIN prodotti_catalogati pc JOIN assoc_prodotto_imballaggio_peso apip JOIN assoc_fornitore_prodotto_prezzo afpp JOIN imballaggio i ON pc.Categoria = f.Categoria AND pc.Tipologia = f.Tipologia AND apip.IDProdotto = pc.ID AND i.ID = apip.IDImballaggio AND afpp.IDFornitore = f.IDFornitore AND afpp.IDProdotto = pc.ID AND afpp.IDImballaggio = apip.IDImballaggio WHERE f.IDFornitore = '"+IDFornitore+"' AND afpp.Prezzo > 0 AND afpp.DataInserimento = ( SELECT MAX(DataInserimento) FROM assoc_fornitore_prodotto_prezzo afpp2 WHERE afpp2.IDFornitore = afpp.IDFornitore AND afpp2.IDProdotto = afpp.IDProdotto AND afpp2.IDImballaggio = afpp.IDImballaggio);";
+		rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
+			
+			@Override
+			public void onSuccess(String[][] result) {
+				if(result == null) return;
+				if(result.length == 0)Window.alert("Potrebbe esser necessario dover associare al fornitore i prodotti ed i loro relativi prezzi");
 				
-				if(lg.hasErrors()){
-					Window.alert("Sono presenti errori nei dati.\nPrima di proseguire controllare.");
-					return;
+				DataSource ds = new DataSource();
+				DataSourceTextField idField = new DataSourceTextField("idprodotto");  
+							idField.setHidden(true);  
+							idField.setPrimaryKey(true);
+				DataSourceTextField descrizioneField = new DataSourceTextField("prodotto","Prodotto");
+				ds.setFields(idField, descrizioneField);
+				ds.setClientOnly(true);
+				prodotto.setOptionDataSource(ds);
+				
+				for(int i=0; i<result.length;i++){
+					Record record = new Record();
+					record.setAttribute("idprodotto", result[i][0]);
+					record.setAttribute("prodotto", result[i][2] +" "+ result[i][3] +" "+ result[i][4] +" "+ result[i][5]);
+					ds.addData(record);
 				}
 				
-				int somma = 0;
+				prodotto.fetchData();
 				
-				int[] editrows = lg.getAllEditRows();
-				for(int i=0; i<editrows.length; i++){
-				Record record = lg.getEditedRecord(editrows[i]);
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
 				
-				System.out.println("RECORD: ??? : "+ record.getAttribute("id"));
-				record.setAttribute("idprodotto", lo.getIdprodotto());
-				record.setAttribute("idcliente", lo.getIdcliente());
-				record.setAttribute("idordine", lo.getIdordine());
-				record.setAttribute("user", SessioneUtente.getUsername());
-				
-				for(int k=0; i<aF.length;k++){
-					if(aF[k].equals(record.getAttribute("fornitore"))){
-						record.setAttribute("idfornitore", aFID[k] );
-						break;
-					}
-				}
-				
-				for(int k=0; i<aT.length;k++){
-					if(aT[k].equals(record.getAttribute("trasportatore"))){
-						record.setAttribute("idtrasportatore", aTID[k]);
-						break;
-					}
-				}
-				
-				for(int k=0; i<aI.length;k++){
-					if(aI[k].equals(record.getAttribute("descrizioneimballaggio"))){
-						record.setAttribute("idimballaggio", aIID[k]);
-						break;
-					}
-				}
-				
-				
-				
-				
-				
-					if(record.getAttribute("id") == null){
-						DataSourceDettaglioOrdini.aggiungiDettaglioOrdine(record);
-					}else{
-						DataSourceDettaglioOrdini.modificaDettaglioOrdine(record);
-					}
-					somma = somma + Integer.parseInt(record.getAttribute("quantita"));
-				}
-				lg.saveAllEdits();
-				ListGridRecord[] rec =  lg.getRecords();
-				
-				for(int i=0; i<rec.length; i++){
-					somma = somma + Integer.parseInt(rec[i].getAttribute("quantita"));
-				}
-				lo.setBackgroundColor("#66FF33");
-				lo.setContents(Integer.toString(somma));
-				thiswind.destroy();
 			}
 		});
 		
 		
 		
-		this.setTitle("Dettaglio ordine");
-		this.setIsModal(true);
-		this.setShowModalMask(true);
-		this.setCanDragReposition(true);  
-		this.setCanDragResize(true);
+		prodotto.addChangedHandler(new ChangedHandler() {
+			
+			@Override
+			public void onChanged(ChangedEvent event) {
+				//idprodotto event.getValue()
+				String query = "SELECT i.ID,i.Descrizione FROM assoc_prodotto_imballaggio_peso a JOIN imballaggio i ON i.ID = a.IDImballaggio WHERE i.ID = '"+event.getValue()+"';";
+				rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
+
+					@Override
+					public void onFailure(Throwable caught) {Window.alert(caught.getMessage());}
+
+					@Override
+					public void onSuccess(String[][] result) {
+						if(result == null) return;
+						if(result.length == 0)Window.alert("Potrebbe esser necessario dover associare al prodotto gli imballaggi!");
+						
+						DataSource ds = new DataSource();
+						DataSourceTextField idField = new DataSourceTextField("idimballaggio");  
+									idField.setHidden(true);  
+									idField.setPrimaryKey(true);
+						DataSourceTextField descrizioneField = new DataSourceTextField("imballaggio","Imballaggio");
+						ds.setFields(idField, descrizioneField);
+						ds.setClientOnly(true);
+						imballaggio.setOptionDataSource(ds);
+						
+						for(int i=0; i<result.length;i++){
+							Record record = new Record();
+							record.setAttribute("idimballaggio", result[i][0]);
+							record.setAttribute("imballaggio", result[i][1]);
+							ds.addData(record);
+						}
+						
+						imballaggio.fetchData();
+					}
+				});
+						
+			}
+		});
+		
+		imballaggio.addChangedHandler(new ChangedHandler() {
+			
+			@Override
+			public void onChanged(ChangedEvent event) {
+				if(event.getValue() == null) return;
+				int[] dim = DataSourceImballaggi.getIstance().getDimensioniImballaggioFromID((String) event.getValue());
+				areaimballaggio = dim[0]*dim[1];
+				colliperlivello = areapallet/areaimballaggio;
+				altezzaImballaggioTmp = dim[2];
+				
+				System.out.println(colliperlivello+" "+areapallet+" "+areaimballaggio);
+			}
+		});
+		
+		numlivelli.addChangedHandler(new ChangedHandler() {
+			
+			@Override
+			public void onChanged(ChangedEvent event) {
+				//Integer.toString(colliperlivello*Integer.parseInt((String)numlivelli.getValue()))
+				numcolli.setValue( ((Integer) numlivelli.getValue())*colliperlivello );
+				altezzaTmp = altezzaImballaggioTmp*((Integer) numlivelli.getValue());
+				int percentuale = (altezzaOccupata+altezzaTmp)*100/altezzaOccupabile;
+				aggiornaBarra(percentuale);
+			}
+		});
 		
 		
-		vLayout = new VLayout();
+		return localForm;
+	}
+	
+	private void caricaDatiListGrid(){
+		String query = "SELECT odsl.*, pc.Categoria,pc.Tipologia,pc.Varieta,pc.Sottovarieta, i.Descrizione, i.Altezza FROM ordine_dettaglio_speciale_livello odsl JOIN prodotti_catalogati pc JOIN imballaggio i ON odsl.IDProdotto = pc.ID AND odsl.IDImballaggio = i.ID WHERE IDPedana = '"+IDPedana+"';";
+		rpc.eseguiQuery(query, new AsyncCallback<String[][]>() {
+
+			@Override
+			public void onFailure(Throwable caught) {Window.alert(caught.getMessage());}
+
+			@Override
+			public void onSuccess(String[][] result) {
+				altezzaOccupata = 0;
+				DataSource ds = new DataSource();
+				DataSourceTextField idField = new DataSourceTextField("id");  
+							idField.setHidden(true);  
+							idField.setPrimaryKey(true);
+				DataSourceTextField descProdField = new DataSourceTextField("descprodotto","Prodotto");
+				DataSourceTextField descImbField = new DataSourceTextField("descimballaggio","Imballaggio");
+				DataSourceTextField numLivField = new DataSourceTextField("numlivelli","N Livelli");
+				DataSourceTextField numColliField = new DataSourceTextField("numcolli","N Colli");
+					
+				
+				ds.setFields(idField, descProdField, descImbField, numLivField, numColliField);
+				ds.setClientOnly(true);
+				lg_mod_pedana.setDataSource(ds);
+				
+				
+				/**
+				ID  	int(11)  	 	  	 No  	None  	 	  Naviga tra i valori DISTINCT   	  Modifica   	  Elimina   	  Primaria   	  Unica   	  Indice   	 Testo completo
+				IDPedana 	int(11) 			No 	None 		Naviga tra i valori DISTINCT 	Modifica 	Elimina 	Primaria 	Unica 	Indice 	Testo completo
+				IDProdotto 	int(11) 			No 	None 		Naviga tra i valori DISTINCT 	Modifica 	Elimina 	Primaria 	Unica 	Indice 	Testo completo
+				IDImballaggio 	int(11) 			No 	None 		Naviga tra i valori DISTINCT 	Modifica 	Elimina 	Primaria 	Unica 	Indice 	Testo completo
+				NumLivelli 	int(11) 			No 	None 		Naviga tra i valori DISTINCT 	Modifica 	Elimina 	Primaria 	Unica 	Indice 	Testo completo
+				NumColli
+				*/
+				
+				for(int i=0; i<result.length;i++){
+					ListGridRecord record = new ListGridRecord();
+					record.setAttribute("id", result[i][0]);
+					record.setAttribute("idpedana", result[i][1]);
+					record.setAttribute("idprodotto", result[i][2]);
+					record.setAttribute("idimballaggio", result[i][3]);
+					record.setAttribute("numlivelli", result[i][4]);
+					record.setAttribute("numcolli", result[i][5]);
+					record.setAttribute("descprodotto", result[i][6] +" "+ result[i][7] +" "+ result[i][8] +" "+ result[i][9]);
+					record.setAttribute("descimballaggio", result[i][10]);
+					altezzaOccupata = altezzaOccupata + Integer.parseInt(result[i][4])*Integer.parseInt(result[i][11]);
+					ds.addData(record);
+				}
+				aggiornaBarra( altezzaOccupata*100/altezzaOccupabile );
+				lg_mod_pedana.fetchData();
+				aggiornaPercentualeOnDB();
+			}
+			
+			
+		});
+	}
+	
+	private void aggiungi(){
+		form.validate();
+		if(form.hasErrors()){
+			Window.alert("Campi mancanti!!");
+			return;
+		}
+		String query = "INSERT INTO ordine_dettaglio_speciale_livello (IDProdotto,IDImballaggio,NumLivelli,NumColli,IDPedana) VALUES ('"+prodotto.getValue()+"','"+imballaggio.getValue()+"','"+numlivelli.getValue()+"','"+numcolli.getValue()+"','"+IDPedana+"')";
+		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+
+			@Override
+			public void onFailure(Throwable caught) {Window.alert(caught.getMessage());}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if(!result){
+					Window.alert("L'inserimento non è avvenuto correttamente");
+					return;
+				}
+				form.reset();
+				caricaDatiListGrid();
+			}
+		});
 		
-		
-		
-		vLayout.setWidth100();
-		vLayout.setHeight100();
-		
-		//
-		label = new TextAreaItem();
-		label.setName("Consigli");
-		label.setWidth("100%");
-		label.setHeight(80);
-		//label.setBackgroundColor("yellow");
-		//label.setContents("Giacenza in magazzino: ");
-		DynamicForm form = new DynamicForm();
-		form.setFields(label);
-		
-		vLayout.addMember(SS);
-		vLayout.addMember(form);
-		vLayout.addMember(confermaButton);
-		
-		//this.setAutoSize(true);
-		this.addItem(vLayout);
-		this.setWidth(700);
-		this.setHeight(400);
-		this.centerInPage();
-		this.draw();
+	}
+	
+	private void aggiornaBarra(int percentuale){
+		progressbar.setPercentDone(percentuale);
+        progressbarlabel.setContents(percentuale+"%");
+	}
+	
+	private void aggiornaPercentualeOnDB(){
+		String query = "UPDATE ordine_dettaglio_speciale SET PercentualeCompletamento = '"+altezzaOccupata*100/altezzaOccupabile+"' WHERE ID = '"+IDPedana+"';";
+		rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+
+			@Override
+			public void onFailure(Throwable caught) {}
+
+			@Override
+			public void onSuccess(Boolean result) {
+
+				panelordinespeciale.caricaDatiListGridPedane();
+			}
+		});
 	}
 	
 	

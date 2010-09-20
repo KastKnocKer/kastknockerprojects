@@ -27,6 +27,7 @@ public class ListGridOrdini extends ListGrid{
 		this.setWidth100();
 		this.setHeight100(); 
 		this.setShowEdges(false);
+		this.setAutoFetchData(true);
 		this.setDataSource(DataSourceOrdini.getIstance());
 		this.setCanReorderFields(false); 
 		this.setCanAcceptDroppedRecords(false);  
@@ -37,10 +38,10 @@ public class ListGridOrdini extends ListGrid{
 		campo.setCanEdit(false);
 		idcampo.setHidden(true);
 		this.setFields(campo,idcampo);
-		this.fetchData();
 		this.sort("idn", SortDirection.DESCENDING);
 		this.setCanSort(false);
 		this.setCanDrag(false);
+		this.fetchData();
 		
 		//////////////
 		

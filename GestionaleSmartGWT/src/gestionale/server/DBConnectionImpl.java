@@ -229,8 +229,8 @@ public String getListaDocumenti() {
 	String text = "";
 	for(int i=0; i<v.size(); i++){
 		String tmp = v.get(i);
-		text = text +"<a href=\""+tmp.replaceAll(" ", "%20")+"\" target=\"_blank\">"+tmp.substring(4)+"</a> <br>";
-		System.out.println("<a href="+v.get(i)+">"+v.get(i)+"</a> <br>");
+		text = text +"<a href=\"" + tmp.replaceAll(" ", "%20").replace("\\", "/") + "\" target=\"_blank\">"+tmp.substring(4)+"</a> <br>";
+		System.out.println("<a href="+v.get(i)+">"+v.get(i)+"</a> <br>" + " TMP: "+tmp);
 	}
 	
 	return text;

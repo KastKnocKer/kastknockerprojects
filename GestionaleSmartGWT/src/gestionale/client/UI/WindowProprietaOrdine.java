@@ -141,6 +141,20 @@ public class WindowProprietaOrdine extends Finestra{
 			@Override
 			public void onClick(ClickEvent event) {
 				
+				String query = "UPDATE ordini SET DataInvioOrdine = CURDATE() AND Convalidato = 1";
+				rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						
+					}
+					@Override
+					public void onSuccess(Boolean result) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
 				
 				rpc.eseguiCreazioneDocumentiOrdine(selectedRecord.getAttribute("id"), new AsyncCallback<String[][]>() {
 					
