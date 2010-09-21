@@ -94,25 +94,25 @@ public class PanelGestioneImballaggi extends VLayout{
 		form = new DynamicForm();
 		
 		larghezza = new TextItem();  
-				larghezza.setType("int");
+				larghezza.setType("float");
 				larghezza.setName("larghezza");
 				larghezza.setTitle("Larghezza (cm)");
 				larghezza.setRequired(true);
 				
 		lunghezza = new TextItem();  
-				lunghezza.setType("int");
+				lunghezza.setType("float");
 				lunghezza.setName("lunghezza");
 				lunghezza.setTitle("Lunghezza (cm)");
 				lunghezza.setRequired(true);
 		
 		altezza = new TextItem();  
-				altezza.setType("int"); 
+				altezza.setType("float"); 
 				altezza.setName("altezza");
 				altezza.setTitle("Altezza (cm)");
 				altezza.setRequired(true);
 		
 		tara = new TextItem();  
-				tara.setType("int");
+				tara.setType("float");
 				tara.setName("tara");
 				tara.setTitle("Tara (g)");
 				tara.setRequired(true);

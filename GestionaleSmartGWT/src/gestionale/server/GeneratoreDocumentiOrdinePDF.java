@@ -59,6 +59,8 @@ public class GeneratoreDocumentiOrdinePDF {
 		
 		CampiOrdine = vOrdine.get(0);
 		
+		if(CampiOrdine[6].equals("1")) return; //Ordine già convalidato
+		
 		if(CampiOrdine[7].equals("Ordinario")){
 			startOrdineOrdinario();
 		} else if(CampiOrdine[7].equals("Speciale")){

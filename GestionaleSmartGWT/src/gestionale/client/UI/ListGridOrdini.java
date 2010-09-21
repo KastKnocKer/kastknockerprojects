@@ -2,6 +2,7 @@ package gestionale.client.UI;
 
 import gestionale.client.DataBase.DataSourceOrdini;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.smartgwt.client.types.SortDirection;
 import com.smartgwt.client.widgets.grid.ListGrid;
@@ -28,7 +29,7 @@ public class ListGridOrdini extends ListGrid{
 		this.setHeight100(); 
 		this.setShowEdges(false);
 		this.setAutoFetchData(true);
-		this.setDataSource(DataSourceOrdini.getIstance());
+		
 		this.setCanReorderFields(false); 
 		this.setCanAcceptDroppedRecords(false);  
 		this.setCanDragRecordsOut(false);
@@ -37,6 +38,7 @@ public class ListGridOrdini extends ListGrid{
 		ListGridField idcampo = new ListGridField("idn", "ID");
 		campo.setCanEdit(false);
 		idcampo.setHidden(true);
+		this.setDataSource(DataSourceOrdini.getIstance());
 		this.setFields(campo,idcampo);
 		this.sort("idn", SortDirection.DESCENDING);
 		this.setCanSort(false);
@@ -58,11 +60,7 @@ public class ListGridOrdini extends ListGrid{
 				
 			}
 		});
-		
-		
-		
-		
-		
+				
 		this.addRowContextClickHandler(new RowContextClickHandler() {
 			
 			public void onRowContextClick(RowContextClickEvent event) {
@@ -119,12 +117,10 @@ public class ListGridOrdini extends ListGrid{
 		
 		
 		
-		
 
 		
 		
 		
 		
 	}
-
 }

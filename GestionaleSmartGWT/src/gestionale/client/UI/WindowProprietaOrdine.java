@@ -3,6 +3,7 @@ package gestionale.client.UI;
 import gestionale.client.DBConnection;
 import gestionale.client.DBConnectionAsync;
 import gestionale.client.DataBase.DataSourceContatti;
+import gestionale.client.DataBase.DataSourceOrdini;
 import gestionale.shared.Contatto;
 
 import java.util.Vector;
@@ -41,8 +42,14 @@ public class WindowProprietaOrdine extends Finestra{
 	private ButtonItem convalidaButton;
 	private Finestra finestra;
 	
+	private String[] trasportatori;
+	private String[] fornitori;
+	private String[] trasportatoriID;
+	private String[] fornitoriID;
+	
 	public WindowProprietaOrdine(final ListGridRecord selectedRecord){
 		super();
+		finestra = this;
 		
 		form = new DynamicForm();
 		//form.setWidth(250);
@@ -59,6 +66,7 @@ public class WindowProprietaOrdine extends Finestra{
 		
 		dataPartenzaMerce = new DateItem();
 		//dataPartenzaMerce.setUseTextField(true);
+		//dataPartenzaMerce.setInputFormat("YMD");
 		dataPartenzaMerce.setName("dataPartenzaMerce");  
 		dataPartenzaMerce.setTitle("Data partenza merce");  
 		dataPartenzaMerce.setRequired(true);  
@@ -88,10 +96,10 @@ public class WindowProprietaOrdine extends Finestra{
 		
 		final Vector<Contatto> vettTrasp = DataSourceContatti.getVettoreTrasportatori();
 		final Vector<Contatto> vettForn = DataSourceContatti.getVettoreFornitori();
-		String[] trasportatori = new String[vettTrasp.size()];
-		String[] fornitori = new String[vettForn.size()];
-		final String[] trasportatoriID = new String[vettTrasp.size()];
-		final String[] fornitoriID = new String[vettForn.size()];
+		trasportatori = new String[vettTrasp.size()];
+		fornitori = new String[vettForn.size()];
+		trasportatoriID = new String[vettTrasp.size()];
+		fornitoriID = new String[vettForn.size()];
 		
 		for(int i=0; i<vettTrasp.size(); i++){
 			trasportatori[i] = vettTrasp.get(i).getRagioneSociale();
@@ -118,8 +126,8 @@ public class WindowProprietaOrdine extends Finestra{
 		convalidaButton = new ButtonItem();
 		convalidaButton.setTitle("Convalida");
 		
-		
-		form.setFields( new FormItem[] {dataCreazioneOrdine, dataPartenzaMerce, TipoOrdine, Trasportatore, Fornitore, note,confermaButton, convalidaButton} );
+		//dataCreazioneOrdine, dataPartenzaMerce, 
+		form.setFields( new FormItem[] {TipoOrdine, Trasportatore, Fornitore, note,confermaButton, convalidaButton} );
 		
 		final VLayout vLayout = new VLayout();
 		vLayout.addMember(form);
@@ -136,12 +144,11 @@ public class WindowProprietaOrdine extends Finestra{
 		this.draw();
 		this.centerInPage();
 		
-		convalidaButton.addClickHandler(new ClickHandler() {
-			
+		confermaButton.addClickHandler(new ClickHandler() {
+
 			@Override
 			public void onClick(ClickEvent event) {
-				
-				String query = "UPDATE ordini SET DataInvioOrdine = CURDATE() AND Convalidato = 1";
+				String query = "";
 				rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
 
 					@Override
@@ -149,56 +156,110 @@ public class WindowProprietaOrdine extends Finestra{
 						// TODO Auto-generated method stub
 						
 					}
+
 					@Override
 					public void onSuccess(Boolean result) {
-						// TODO Auto-generated method stub
+						String fornitore = (String) Fornitore.getValue();
+						String trasportatore = (String) Trasportatore.getValue();
+						String idtrasp="";
+						String idforn="";
+						for(int i=0; i<trasportatori.length;i++){
+							if(trasportatori[i].equals(trasportatore)){
+								idtrasp = trasportatoriID[i];
+								break;
+							}
+						}
+						for(int i=0; i<fornitori.length;i++){
+							if(fornitori[i].equals(fornitore)){
+								idforn = fornitoriID[i];
+								break;
+							}
+						}
 						
+						selectedRecord.setAttribute("idtrasportatore", idtrasp);
+						selectedRecord.setAttribute("idfornitore", idforn);
+						selectedRecord.setAttribute("note", note.getValue());
+						
+						String query = "UPDATE ordini SET IDTrasportatore = '"+idtrasp+"' , IDFornitore = '"+idforn+"' , Note = '"+note.getValue()+"' WHERE ID = '"+selectedRecord.getAttribute("id")+"';";
+						rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+								
+							}
+
+							@Override
+							public void onSuccess(Boolean result) {
+								finestra.destroy();
+							}
+							
+						});
+
+					}
+					
+				});
+			}
+			
+		});
+		
+		convalidaButton.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				if(!Window.confirm("La seguente procedura convalidera' l'ordine rendendolo non piu' modificabile. Inoltre avviera' la procedura automatica di creazione dei documenti allegati. Continuare la procedura?")) return;
+				
+				String query = "UPDATE ordini SET Convalidato = 1, DataInvioOrdine = CURDATE() WHERE ID = '"+selectedRecord.getAttribute("id")+"';";
+				rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						
+						rpc.eseguiCreazioneDocumentiOrdine(selectedRecord.getAttribute("id"), new AsyncCallback<String[][]>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								// TODO Auto-generated method stub
+								
+							}
+
+							@Override
+							public void onSuccess(String[][] result) {
+								
+								ListGrid lg = new ListGrid();
+								lg.setFields(new ListGridField("nome","Titolo"),new ListGridField("url","URL"));
+								
+								ListGridRecord rec = null;
+								for(int i=0; i<result.length; i++){
+									String[] str = result[i];
+									rec = new ListGridRecord();
+									rec.setAttribute("nome", str[1]);
+									rec.setAttribute("url", str[0]);
+									lg.addData(rec);
+								}
+								lg.getField("url").setType(ListGridFieldType.LINK);
+								finestra.clear();
+								finestra.addItem(lg);
+								
+								
+								DataSourceOrdini.getIstance().getNewRecords();
+							}
+						});
+					
 					}
 				});
 				
-				rpc.eseguiCreazioneDocumentiOrdine(selectedRecord.getAttribute("id"), new AsyncCallback<String[][]>() {
-					
-					@Override
-					public void onSuccess(String[][] result) {
-						System.out.println("Scrivo i link");
-						for(int i=0; i<result.length;i++){
-							String[] rec = result[i];
-							System.out.println("");
-							for(int j=0; j<rec.length; j++){
-								System.out.print(rec[j]+" - ");
-							}
-							
-							
-						}
-						
-						ListGrid lg = new ListGrid();
-						lg.setFields(new ListGridField("nome","Titolo"),new ListGridField("url","URL"));
-						
-						ListGridRecord rec = null;
-						for(int i=0; i<result.length; i++){
-							String[] str = result[i];
-							rec = new ListGridRecord();
-							rec.setAttribute("nome", str[1]);
-							rec.setAttribute("url", str[0]);
-							lg.addData(rec);
-						}
-						lg.getField("url").setType(ListGridFieldType.LINK);
-						vLayout.addMember(lg);
-						
-					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						Window.alert(caught.getMessage());
-					}
-
-					
-				});
 				
 				
 			}
 		});
-		
+		if(selectedRecord.getAttribute("convalidato").equals("1")){
+			convalidaButton.setDisabled(true);
+			confermaButton.setDisabled(true);
+		}
 	}
 	
 }

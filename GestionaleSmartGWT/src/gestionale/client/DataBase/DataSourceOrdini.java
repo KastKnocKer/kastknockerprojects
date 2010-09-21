@@ -45,19 +45,8 @@ public class DataSourceOrdini extends DataSource{
 		DataSourceTextField idimballaggioField = new DataSourceTextField("idimballaggio","idimballaggio");
 		DataSourceTextField quantitaField = new DataSourceTextField("quantita","quantita");
 		DataSourceTextField userField = new DataSourceTextField("user","user");
-		/*
-		 * record.setAttribute("id",ordine.getID());
-						record.setAttribute("idn",Integer.parseInt(ordine.getID()));
-						record.setAttribute("datacreazioneordine",ordine.getDataCreazioneOrdine());
-						record.setAttribute("datainvioordine",ordine.getDataInvioOrdine());
-						record.setAttribute("datapartenzamerce",ordine.getDataPartenzaMerce());
-						record.setAttribute("note",ordine.getNote());
-						record.setAttribute("idtrasportatore",ordine.getIDTrasportatore());
-						record.setAttribute("convalidato",ordine.getConvalidato());
-						record.setAttribute("tipoordine",ordine.getTipoOrdine());
-		 */
-		 
-        setFields(idField, idnField, idordineField, idprodottoField, idclienteField, idimballaggioField, quantitaField, userField); 
+		
+		setFields(idField, idnField, idordineField, idprodottoField, idclienteField, idimballaggioField, quantitaField, userField); 
 		
 		setClientOnly(true);
 		getNewRecords();
@@ -96,10 +85,11 @@ public class DataSourceOrdini extends DataSource{
 						record.setAttribute("tipoordine",ordine.getTipoOrdine());
 						record.setAttribute("descrizioneordine",ordine.getDataCreazioneOrdine()+" - ["+ordine.getTipoOrdine()+"]");
 						
-						if(istance.caricato)
-						istance.updateData(record);
-						else
-						istance.addData(record);
+						if(istance.caricato){
+							istance.updateData(record);
+						}else{
+							istance.addData(record);
+						}
 						
 					}
 					istance.caricato = true;
