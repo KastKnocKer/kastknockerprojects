@@ -27,7 +27,7 @@ public class PanelOrdine extends TabSet{
 	private String IDOrdine;
 	private DataSourceDettaglioOrdini dsdo; 
 	private PanelFiltroProdotti panelfiltroprodotti;
-	private PanelFiltroContatti panelfiltrocontatti;
+	private PanelFiltroClienti panelfiltrocontatti;
 	
 	
 	
@@ -44,7 +44,7 @@ public class PanelOrdine extends TabSet{
 
 		this.setHeight100();
 		this.setWidth100();
-		panelfiltrocontatti = new PanelFiltroContatti();
+		panelfiltrocontatti = new PanelFiltroClienti();
 		panelfiltroprodotti = new PanelFiltroProdotti();
 		
 		flextableOrdineOrdinario = new FlexTableOrdineOrdinario(IDOrdine);

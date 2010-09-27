@@ -31,7 +31,7 @@ public class WindowLoadData extends Finestra{
 		DataSourceMercati.getIstance();
 		
 		PanelFiltroProdotti.CaricaVettoreProdottiPreferito();
-		PanelFiltroContatti.CaricaVettoreContattiPreferito();
+		PanelFiltroClienti.CaricaVettoreContattiPreferito();
 		
 		
 		

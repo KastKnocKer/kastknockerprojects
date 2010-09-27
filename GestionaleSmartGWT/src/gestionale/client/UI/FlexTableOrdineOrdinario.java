@@ -34,7 +34,7 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 	private FlexTableOrdineOrdinario thisTable;
 	private DataSourceDettaglioOrdini dsdo = null;
 	
-	private PanelFiltroContatti panelfiltrocontatti = null;
+	private PanelFiltroClienti panelfiltrocontatti = null;
 	private PanelFiltroProdotti panelfiltroprodotti = null;
 	
 	public FlexTableOrdineOrdinario(String idordine){
@@ -230,7 +230,7 @@ public class FlexTableOrdineOrdinario extends FlexTable{
 
 
 
-	public void setPanelFiltroContatti(PanelFiltroContatti panelfiltrocontatti) {
+	public void setPanelFiltroContatti(PanelFiltroClienti panelfiltrocontatti) {
 		this.panelfiltrocontatti = panelfiltrocontatti;
 	}
 
