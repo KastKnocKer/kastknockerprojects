@@ -62,6 +62,7 @@ public class GeneratoreDocumentiOrdinePDF {
 		if(CampiOrdine[6].equals("1")) return; //Ordine già convalidato
 		
 		if(CampiOrdine[7].equals("Ordinario")){
+			System.out.println("START-ORD");
 			startOrdineOrdinario();
 		} else if(CampiOrdine[7].equals("Speciale")){
 			
@@ -170,11 +171,15 @@ public class GeneratoreDocumentiOrdinePDF {
 	}
 	
 	public String[][] generaPDF(){
+		System.out.println("TEST");
 		if(CampiOrdine[7].equals("Ordinario")){
+			System.out.println("ORD");
 			return generaPDFOrdineOrdinario();
 		} else if(CampiOrdine[7].equals("Speciale")){
+			System.out.println("Spec");
 			return null;
 		}
+		System.out.println("NADA");
 		return null;
 	}
 	

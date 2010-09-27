@@ -209,47 +209,58 @@ public class WindowProprietaOrdine extends Finestra{
 			public void onClick(ClickEvent event) {
 				if(!Window.confirm("La seguente procedura convalidera' l'ordine rendendolo non piu' modificabile. Inoltre avviera' la procedura automatica di creazione dei documenti allegati. Continuare la procedura?")) return;
 				
-				String query = "UPDATE ordini SET Convalidato = 1, DataInvioOrdine = CURDATE() WHERE ID = '"+selectedRecord.getAttribute("id")+"';";
-				rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
+				rpc.eseguiCreazioneDocumentiOrdine(selectedRecord.getAttribute("id"), new AsyncCallback<String[][]>() {
 
 					@Override
-					public void onFailure(Throwable caught) {}
+					public void onFailure(Throwable caught) {
+						Window.alert(caught.getMessage());
+					}
 
 					@Override
-					public void onSuccess(Boolean result) {
+					public void onSuccess(String[][] result) {
 						
-						rpc.eseguiCreazioneDocumentiOrdine(selectedRecord.getAttribute("id"), new AsyncCallback<String[][]>() {
+						if(result == null){
+							finestra.destroy();
+							DataSourceOrdini.getIstance().getNewRecords();
+							return;
+						}
+						
+						ListGrid lg = new ListGrid();
+						lg.setFields(new ListGridField("nome","Titolo"),new ListGridField("url","URL"));
+						
+						ListGridRecord rec = null;
+						for(int i=0; i<result.length; i++){
+							String[] str = result[i];
+							rec = new ListGridRecord();
+							rec.setAttribute("nome", str[1]);
+							rec.setAttribute("url", str[0]);
+							lg.addData(rec);
+						}
+						lg.getField("url").setType(ListGridFieldType.LINK);
+						finestra.clear();
+						finestra.addItem(lg);
+						
+						
+						DataSourceOrdini.getIstance().getNewRecords();
+						
+						
+						String query = "UPDATE ordini SET Convalidato = 1, DataInvioOrdine = CURDATE() WHERE ID = '"+selectedRecord.getAttribute("id")+"';";
+						rpc.eseguiUpdate(query, new AsyncCallback<Boolean>() {
 
 							@Override
-							public void onFailure(Throwable caught) {
-								Window.alert(caught.getMessage());
-							}
+							public void onFailure(Throwable caught) {Window.alert(caught.getMessage());}
 
 							@Override
-							public void onSuccess(String[][] result) {
+							public void onSuccess(Boolean result) {
 								
-								ListGrid lg = new ListGrid();
-								lg.setFields(new ListGridField("nome","Titolo"),new ListGridField("url","URL"));
-								
-								ListGridRecord rec = null;
-								for(int i=0; i<result.length; i++){
-									String[] str = result[i];
-									rec = new ListGridRecord();
-									rec.setAttribute("nome", str[1]);
-									rec.setAttribute("url", str[0]);
-									lg.addData(rec);
-								}
-								lg.getField("url").setType(ListGridFieldType.LINK);
-								finestra.clear();
-								finestra.addItem(lg);
-								
-								
-								DataSourceOrdini.getIstance().getNewRecords();
 							}
 						});
-					
 					}
 				});
+				
+				
+				
+				
 				
 				
 				
