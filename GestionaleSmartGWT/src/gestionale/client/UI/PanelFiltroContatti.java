@@ -21,6 +21,7 @@ import com.smartgwt.client.types.SelectionAppearance;
 import com.smartgwt.client.types.SelectionStyle;
 import com.smartgwt.client.types.TitleOrientation;
 import com.smartgwt.client.widgets.Button;
+import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.ButtonItem;
 import com.smartgwt.client.widgets.form.fields.CheckboxItem;
@@ -249,7 +250,7 @@ public class PanelFiltroContatti extends Layout{
 	}
 	
 	private void createFilter4(){
-		
+
 		ti_TipoMercatoDiRiferimento = new SelectItem();
 		ti_TipoMercatoDiRiferimento.setName("tipomercato");
 		ti_TipoMercatoDiRiferimento.setTitle("Tipo Mercato");

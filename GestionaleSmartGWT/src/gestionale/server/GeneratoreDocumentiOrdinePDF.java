@@ -179,6 +179,7 @@ public class GeneratoreDocumentiOrdinePDF {
 	}
 	
 	public String[][] generaPDFOrdineOrdinario(){
+		if(data == null) return null;
 		if(data.size() == 0) return null;	//Niente ordinazioni
 		
 		url = new Vector<String[]>();

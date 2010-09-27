@@ -72,13 +72,11 @@ public class GUIManager {
         usernameItem.setWidth(220);
         usernameItem.setTitle("Username");
         usernameItem.setRequired(true);
-        usernameItem.setDefaultValue("a");
   
         passwordItem = new PasswordItem();
         passwordItem.setWidth(220);
         passwordItem.setTitle("Password");  
         passwordItem.setRequired(true);
-        passwordItem.setDefaultValue("a");
         
        
         form.setFields( new FormItem[] {usernameItem, passwordItem} );
@@ -91,9 +89,7 @@ public class GUIManager {
 								User user = new User();
 								user.setUsername( (String) usernameItem.getValue() );
 								user.setPassword( (String) passwordItem.getValue() );
-								usernameItem.setValue("a");
-								usernameItem.setValue("a");
-								
+																
 								SessioneUtente.setUsername( (String) usernameItem.getValue() );
 
 								DBConnectionAsync rpc = (DBConnectionAsync) GWT.create(DBConnection.class);

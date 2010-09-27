@@ -222,8 +222,7 @@ public class WindowProprietaOrdine extends Finestra{
 
 							@Override
 							public void onFailure(Throwable caught) {
-								// TODO Auto-generated method stub
-								
+								Window.alert(caught.getMessage());
 							}
 
 							@Override
